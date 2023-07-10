@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/Mayank-thite/me/frontend/App.js/static/css/main.073c9b0a.css",
-    "main.js": "/Mayank-thite/me/frontend/App.js/static/js/main.8f4f544f.js",
-    "static/js/787.cda612ba.chunk.js": "/Mayank-thite/me/frontend/App.js/static/js/787.cda612ba.chunk.js",
-    "static/media/logo.svg": "/Mayank-thite/me/frontend/App.js/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "index.html": "/Mayank-thite/me/frontend/App.js/index.html",
-    "main.073c9b0a.css.map": "/Mayank-thite/me/frontend/App.js/static/css/main.073c9b0a.css.map",
-    "main.8f4f544f.js.map": "/Mayank-thite/me/frontend/App.js/static/js/main.8f4f544f.js.map",
-    "787.cda612ba.chunk.js.map": "/Mayank-thite/me/frontend/App.js/static/js/787.cda612ba.chunk.js.map"
+    "main.css": "/Mayank-thite/me/static/css/main.073c9b0a.css",
+    "main.js": "/Mayank-thite/me/static/js/main.1af5ffc5.js",
+    "static/js/787.cda612ba.chunk.js": "/Mayank-thite/me/static/js/787.cda612ba.chunk.js",
+    "static/media/logo.svg": "/Mayank-thite/me/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/Mayank-thite/me/index.html",
+    "main.073c9b0a.css.map": "/Mayank-thite/me/static/css/main.073c9b0a.css.map",
+    "main.1af5ffc5.js.map": "/Mayank-thite/me/static/js/main.1af5ffc5.js.map",
+    "787.cda612ba.chunk.js.map": "/Mayank-thite/me/static/js/787.cda612ba.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.8f4f544f.js"
+    "static/js/main.1af5ffc5.js"
   ]
 }
