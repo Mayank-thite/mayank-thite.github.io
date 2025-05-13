@@ -9,5 +9,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/mayank-thite.github.io/'
+  base: '/mayank-thite.github.io'
 })
