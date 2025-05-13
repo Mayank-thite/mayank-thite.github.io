@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://github.com/Mayank-thite/mayank-thite.github.io",
+  "homepage": "https://mayank-thite.github.io/mayank-thite.github.io/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
