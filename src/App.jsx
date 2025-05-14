@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css'
 import "./index.css";
 import "tailwindcss";
 
@@ -7,27 +6,27 @@ import { useState } from "react";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { Navbar } from "./components/Navbar";
 // import { MobileMenu } from "./components/MobileMenu";
-// import { Home } from "./components/sections/Home";
+import { Home }  from "./components/pages/Home";
 // import { About } from "./components/sections/About";
 // import { Projects } from "./components/sections/Projects";
 // import { Contact } from "./components/sections/Contact";
 
 function App() {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <>
-      {!isLoaded && <LoadingScreen onComplete={() => setIsLoaded(true)} />}{" "}
+      {/* {!isLoaded && <LoadingScreen onComplete={() => setIsLoaded(true)} />}{" "} */}
       <div
         className={`min-h-screen transition-opacity duration-700 ${
           isLoaded ? "opacity-100" : "opacity-0"
-        } bg-black text-gray-100`}
+        } bg-white text-gray-900`}
       >
         <Navbar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
         {/* <MobileMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} /> */}
-        {/* <Home />
-        <About />
+         <Home />
+        {/*<About />
         <Projects />
         <Contact /> */}
       </div>
