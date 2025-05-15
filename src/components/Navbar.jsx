@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import logo from "../assets/logo.png";
 
 export const Navbar = ({ menuOpen, setMenuOpen }) => {
   useEffect(() => {
@@ -11,7 +12,7 @@ export const Navbar = ({ menuOpen, setMenuOpen }) => {
           <a href="#home" className="font-sans text-l text-grey-800">
             {" "}
             <img
-              src="src\assets\logo.png"
+              src={logo}
               alt="Logo"
               className="w-10 h-10 rounded-full"/>
           </a>
