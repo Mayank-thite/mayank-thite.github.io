@@ -5,9 +5,9 @@ export const GITHUB = 'https://github.com/Mayank-thite';
 export const RECAP_DEMO = 'https://event-gallery-ten.vercel.app';
 export const RECAP_SOURCE = 'https://github.com/Mayank-thite/event-gallery';
 
-// Leave null until the PDF is approved for the public site (the current one has a phone number on it).
-// When it's ready, drop it in /public and set this to '/Mayank_Thite_Resume.pdf'.
-export const RESUME_PDF = null;
+// Public copy of the resume, with the phone number removed (approved by Mayank, Nov 2).
+
+export const RESUME_PDF = '/Mayank_Thite_Resume.pdf';
 
 export const NAME = 'Mayank Thite';
 export const ROLE = 'Data analyst';
