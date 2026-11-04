@@ -23,9 +23,10 @@ export const PROJECTS = [
     star: 'Course drop-off',
     when: '2026',
     summary: 'Where and why students leave online courses, using the Open University learning dataset. SQL first, then Python for the model and tests.',
-    finding: 'Withdrawals peak in week 2 of a course.',
-    stack: ['SQL', 'PostgreSQL', 'Python', 'Power BI'],
+    finding: 'Half of all dated withdrawals happen before day 28. A day 28 call list flags students who go on to withdraw at twice the base rate.',
+    stack: ['SQL', 'PostgreSQL', 'Python', 'scikit-learn', 'Power BI'],
     repo: `${GH}/course-dropoff-analysis`,
+    dashboard: '/projects/course-dropoff-analysis/',
   },
   {
     id: 'retail',
@@ -36,6 +37,7 @@ export const PROJECTS = [
     finding: 'Most top sellers have lumpy demand, and the textbook reorder formula set the reorder point too low for 647 of the 828 products that make 80% of revenue.',
     stack: ['PySpark', 'Spark SQL', 'Pandas', 'Power BI'],
     repo: `${GH}/retail-analytics-engine`,
+    dashboard: '/projects/retail-analytics-engine/',
   },
   {
     id: 'stock-sentiment',
@@ -46,6 +48,7 @@ export const PROJECTS = [
     finding: 'On 47,913 ticker days, headline tone lined up with same-day returns (r = 0.044 net of the market) but told you nothing about the next day.',
     stack: ['Python', 'Kafka', 'Spark', 'HiveQL', 'statsmodels'],
     repo: `${GH}/stock-sentiment-pipeline`,
+    dashboard: '/projects/stock-sentiment-pipeline/',
   },
   {
     id: 'stats',

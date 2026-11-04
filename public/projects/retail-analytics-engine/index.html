@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retail Stocking Dashboard</title>
+<meta name="description" content="Sales, stocking and customer numbers for a UK online gift wholesaler, built from UCI Online Retail II.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #04050A; --panel: #0B0D15; --ink: #ECEEF3; --text-2: #A4ABBD; --body: #C9CEDA;
+  --line: rgba(220,226,240,.12); --accent: #FFC77A; --cool: #9CCBFF; --track: rgba(220,226,240,.06);
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #F6F6F3; --panel: #FFFFFF; --ink: #10131C; --text-2: #4E5566; --body: #2A2F3B;
+    --line: rgba(16,19,28,.12); --accent: #9A5B00; --cool: #2560A6; --track: rgba(16,19,28,.05);
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--body);
+  font: 300 16px/1.55 "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1080px; margin: 0 auto; padding: 56px 16px 64px; }
+.mono, .eyebrow, .tl, .tick, .hv, th, .meta {
+  font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+.eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2); margin: 0 0 14px; }
+h1 { color: var(--ink); font-weight: 400; font-size: clamp(26px, 4.2vw, 40px); line-height: 1.15;
+  letter-spacing: -.015em; margin: 0 0 16px; max-width: 24ch; }
+h2 { color: var(--ink); font-weight: 400; font-size: 18px; margin: 0 0 4px; }
+.lede { max-width: 66ch; margin: 0 0 8px; }
+.meta { font-size: 12px; color: var(--text-2); margin: 0 0 40px; }
+a { color: var(--cool); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 12px; margin-bottom: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 22px; min-width: 0; }
+.tl { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-2); }
+.tv { color: var(--ink); font-size: 32px; font-weight: 400; margin: 8px 0 4px; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.tv.accent-t { color: var(--accent); }
+.ts { font-size: 13.5px; color: var(--text-2); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: 12px; margin-top: 12px; }
+.full { margin-top: 12px; }
+.sub2 { font-size: 14px; color: var(--text-2); margin: 0 0 18px; }
+svg { width: 100%; height: auto; display: block; overflow: visible; }
+svg .gridline { stroke: var(--line); stroke-width: 1; }
+svg .tick { fill: var(--text-2); font-size: var(--fs); }
+svg .lab { font-size: var(--fs); font-family: "Geist", system-ui, sans-serif; }
+svg .line { fill: none; stroke-width: 2.2; stroke-linejoin: round; }
+svg .line.accent, svg .dot.accent { stroke: var(--accent); } svg .dot.accent, svg .lab.accent { fill: var(--accent); }
+svg .line.cool, svg .dot.cool { stroke: var(--cool); } svg .dot.cool, svg .lab.cool { fill: var(--cool); }
+.narrow { display: none; }
+@media (max-width: 560px) { .wide { display: none; } .narrow { display: block; } .card { padding: 18px; } }
+.hrow { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr) auto; gap: 10px; align-items: center;
+  padding: 5px 0; font-size: 14px; }
+.hrow.slim { grid-template-columns: minmax(0, 1fr) 7.5em; padding: 2px 0; }
+.hl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { position: relative; height: 10px; background: var(--track); border-radius: 0 3px 3px 0; }
+.track.ref::after { content: ""; position: absolute; left: 100%; top: -4px; bottom: -4px; border-left: 1px solid var(--cool); }
+.bar { display: block; height: 100%; border-radius: 0 3px 3px 0; }
+.bar.accent { background: var(--accent); } .bar.cool { background: var(--cool); }
+.hv { font-size: 12.5px; text-align: right; min-width: 4.5em; color: var(--ink); }
+.accent-t { color: var(--accent); } .cool-t { color: var(--cool); }
+.pair { padding: 6px 0 8px; border-bottom: 1px solid var(--line); }
+.pair:last-child { border-bottom: 0; }
+.pl { font-size: 14px; color: var(--ink); margin-bottom: 2px; }
+.scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 9px 6px; border-bottom: 1px solid var(--line); }
+th:first-child, td:first-child { text-align: left; }
+th { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-2); font-weight: 400; }
+td.strong { color: var(--accent); }
+td .pat { color: var(--text-2); font-size: 12.5px; display: block; }
+.note { font-size: 13.5px; color: var(--text-2); margin: 14px 0 0; max-width: 72ch; }
+.caveats { margin-top: 40px; max-width: 72ch; }
+.caveats p { font-size: 14.5px; margin: 0 0 10px; }
+footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 13px; color: var(--text-2); }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+<p class="eyebrow">Retail analytics engine · UK online gift wholesaler</p>
+<h1>Sep to Nov brings in 37.5% of the year, and the best sellers sell too unevenly for a normal-demand reorder formula</h1>
+<p class="lede">Two years of invoice lines, cleaned in PySpark into a star schema, with the metrics in Spark SQL and the stocking and customer work in Pandas. Revenue is in GBP. Net means sales minus cancellations.</p>
+<p class="meta">Data 1 Dec 2009 to 9 Dec 2011 · as of 2011-12-09 · source <a href="https://archive.ics.uci.edu/dataset/502/online+retail+ii">UCI Online Retail II</a></p>
+
+<div class="tiles"><div class="card"><div class="tl">Net revenue</div><div class="tv ">£18,926,266</div><div class="ts">1 Dec 2009 to 9 Dec 2011, after £716,426 of cancellations</div></div><div class="card"><div class="tl">Sep to Nov share</div><div class="tv accent-t">37.5%</div><div class="ts">of net revenue, Dec 2010 to Nov 2011 (36.1% the year before)</div></div><div class="card"><div class="tl">Class A SKUs</div><div class="tv ">828</div><div class="ts">of 3,788 sold made 80.0% of net revenue, last 52 weeks</div></div><div class="card"><div class="tl">Normal formula too low</div><div class="tv ">647</div><div class="ts">of 828 A SKUs get a lower reorder point from the normal formula than from their real 2 week demand</div></div></div>
+
+<section class="card full">
+<h2>Both years climb from August and peak in November</h2>
+<p class="sub2">Net revenue per month. December 2011 is left out because the data stops on 9 Dec.</p>
+<div class="wide"><svg viewBox="0 0 760 280" role="img" style="--fs:12px" aria-label="Monthly net revenue for two twelve month periods. Both peak in November."><line x1="55.199999999999996" x2="646.0" y1="251.2" y2="251.2" class="gridline"/><text x="47.199999999999996" y="255.4" class="tick" text-anchor="end">£0.0m</text><line x1="55.199999999999996" x2="646.0" y1="192.0" y2="192.0" class="gridline"/><text x="47.199999999999996" y="196.2" class="tick" text-anchor="end">£0.5m</text><line x1="55.199999999999996" x2="646.0" y1="132.8" y2="132.8" class="gridline"/><text x="47.199999999999996" y="137.0" class="tick" text-anchor="end">£1.0m</text><line x1="55.199999999999996" x2="646.0" y1="73.6" y2="73.6" class="gridline"/><text x="47.199999999999996" y="77.8" class="tick" text-anchor="end">£1.5m</text><line x1="55.199999999999996" x2="646.0" y1="14.4" y2="14.4" class="gridline"/><text x="47.199999999999996" y="18.6" class="tick" text-anchor="end">£2.0m</text><text x="55.2" y="269.2" class="tick" text-anchor="middle">Dec</text><text x="108.9" y="269.2" class="tick" text-anchor="middle">Jan</text><text x="162.6" y="269.2" class="tick" text-anchor="middle">Feb</text><text x="216.3" y="269.2" class="tick" text-anchor="middle">Mar</text><text x="270.0" y="269.2" class="tick" text-anchor="middle">Apr</text><text x="323.7" y="269.2" class="tick" text-anchor="middle">May</text><text x="377.5" y="269.2" class="tick" text-anchor="middle">Jun</text><text x="431.2" y="269.2" class="tick" text-anchor="middle">Jul</text><text x="484.9" y="269.2" class="tick" text-anchor="middle">Aug</text><text x="538.6" y="269.2" class="tick" text-anchor="middle">Sep</text><text x="592.3" y="269.2" class="tick" text-anchor="middle">Oct</text><text x="646.0" y="269.2" class="tick" text-anchor="middle">Nov</text><polyline points="55.2,159.1 108.9,179.6 162.6,189.0 216.3,162.2 270.0,175.9 323.7,179.4 377.5,171.9 431.2,178.3 484.9,172.9 538.6,151.6 592.3,124.6 646.0,86.1" class="line cool"/><circle cx="55.2" cy="159.1" r="2.6" class="dot cool"><title>2009-12: £778,180 net</title></circle><circle cx="108.9" cy="179.6" r="2.6" class="dot cool"><title>2010-01: £604,806 net</title></circle><circle cx="162.6" cy="189.0" r="2.6" class="dot cool"><title>2010-02: £525,318 net</title></circle><circle cx="216.3" cy="162.2" r="2.6" class="dot cool"><title>2010-03: £752,062 net</title></circle><circle cx="270.0" cy="175.9" r="2.6" class="dot cool"><title>2010-04: £636,208 net</title></circle><circle cx="323.7" cy="179.4" r="2.6" class="dot cool"><title>2010-05: £606,281 net</title></circle><circle cx="377.5" cy="171.9" r="2.6" class="dot cool"><title>2010-06: £670,103 net</title></circle><circle cx="431.2" cy="178.3" r="2.6" class="dot cool"><title>2010-07: £615,851 net</title></circle><circle cx="484.9" cy="172.9" r="2.6" class="dot cool"><title>2010-08: £661,639 net</title></circle><circle cx="538.6" cy="151.6" r="2.6" class="dot cool"><title>2010-09: £841,538 net</title></circle><circle cx="592.3" cy="124.6" r="2.6" class="dot cool"><title>2010-10: £1,068,907 net</title></circle><circle cx="646.0" cy="86.1" r="2.6" class="dot cool"><title>2010-11: £1,394,454 net</title></circle><polyline points="55.2,161.4 108.9,182.7 162.6,192.1 216.3,170.8 270.0,194.1 323.7,164.7 377.5,165.5 431.2,171.1 484.9,168.2 538.6,131.5 592.3,125.5 646.0,82.2" class="line accent"/><circle cx="55.2" cy="161.4" r="2.6" class="dot accent"><title>2010-12: £758,024 net</title></circle><circle cx="108.9" cy="182.7" r="2.6" class="dot accent"><title>2011-01: £578,837 net</title></circle><circle cx="162.6" cy="192.1" r="2.6" class="dot accent"><title>2011-02: £499,448 net</title></circle><circle cx="216.3" cy="170.8" r="2.6" class="dot accent"><title>2011-03: £679,204 net</title></circle><circle cx="270.0" cy="194.1" r="2.6" class="dot accent"><title>2011-04: £482,039 net</title></circle><circle cx="323.7" cy="164.7" r="2.6" class="dot accent"><title>2011-05: £730,966 net</title></circle><circle cx="377.5" cy="165.5" r="2.6" class="dot accent"><title>2011-06: £723,845 net</title></circle><circle cx="431.2" cy="171.1" r="2.6" class="dot accent"><title>2011-07: £676,738 net</title></circle><circle cx="484.9" cy="168.2" r="2.6" class="dot accent"><title>2011-08: £701,270 net</title></circle><circle cx="538.6" cy="131.5" r="2.6" class="dot accent"><title>2011-09: £1,011,333 net</title></circle><circle cx="592.3" cy="125.5" r="2.6" class="dot accent"><title>2011-10: £1,061,698 net</title></circle><circle cx="646.0" cy="82.2" r="2.6" class="dot accent"><title>2011-11: £1,427,121 net</title></circle><text x="654.0" y="80.0" class="lab accent">Dec 10 to Nov 11</text><text x="654.0" y="96.8" class="lab cool">Dec 09 to Nov 10</text></svg></div>
+<div class="narrow"><svg viewBox="0 0 360 240" role="img" style="--fs:11px" aria-label="Monthly net revenue for two twelve month periods. Both peak in November."><line x1="50.599999999999994" x2="255.49999999999997" y1="213.6" y2="213.6" class="gridline"/><text x="42.599999999999994" y="217.4" class="tick" text-anchor="end">£0.0m</text><line x1="50.599999999999994" x2="255.49999999999997" y1="163.5" y2="163.5" class="gridline"/><text x="42.599999999999994" y="167.3" class="tick" text-anchor="end">£0.5m</text><line x1="50.599999999999994" x2="255.49999999999997" y1="113.4" y2="113.4" class="gridline"/><text x="42.599999999999994" y="117.2" class="tick" text-anchor="end">£1.0m</text><line x1="50.599999999999994" x2="255.49999999999997" y1="63.3" y2="63.3" class="gridline"/><text x="42.599999999999994" y="67.1" class="tick" text-anchor="end">£1.5m</text><line x1="50.599999999999994" x2="255.49999999999997" y1="13.2" y2="13.2" class="gridline"/><text x="42.599999999999994" y="17.0" class="tick" text-anchor="end">£2.0m</text><text x="50.6" y="230.1" class="tick" text-anchor="middle">Dec</text><text x="106.5" y="230.1" class="tick" text-anchor="middle">Mar</text><text x="162.4" y="230.1" class="tick" text-anchor="middle">Jun</text><text x="218.2" y="230.1" class="tick" text-anchor="middle">Sep</text><text x="255.5" y="230.1" class="tick" text-anchor="middle">Nov</text><polyline points="50.6,135.6 69.2,153.0 87.9,161.0 106.5,138.2 125.1,149.9 143.7,152.9 162.4,146.5 181.0,151.9 199.6,147.3 218.2,129.3 236.9,106.5 255.5,73.9" class="line cool"/><circle cx="50.6" cy="135.6" r="2.6" class="dot cool"><title>2009-12: £778,180 net</title></circle><circle cx="69.2" cy="153.0" r="2.6" class="dot cool"><title>2010-01: £604,806 net</title></circle><circle cx="87.9" cy="161.0" r="2.6" class="dot cool"><title>2010-02: £525,318 net</title></circle><circle cx="106.5" cy="138.2" r="2.6" class="dot cool"><title>2010-03: £752,062 net</title></circle><circle cx="125.1" cy="149.9" r="2.6" class="dot cool"><title>2010-04: £636,208 net</title></circle><circle cx="143.7" cy="152.9" r="2.6" class="dot cool"><title>2010-05: £606,281 net</title></circle><circle cx="162.4" cy="146.5" r="2.6" class="dot cool"><title>2010-06: £670,103 net</title></circle><circle cx="181.0" cy="151.9" r="2.6" class="dot cool"><title>2010-07: £615,851 net</title></circle><circle cx="199.6" cy="147.3" r="2.6" class="dot cool"><title>2010-08: £661,639 net</title></circle><circle cx="218.2" cy="129.3" r="2.6" class="dot cool"><title>2010-09: £841,538 net</title></circle><circle cx="236.9" cy="106.5" r="2.6" class="dot cool"><title>2010-10: £1,068,907 net</title></circle><circle cx="255.5" cy="73.9" r="2.6" class="dot cool"><title>2010-11: £1,394,454 net</title></circle><polyline points="50.6,137.6 69.2,155.6 87.9,163.6 106.5,145.5 125.1,165.3 143.7,140.4 162.4,141.1 181.0,145.8 199.6,143.3 218.2,112.3 236.9,107.2 255.5,70.6" class="line accent"/><circle cx="50.6" cy="137.6" r="2.6" class="dot accent"><title>2010-12: £758,024 net</title></circle><circle cx="69.2" cy="155.6" r="2.6" class="dot accent"><title>2011-01: £578,837 net</title></circle><circle cx="87.9" cy="163.6" r="2.6" class="dot accent"><title>2011-02: £499,448 net</title></circle><circle cx="106.5" cy="145.5" r="2.6" class="dot accent"><title>2011-03: £679,204 net</title></circle><circle cx="125.1" cy="165.3" r="2.6" class="dot accent"><title>2011-04: £482,039 net</title></circle><circle cx="143.7" cy="140.4" r="2.6" class="dot accent"><title>2011-05: £730,966 net</title></circle><circle cx="162.4" cy="141.1" r="2.6" class="dot accent"><title>2011-06: £723,845 net</title></circle><circle cx="181.0" cy="145.8" r="2.6" class="dot accent"><title>2011-07: £676,738 net</title></circle><circle cx="199.6" cy="143.3" r="2.6" class="dot accent"><title>2011-08: £701,270 net</title></circle><circle cx="218.2" cy="112.3" r="2.6" class="dot accent"><title>2011-09: £1,011,333 net</title></circle><circle cx="236.9" cy="107.2" r="2.6" class="dot accent"><title>2011-10: £1,061,698 net</title></circle><circle cx="255.5" cy="70.6" r="2.6" class="dot accent"><title>2011-11: £1,427,121 net</title></circle><text x="263.5" y="68.4" class="lab accent">Dec 10 to Nov 11</text><text x="263.5" y="83.8" class="lab cool">Dec 09 to Nov 10</text></svg></div>
+<p class="note">Dec 2010 to Nov 2011 made £9,330,523 net, 1.91% more than the year before. Nov 2011 was the peak at £1,427,121, 2.96 times the weakest month (Apr 2011).</p>
+</section>
+
+<div class="grid2">
+<section class="card">
+<h2>Top 10 SKUs by net revenue</h2>
+<p class="sub2">Last 52 full weeks, 2010-12-06 to week of 2011-11-28.</p>
+<div class="hrow"><span class="hl" title="Regency Cakestand 3 Tier">Regency Cakestand 3 Tier</span><span class="track"><span class="bar accent" style="width:100.0%"></span></span><span class="hv">£151,948</span></div><div class="hrow"><span class="hl" title="Party Bunting">Party Bunting</span><span class="track"><span class="bar accent" style="width:64.3%"></span></span><span class="hv">£97,659</span></div><div class="hrow"><span class="hl" title="White Hanging Heart T-Light Holder">White Hanging Heart T-Light Holder</span><span class="track"><span class="bar accent" style="width:62.5%"></span></span><span class="hv">£94,992</span></div><div class="hrow"><span class="hl" title="Jumbo Bag Red Retrospot">Jumbo Bag Red Retrospot</span><span class="track"><span class="bar accent" style="width:59.2%"></span></span><span class="hv">£89,986</span></div><div class="hrow"><span class="hl" title="Rabbit Night Light">Rabbit Night Light</span><span class="track"><span class="bar accent" style="width:39.2%"></span></span><span class="hv">£59,574</span></div><div class="hrow"><span class="hl" title="Assorted Colour Bird Ornament">Assorted Colour Bird Ornament</span><span class="track"><span class="bar accent" style="width:37.0%"></span></span><span class="hv">£56,190</span></div><div class="hrow"><span class="hl" title="Paper Chain Kit 50&#x27;S Christmas">Paper Chain Kit 50&#x27;S Christmas</span><span class="track"><span class="bar accent" style="width:36.9%"></span></span><span class="hv">£56,134</span></div><div class="hrow"><span class="hl" title="Picnic Basket Wicker Small">Picnic Basket Wicker Small</span><span class="track"><span class="bar accent" style="width:33.3%"></span></span><span class="hv">£50,639</span></div><div class="hrow"><span class="hl" title="Chilli Lights">Chilli Lights</span><span class="track"><span class="bar accent" style="width:32.4%"></span></span><span class="hv">£49,278</span></div><div class="hrow"><span class="hl" title="Small Popcorn Holder">Small Popcorn Holder</span><span class="track"><span class="bar accent" style="width:30.7%"></span></span><span class="hv">£46,614</span></div>
+<p class="note">Only 5 of these are also in the top 10 by units per week. The fastest movers are cheap items.</p>
+</section>
+<section class="card">
+<h2>Bank holiday weeks come in about a fifth lower</h2>
+<p class="sub2">Net revenue in each bank holiday week divided by the normal weeks up to 2 either side. The line marks 1.0.</p>
+<div class="hrow"><span class="hl">29 Mar 2010</span><span class="track ref"><span class="bar accent" style="width:98.6%"></span></span><span class="hv">0.99</span></div><div class="hrow"><span class="hl">05 Apr 2010</span><span class="track ref"><span class="bar accent" style="width:87.0%"></span></span><span class="hv">0.87</span></div><div class="hrow"><span class="hl">03 May 2010</span><span class="track ref"><span class="bar accent" style="width:98.5%"></span></span><span class="hv">0.98</span></div><div class="hrow"><span class="hl">31 May 2010</span><span class="track ref"><span class="bar accent" style="width:67.2%"></span></span><span class="hv">0.67</span></div><div class="hrow"><span class="hl">30 Aug 2010</span><span class="track ref"><span class="bar accent" style="width:92.4%"></span></span><span class="hv">0.92</span></div><div class="hrow"><span class="hl">18 Apr 2011</span><span class="track ref"><span class="bar accent" style="width:86.5%"></span></span><span class="hv">0.87</span></div><div class="hrow"><span class="hl">25 Apr 2011</span><span class="track ref"><span class="bar accent" style="width:47.0%"></span></span><span class="hv">0.47</span></div><div class="hrow"><span class="hl">02 May 2011</span><span class="track ref"><span class="bar accent" style="width:66.1%"></span></span><span class="hv">0.66</span></div><div class="hrow"><span class="hl">30 May 2011</span><span class="track ref"><span class="bar accent" style="width:59.7%"></span></span><span class="hv">0.60</span></div><div class="hrow"><span class="hl">29 Aug 2011</span><span class="track ref"><span class="bar accent" style="width:74.7%"></span></span><span class="hv">0.75</span></div>
+<p class="note">The shop had no sales on any of the 17 bank holidays, so the useful question is the week, not the day. All 10 weeks were below their baseline (sign test p = 0.002). The closed day is not made up on the other days of that week. Christmas weeks are left out because the shop shuts for the whole break.</p>
+</section>
+</div>
+
+<section class="card full">
+<h2>Reorder points for the 10 fastest A class SKUs</h2>
+<p class="sub2">Units. Empirical = 95th percentile of real 2 week demand over the last 52 weeks. Normal = mean × 2 + 1.645 × std × √2.</p>
+<div class="scroll"><table>
+<thead><tr><th>SKU</th><th>Avg units/wk</th><th>Empirical ROP</th><th>Normal ROP</th></tr></thead>
+<tbody><tr><td>Small Popcorn Holder<span class="pat">erratic, CV 1.00</span></td><td>990.1</td><td class="strong">5,871</td><td>4,295</td></tr><tr><td>World War 2 Gliders Asstd Designs<span class="pat">erratic, CV 0.99</span></td><td>947.5</td><td class="strong">4,423</td><td>4,080</td></tr><tr><td>Jumbo Bag Red Retrospot<span class="pat">smooth, CV 0.54</span></td><td>887.1</td><td class="strong">3,154</td><td>2,890</td></tr><tr><td>Pack Of 72 Retrospot Cake Cases<span class="pat">smooth, CV 0.60</span></td><td>668.8</td><td class="strong">2,277</td><td>2,277</td></tr><tr><td>Assorted Colour Bird Ornament<span class="pat">erratic, CV 0.84</span></td><td>667.4</td><td class="strong">2,879</td><td>2,639</td></tr><tr><td>White Hanging Heart T-Light Holder<span class="pat">erratic, CV 0.77</span></td><td>647.3</td><td class="strong">2,262</td><td>2,460</td></tr><tr><td>Rabbit Night Light<span class="pat">lumpy, CV 2.33</span></td><td>527.7</td><td class="strong">6,691</td><td>3,921</td></tr><tr><td>Mini Paint Set Vintage<span class="pat">erratic, CV 0.84</span></td><td>495.1</td><td class="strong">2,056</td><td>1,962</td></tr><tr><td>Pack Of 12 London Tissues<span class="pat">erratic, CV 1.01</span></td><td>476.9</td><td class="strong">1,870</td><td>2,075</td></tr><tr><td>Pack Of 60 Pink Paisley Cake Cases<span class="pat">erratic, CV 1.00</span></td><td>463.5</td><td class="strong">2,073</td><td>2,001</td></tr></tbody></table></div>
+<p class="note">Of the 828 A SKUs, 106 are smooth, 432 erratic, 207 lumpy and 83 intermittent (Syntetos Boylan Croston rules on weekly demand). The normal formula gave a lower reorder point than the empirical one for 647 of them. There are no stock levels in the data, so these are where a planner would reorder, not current positions. The 2 week lead time is my assumption.</p>
+</section>
+
+<section class="card full">
+<h2>About a quarter of known customers bring in two thirds of their revenue</h2>
+<p class="sub2">RFM segments for the 5,852 customers with an ID. Revenue is net of each customer's cancellations.</p>
+<div class="pair"><div class="pl">Champions</div><div class="hrow slim"><span class="track"><span class="bar cool" style="width:34.1%"></span></span><span class="hv cool-t">23.6% cust.</span></div><div class="hrow slim"><span class="track"><span class="bar accent" style="width:100.0%"></span></span><span class="hv accent-t">69.3% rev.</span></div></div><div class="pair"><div class="pl">Loyal</div><div class="hrow slim"><span class="track"><span class="bar cool" style="width:29.4%"></span></span><span class="hv cool-t">20.4% cust.</span></div><div class="hrow slim"><span class="track"><span class="bar accent" style="width:21.8%"></span></span><span class="hv accent-t">15.1% rev.</span></div></div><div class="pair"><div class="pl">At risk</div><div class="hrow slim"><span class="track"><span class="bar cool" style="width:17.6%"></span></span><span class="hv cool-t">12.2% cust.</span></div><div class="hrow slim"><span class="track"><span class="bar accent" style="width:12.1%"></span></span><span class="hv accent-t">8.4% rev.</span></div></div><div class="pair"><div class="pl">Hibernating</div><div class="hrow slim"><span class="track"><span class="bar cool" style="width:40.3%"></span></span><span class="hv cool-t">27.9% cust.</span></div><div class="hrow slim"><span class="track"><span class="bar accent" style="width:5.9%"></span></span><span class="hv accent-t">4.1% rev.</span></div></div><div class="pair"><div class="pl">New or promising</div><div class="hrow slim"><span class="track"><span class="bar cool" style="width:12.4%"></span></span><span class="hv cool-t">8.6% cust.</span></div><div class="hrow slim"><span class="track"><span class="bar accent" style="width:2.3%"></span></span><span class="hv accent-t">1.6% rev.</span></div></div><div class="pair"><div class="pl">Needs attention</div><div class="hrow slim"><span class="track"><span class="bar cool" style="width:10.5%"></span></span><span class="hv cool-t">7.3% cust.</span></div><div class="hrow slim"><span class="track"><span class="bar accent" style="width:2.0%"></span></span><span class="hv accent-t">1.4% rev.</span></div></div>
+<p class="note">Champions are 23.6% of these customers and 69.3% of their net revenue, which is 59.9% of all net revenue. 13.6% of net revenue comes from sales with no customer ID, so it is in the totals above but not here.</p>
+</section>
+
+<section class="caveats">
+<h2>Caveats</h2>
+<p>Cancellations are not the same as returns. Some are order corrections. Two bulk orders of 74,215 and 80,995 units were cancelled the same day; they net to zero in the weekly demand, so they do not inflate velocity or ABC.</p>
+<p>Revenue is list price times quantity. There is no cost data, so there is no margin.</p>
+<p>The reorder points come from one year of history and overlapping 2 week windows, so the 95th percentile rests on a handful of big weeks per SKU. Treat them as a starting point.</p>
+</section>
+
+<footer>Data: Chen, D. (2012). Online Retail II [Dataset]. UCI Machine Learning Repository. <a href="https://doi.org/10.24432/C5CG6D">doi.org/10.24432/C5CG6D</a>, CC BY 4.0. England bank holidays from <a href="https://date.nager.at">Nager.Date</a>, plus the 29 Apr 2011 one-off. Code: <a href="https://github.com/mayank-thite/retail-analytics-engine">github.com/mayank-thite/retail-analytics-engine</a>.</footer>
+</main>
+</body>
+</html>
