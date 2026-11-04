@@ -1,15 +1,18 @@
 import { EMAIL, LINKEDIN, GITHUB } from './profile';
+import { PROJECTS } from './projects';
 
-// Seven constellations on a ring around the sun, in route order.
+// Eight constellations on a ring around the sun, in route order.
 // Each star is [x, y, label, size, fact, action?]. Action is 'copy', 'recap' or a URL.
 // Positions are offsets from the constellation centre; sizes are data driven where noted.
-export const ORDER = ['about', 'impact', 'experience', 'work', 'skills', 'education', 'contact'];
+export const ORDER = ['about', 'impact', 'experience', 'data', 'work', 'skills', 'education', 'contact'];
 export const TITLE = {
-  about: 'About', impact: 'Impact', experience: 'Experience', work: 'Work',
+  about: 'About', impact: 'Impact', experience: 'Experience', data: 'Data work', work: 'Work',
   skills: 'Skills', education: 'Education', contact: 'Contact',
 };
 export const RING = 950;
 export const R = 230;
+
+const PLEIADES = [[-150, -60], [-40, -120], [90, -70], [140, 60], [-60, 110]];
 
 const SKY = {
   about: { name: 'Cassiopeia', stars: [
@@ -34,6 +37,9 @@ const SKY = {
     [115, 95, 'Robotics pilot', 2.6, 'Monitoring 1,000 robotic drive units and 40 induct stations.'],
     [125, 5, 'now', 2.4, 'Holding 98.5%+ throughput accuracy against SLA targets.'],
   ], edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 3]] },
+  // One star per project, placed like the Pleiades cluster. Clicking a star opens its repo.
+  data: { name: 'Pleiades', stars: PROJECTS.map((p, i) => [...PLEIADES[i], p.star, 2.6, p.finding, p.repo]),
+    edges: [[0, 1], [1, 2], [2, 3], [3, 4], [4, 0], [1, 3]] },
   work: { name: 'Orion', stars: [
     [-95, -145, 'PWA client', 3, 'Installable on any phone. Offline uploads sync when it reconnects.'],
     [75, -125, 'React + TS', 2.2, 'React, TypeScript, React Query and Zustand.'],

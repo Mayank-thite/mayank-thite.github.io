@@ -13,7 +13,7 @@ export function Legend() {
           <dl>
             <dt>Hold mouse</dt><dd>Fly toward the cursor</dd>
             <dt><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></dt><dd>Fly freely, <kbd>Space</kbd> to boost</dd>
-            <dt><kbd>1</kbd> to <kbd>7</kbd></dt><dd>Jump to a section</dd>
+            <dt><kbd>1</kbd> to <kbd>8</kbd></dt><dd>Jump to a section</dd>
             <dt><kbd>Enter</kbd></dt><dd>Skip the reveal</dd>
             <dt><kbd>M</kbd></dt><dd>Whole map</dd>
             <dt><kbd>T</kbd></dt><dd>Guided tour</dd>
