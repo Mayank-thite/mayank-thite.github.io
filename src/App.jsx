@@ -42,7 +42,7 @@ function onKey(e) {
   if (k === '?' || (k === '/' && e.shiftKey)) { store.set({ legend: !u.legend }); return; }
   if (u.intro) {
     if (k === 'pagedown' || k === 'arrowdown') { e.preventDefault(); closeIntro('scroll'); goTo(SECTIONS[0].id); return; }
-    if (/^[1-7]$/.test(k)) { closeIntro('key'); goTo(SECTIONS[+k - 1].id); return; }
+    if (/^[1-8]$/.test(k)) { closeIntro('key'); goTo(SECTIONS[+k - 1].id); return; }
     if (FLY.includes(k) || k === 'enter') { closeIntro('key'); sky.current?.freeFly(); }
   }
 }
@@ -69,7 +69,7 @@ export default function App() {
     <>
       <a className="skip" href="#text" onClick={(e) => { e.preventDefault(); closeIntro('skip'); openPage('text'); }}>Read the portfolio as text</a>
       <canvas id="field" ref={cv} tabIndex={0}
-        aria-label="A sky of seven data constellations. Hold to fly, press 1 to 7 to jump, or use W A S D to fly freely." />
+        aria-label="A sky of eight data constellations. Hold to fly, press 1 to 8 to jump, or use W A S D to fly freely." />
       {ready && (
         <>
           <Labels />

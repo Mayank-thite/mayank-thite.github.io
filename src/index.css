@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Mayank Field: a full-window sky of seven data constellations under a thin HUD.
+/* Mayank Field: a full-window sky of eight data constellations under a thin HUD.
    Single dark look by design. Tokens first, then components. */
 :root{
   --space:#04050A; --text:#ECEEF3; --text-2:#9AA0AE; --line:rgba(236,238,243,.12); --glass:rgba(14,16,24,.74);
@@ -120,6 +120,10 @@ body.intro-off .intro *{pointer-events:none}
 .item-h span{font-family:var(--mono);font-size:11px;color:var(--text-2)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-family:var(--mono);font-size:11.5px;padding:5px 9px;border-radius:6px;border:1px solid var(--line);color:var(--text-2)}
+.projs{display:flex;flex-direction:column}
+.proj{display:flex;flex-direction:column;gap:10px;padding:18px 0;border-top:1px solid var(--line)}
+.proj .proj-find{display:flex;flex-direction:column;gap:4px;padding-left:12px;border-left:2px solid rgba(255,199,122,.5)}
+.proj-links{gap:18px}
 .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
 .stat{padding:16px;background:rgba(10,12,18,.9)}
 .stat b{display:block;font-weight:300;font-size:36px;line-height:1;letter-spacing:-.03em;color:var(--accent);font-variant-numeric:tabular-nums}

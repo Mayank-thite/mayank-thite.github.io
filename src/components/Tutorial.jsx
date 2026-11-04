@@ -11,7 +11,7 @@ const STEPS = COARSE ? [
 ] : [
   { h: 'Fly the ship', p: 'Use W A S D or the arrow keys, and Space to boost. Or hold the mouse anywhere and the ship follows it.', art: 'keys' },
   { h: 'Fly into a constellation', p: 'Each constellation covers one topic, like my experience or skills. Fly into one and its stars light up, then a panel opens with the details.', art: 'chart' },
-  { h: 'Hover the stars', p: 'Every star is a real fact: a result, a role or a tool. Hover one to read it. Press 1 to 7 to jump, M for the whole map.', art: 'star' },
+  { h: 'Hover the stars', p: 'Every star is a real fact: a result, a role or a tool. Hover one to read it. Press 1 to 8 to jump, M for the whole map.', art: 'star' },
 ];
 
 const SH = '<path d="M10 0 L-6 -5 L-3 0 L-6 5 Z" fill="#ECEEF3"/><path d="M-4 -2 Q-12 -2.6 -18 0 Q-12 2.6 -4 2 Z" fill="#8CC8FF" opacity=".9"/><path d="M-4 -1.1 Q-9 -1.3 -12 0 Q-9 1.3 -4 1.1 Z" fill="#FFD27A"/>';

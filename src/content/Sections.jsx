@@ -1,6 +1,7 @@
 // The portfolio copy, written once and shown in two places: the sky panel and the text page.
 // Keep it plain and first person. No em dashes, no invented numbers, no sky references here.
 import { EMAIL, LINKEDIN, GITHUB, RECAP_DEMO, RECAP_SOURCE } from './profile';
+import { PROJECTS, PROJECTS_INTRO } from './projects';
 import { copyEmail, openPage } from '../actions';
 import { useState } from 'react';
 
@@ -58,6 +59,30 @@ const SECTION_COPY = {
           <p>I wrote MERN code and also looked after the analytics. My weekly Power BI dashboards helped lift course completion by 27%, and the 3-step checkout I built grew sales by 175%. I also ran three production sites with about 10,000 daily hits.</p>
           <Chips items={['Power BI', 'Google Analytics', 'MERN', 'A/B testing']} />
         </Item>
+      </>
+    ),
+  },
+  data: {
+    eyebrow: 'Data work',
+    title: <>Data <em>projects</em></>,
+    body: () => (
+      <>
+        <p className="muted">{PROJECTS_INTRO}</p>
+        <div className="projs">
+          {PROJECTS.map((p) => (
+            <article className="proj" key={p.id} aria-labelledby={`p-${p.id}`}>
+              <div className="item-h"><b id={`p-${p.id}`}>{p.title}</b><span>{p.when}</span></div>
+              <p>{p.summary}</p>
+              <p className="proj-find"><span className="eyebrow accent">Finding</span>{p.finding}</p>
+              <Chips items={p.stack} />
+              <div className="row proj-links">
+                <Ext className="link" href={p.repo}>Code</Ext>
+                {p.dashboard && <Ext className="link" href={p.dashboard}>Dashboard</Ext>}
+                {p.notebooks && <Ext className="link" href={p.notebooks}>Notebooks</Ext>}
+              </div>
+            </article>
+          ))}
+        </div>
       </>
     ),
   },

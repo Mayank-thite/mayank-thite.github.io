@@ -1,4 +1,4 @@
-// The sky: a canvas simulation of the ship, stardust, sun, comets and seven constellations.
+// The sky: a canvas simulation of the ship, stardust, sun, comets and eight constellations.
 // It runs outside React for speed and talks to the HUD through the shared store.
 import { SECTIONS, byId, R } from '../content/sky';
 import { store, track, uiRefs } from '../store';
@@ -154,7 +154,7 @@ export function createSky(cv) {
     const onCtl = ae && ae !== cv && ae.matches && ae.matches('button,a,input');
     if (blocked() || e.metaKey || e.ctrlKey || e.altKey) return;
     if (onCtl && (k === ' ' || k === 'enter')) return;
-    if (/^[1-7]$/.test(k)) { if (tour) stopTour(); goTo(S[+k - 1]); track('key_jump', { n: +k }); return; }
+    if (/^[1-8]$/.test(k)) { if (tour) stopTour(); goTo(S[+k - 1]); track('key_jump', { n: +k }); return; }
     if (k === 'm') { showMap(); return; }
     if (k === 't') { if (tour) stopTour(); else startTour(); return; }
     if (k === 'enter') { skipReveal(); return; }
