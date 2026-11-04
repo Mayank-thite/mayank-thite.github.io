@@ -55,9 +55,10 @@ export const PROJECTS = [
     title: 'Statistics and modeling',
     star: 'Stats and models',
     when: '2026',
-    summary: 'Hypothesis tests, regression and classification on two public UCI datasets, written up as notebooks.',
-    finding: 'The bank model looks good on a random split and drops a lot when tested on later months.',
+    summary: 'Hypothesis tests, regression and classification on two public UCI datasets, written up as notebooks. The README leads with the time-split result, which is the weaker one.',
+    finding: 'A bank marketing model that scored 0.81 ROC-AUC on a random split dropped to 0.70 on later calls. At my assumed costs, calling everyone still won.',
     stack: ['Python', 'statsmodels', 'scikit-learn', 'LightGBM'],
     repo: `${GH}/statistics-and-modeling`,
+    notebooks: `${GH}/statistics-and-modeling/tree/main/notebooks`,
   },
 ];
