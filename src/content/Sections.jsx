@@ -109,8 +109,8 @@ const SECTION_COPY = {
     title: <>Tools I <em>use</em></>,
     body: () => (
       <>
-        <Item title="Data analysis and BI"><Chips items={['SQL', 'Power BI', 'DAX', 'Excel', 'Google Analytics', 'Microsoft Clarity', 'A/B testing']} /></Item>
-        <Item title="Data engineering"><Chips items={['Python (Pandas)', 'Apache Spark', 'Kafka', 'Hive', 'HDFS', 'ETL pipelines']} /></Item>
+        <Item title="Data analysis and BI"><Chips items={['SQL', 'Power BI', 'DAX', 'Excel', 'Google Analytics', 'Microsoft Clarity', 'A/B testing', 'statsmodels', 'scikit-learn']} /></Item>
+        <Item title="Data engineering"><Chips items={['Python (Pandas)', 'Apache Spark', 'Kafka', 'Hive', 'HDFS', 'dbt', 'GitHub Actions', 'ETL pipelines']} /></Item>
         <Item title="Cloud and databases"><Chips items={['AWS (S3, Glue, Athena)', 'GCP', 'PostgreSQL', 'Supabase', 'Redis']} /></Item>
         <Item title="Web and testing"><Chips items={['JavaScript', 'TypeScript', 'React', 'Node.js', 'Docker', 'Jest', 'Selenium', 'Postman']} /></Item>
         <p className="muted mono-note">Learning right now: Azure and Databricks</p>

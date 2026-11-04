@@ -12,7 +12,7 @@ export const TITLE = {
 export const RING = 950;
 export const R = 230;
 
-const PLEIADES = [[-150, -60], [-40, -120], [90, -70], [140, 60], [-60, 110]];
+const PLEIADES = [[-105, -45], [-25, -105], [60, -55], [95, 45], [-45, 90]];
 
 const SKY = {
   about: { name: 'Cassiopeia', stars: [
