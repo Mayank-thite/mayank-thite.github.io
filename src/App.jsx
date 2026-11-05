@@ -1,4 +1,4 @@
-// App shell: boot loader hand-off, view routing (#hire, #story) and the view-to-view transition.
+// App shell: view routing (#hire, #story) and the view-to-view transition.
 // Views are separate chunks. A view's code and its first images load on intent (hover/touch) or click,
 // and the switch only happens once they're ready, while the screen is empty, so motion never stalls.
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -40,23 +40,20 @@ export default function App() {
   const nowRef = useRef(null)
   usePointerFx()
 
-  // Boot: wait for fonts, the first view's code and images, and a short minimum so the intro can play.
+  // Start: the intro page renders right away. A deep link (#hire, #story) shows a small loader
+  // while that view's code and first images arrive. Other views' code is fetched when the browser is idle.
   useEffect(() => {
     const first = fromHash()
-    const bar = (p) => document.documentElement.style.setProperty('--boot', p)
-    let n = 0
-    const tick = (p) => p.then(() => bar(Math.min(1, (++n) / 3)))
-    Promise.all([tick(document.fonts ? document.fonts.ready : Promise.resolve()), tick(prepare(first)), tick(wait(RM ? 200 : 1100))]).then(() => {
+    const show = () => {
       viewRef.current = first
-      setView(first); skyView(first)
+      setView(first); skyView(first); setLoading(false)
       document.body.dataset.view = first
-      const boot = document.getElementById('boot')
-      if (boot) { boot.classList.add('done'); setTimeout(() => boot.remove(), 700) }
-      restartIntro()
-      setBooted(true)
-      // Quietly fetch the other views' code once the intro has settled (code only, no images).
-      setTimeout(() => { loaders.hire(); loaders.story() }, 2500)
-    })
+      restartIntro(); setBooted(true)
+      const idle = window.requestIdleCallback || ((f) => setTimeout(f, 2000))
+      setTimeout(() => idle(() => { loaders.hire(); loaders.story() }), 3000)
+    }
+    if (first === 'gate') show()
+    else { setLoading(true); prepare(first).then(show) }
   }, [])
 
   const go = useCallback(async (v, opts = {}) => {
@@ -115,7 +112,7 @@ export default function App() {
         </header>
       )}
       <main>
-        {(view === 'gate' || view === null) && <Gate go={go} intent={intent} ready={booted} />}
+        {(view === 'gate' || (view === null && fromHash() === 'gate')) && <Gate go={go} intent={intent} ready={booted} />}
         {View && <View go={go} onStop={onStop} />}
       </main>
       {loading && <div className="tload" role="status"><span className="orb" /><span>Loading</span></div>}
