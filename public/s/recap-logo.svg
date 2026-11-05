@@ -1,0 +1,26 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="arrowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1F2937" />
+      <stop offset="100%" stop-color="#6B7280" />
+    </linearGradient>
+  </defs>
+  <rect x="34" y="38" width="32" height="24" rx="4" stroke="#1F2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <path d="M40 38 L42 34 H58 L60 38" stroke="#1F2937" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <circle cx="50" cy="50" r="7" stroke="#0d9488" stroke-width="2.5" stroke-linecap="round" fill="none" />
+  <circle cx="52.5" cy="47.5" r="1.5" fill="#0d9488" opacity="0.6" />
+  <path
+    d="M 15.23 59.32 A 36 36 0 1 1 40.68 84.77"
+    stroke="url(#arrowGradient)"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <polyline
+    points="47.26,82.38 40.68,84.77 45.18,90.14"
+    stroke="url(#arrowGradient)"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>
