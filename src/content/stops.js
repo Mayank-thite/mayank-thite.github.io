@@ -6,7 +6,7 @@ export const STOPS=[
  {when:'Pune',place:'Growing up',land:'in',title:'Taking things apart',c:'quad',items:[
   {fig:'wide',ph:[U('3bPueyJIB1g','Ravi Bhardwaj')]},
   {big:"My first build was a small quadcopter, made from the motors and circuit boards of old RC cars."},
-  {fig:'two',ph:[U('jXd2FSvcRr8','Umberto'),{slot:'Quadcopter photo'}],need:'Your photo of the quadcopter or the old RC cars goes here'}],
+  {fig:'two',ph:[U('jXd2FSvcRr8','Umberto'),U('G_fpjtUzKkg','Pawel Spychalski')]}],
   story:[
   "My mom kept bringing home RC cars, and none of them stayed in one piece for long. I was never that interested in driving them. I wanted to see what was inside and what else the parts could become, so I kept the motors and boards in a box until I had enough to try something bigger.",
   "A bit later I learned C, and my first program was a calculator, like everyone's. I also decided I wanted to run a company one day, so I studied business at Pune University. I figured anyone running a company should understand money first.",
@@ -46,7 +46,7 @@ export const STOPS=[
   "I moved to Canada for two postgraduate certificates at Conestoga College in Waterloo: Computer Applications Development, then Big Data Solutions Architecture.",
   {stat:['3.89 · 3.81','GPA']},
   "That's where I first built my retail analytics and stock sentiment projects, the ones I later rebuilt on public data.",
-  {fig:'three',ph:[U('5C3h-vtELBE','Crawford Passy'),U('3Ve7zICJiCY','Emily Wassmansdorf'),U('zQftyObivt4','Emily Wassmansdorf')],need:'Your photo of the Waterloo campus or the University Ave sign goes here'}],
+  {fig:'three',ph:[U('5C3h-vtELBE','Crawford Passy'),U('3Ve7zICJiCY','Emily Wassmansdorf'),U('zQftyObivt4','Emily Wassmansdorf')]}],
   story:[
   "Leaving a job I was good at, at a company I'd helped grow, wasn't easy. I flew out of Mumbai in 2023.",
   {fig:'wide',ph:[{img:'s/csmia-t2.webp',cr:'Mumbai airport · Photo: @CSMIA / Facebook'}]},
