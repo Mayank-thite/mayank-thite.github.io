@@ -1,6 +1,6 @@
 // The recruiter view: one page, the short version.
 import { useRef } from 'react'
-import { useReveal } from '../ui/motion.jsx'
+import { useReveal } from '../ui/motion.js'
 import { ProjectGrid, CopyEmail } from '../ui/Projects.jsx'
 
 const H2 = ({ children }) => <h2 className="rv"><span data-scramble={children}>{children}</span></h2>

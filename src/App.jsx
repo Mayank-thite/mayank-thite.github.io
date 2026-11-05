@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import Gate from './views/Gate.jsx'
 import { glide, setView as skyView, restartIntro, RM } from './sky/engine.js'
-import { scramble, usePointerFx } from './ui/motion.jsx'
+import { scramble, usePointerFx } from './ui/motion.js'
 
 const mods = {}
 const loaders = {
@@ -29,6 +29,9 @@ function prepare(v) {
   }
   return pending[v]
 }
+const TITLES = { gate: 'Mayank Thite, Data Analyst', hire: 'Mayank Thite, Data Analyst · Recruiter view', story: 'Mayank Thite, Data Analyst · The story' }
+// If a view's code can't load (offline, or a newer deploy replaced the files), fall back to a full page load.
+const hardLoad = (v) => { location.hash = v === 'gate' ? '' : v; location.reload() }
 const fromHash = () => { const h = location.hash.slice(1); return h === 'hire' || h === 'story' ? h : 'gate' }
 
 export default function App() {
@@ -46,14 +49,14 @@ export default function App() {
     const first = fromHash()
     const show = () => {
       viewRef.current = first
-      setView(first); skyView(first); setLoading(false)
+      setView(first); skyView(first); setLoading(false); document.title = TITLES[first]
       document.body.dataset.view = first
       restartIntro(); setBooted(true)
       const idle = window.requestIdleCallback || ((f) => setTimeout(f, 2000))
       setTimeout(() => idle(() => { loaders.hire(); loaders.story() }), 3000)
     }
     if (first === 'gate') show()
-    else { setLoading(true); prepare(first).then(show) }
+    else { setLoading(true); prepare(first).then(show, () => { pending[first] = null; location.hash = ''; location.reload() }) }
   }, [])
 
   const go = useCallback(async (v, opts = {}) => {
@@ -62,12 +65,14 @@ export default function App() {
     const B = document.body
     glide(0.6, 0.42); B.classList.add('leaving')
     const slow = setTimeout(() => setLoading(true), 700)
-    await Promise.all([prepare(v), wait(RM ? 0 : 440)])
+    try { await Promise.all([prepare(v), wait(RM ? 0 : 440)]) } catch { hardLoad(v); return }
     clearTimeout(slow); setLoading(false)
     B.classList.add('entering'); B.classList.remove('leaving')
     viewRef.current = v
     flushSync(() => setView(v))
-    B.dataset.view = v; skyView(v); scrollTo(0, 0)
+    B.dataset.view = v; skyView(v); scrollTo(0, 0); document.title = TITLES[v]
+    // Move keyboard and screen reader focus to the new view's heading.
+    const h = document.querySelector('main h1'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }) }
     if (!opts.fromHash) history.pushState(null, '', v === 'gate' ? location.pathname + location.search : '#' + v)
     requestAnimationFrame(() => requestAnimationFrame(() => { B.classList.remove('entering'); glide(1, 1.1); busy.current = false }))
   }, [])

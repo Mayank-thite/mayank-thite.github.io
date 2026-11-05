@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import { STOPS } from '../content/stops.js'
 import { setStory, setView } from '../sky/engine.js'
 import { addFigure } from '../sky/figures.js'
-import { Split, useReveal } from '../ui/motion.jsx'
+import { useReveal } from '../ui/motion.js'
+import Split from '../ui/Split.jsx'
 import { ProjectGrid, CopyEmail } from '../ui/Projects.jsx'
 
 const MEO = 'M1681.7 31.7L1696.7 10L1730 1.7L1770 0L1806.7 6.7L1823.3 23.3L1820 46.7L1806.7 66.7L1800 86.7L1796.7 110L1796.7 140L1801.7 173.3L1820 206.7L1833.3 240L1743.3 240L1743.3 206.7L1745 173.3L1743.3 146.7L1730 126.7L1710 113.3L1705 86.7L1691.7 60Z'
@@ -114,6 +115,7 @@ export default function Story({ onStop }) {
   return (
     <section className="view" id="story">
       <div className="story" ref={ref}>
+        <h1 className="sr-only">Mayank Thite, the story so far</h1>
         {STOPS.map((s, i) => <Stop key={i} s={s} i={i} />)}
         <div className="credits"><b>Photo credits</b><br />{credits.map((c) => c + ' (Unsplash)').join(' · ')} · Mumbai airport: @CSMIA / Facebook · Team photo: Snapper Future Tech · Robotics photos: Amazon, Amazon Science</div>
       </div>

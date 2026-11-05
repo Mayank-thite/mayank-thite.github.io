@@ -33,22 +33,6 @@ function countUp(el) {
   requestAnimationFrame(f)
 }
 
-// Headline split into words that rise in one after another.
-export function Split({ text, as: Tag = 'h2', className, children }) {
-  let i = 0
-  return (
-    <Tag className={(className ? className + ' ' : '') + 'split rv'}>
-      {children}
-      {text.split(' ').map((w, k) => (
-        <span key={k}>
-          {k > 0 && ' '}
-          <span className="w"><span style={{ '--i': i++ }}>{w}</span></span>
-        </span>
-      ))}
-    </Tag>
-  )
-}
-
 // Reveals every `.rv` inside the given root as it scrolls into view, staggered within a batch.
 // Elements marked data-count count up; elements marked data-scramble decode.
 export function useReveal(ref, deps = []) {

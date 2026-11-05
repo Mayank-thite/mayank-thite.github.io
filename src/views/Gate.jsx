@@ -1,5 +1,6 @@
 import { useRef } from 'react'
-import { Split, useReveal } from '../ui/motion.jsx'
+import { useReveal } from '../ui/motion.js'
+import Split from '../ui/Split.jsx'
 
 export default function Gate({ go, intent, ready }) {
   const ref = useRef(null)
