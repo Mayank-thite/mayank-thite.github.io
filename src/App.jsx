@@ -1,90 +1,126 @@
-import { useEffect, useRef, useState } from 'react';
-import { createSky } from './sky/engine';
-import { byId, SECTIONS } from './content/sky';
-import { closeIntro, closeTut, goTo, openPage, sky } from './actions';
-import { store, useStore } from './store';
-import { TopBar } from './components/TopBar';
-import { Intro } from './components/Intro';
-import { Dock } from './components/Dock';
-import { Sheet } from './components/Sheet';
-import { Labels } from './components/Labels';
-import { StarCard } from './components/StarCard';
-import { Tutorial } from './components/Tutorial';
-import { Legend, Toast } from './components/Overlays';
-import { Pages } from './components/Pages';
+// App shell: view routing (#hire, #story) and the view-to-view transition.
+// Views are separate chunks. A view's code and its first images load on intent (hover/touch) or click,
+// and the switch only happens once they're ready, while the screen is empty, so motion never stalls.
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
+import Gate from './views/Gate.jsx'
+import { glide, setView as skyView, restartIntro, RM } from './sky/engine.js'
+import { scramble, usePointerFx } from './ui/motion.js'
 
-const FLY = ['arrowup', 'arrowdown', 'arrowleft', 'arrowright', ' ', 'w', 'a', 's', 'd'];
-
-// Deep links: #about ... #contact, #recap, #text
-function route(h, instant) {
-  if (byId[h]) { closeIntro('link'); goTo(h, { instant }); return true; }
-  if (h === 'recap') { closeIntro('link'); if (instant) goTo('work', { instant }); openPage('recap'); return true; }
-  if (h === 'text') { closeIntro('link'); openPage('text'); return true; }
-  return false;
+const mods = {}
+const loaders = {
+  hire: () => import('./views/Hire.jsx'),
+  story: () => import('./views/Story.jsx'),
 }
-
-// Keys the HUD owns. Flying, zoom and number jumps live in the engine.
-function onKey(e) {
-  const u = store.get(), k = e.key.toLowerCase();
-  if (u.tut) { if (k === 'escape') closeTut(false); return; }
-  if (k === 'escape') {
-    if (u.picker) store.set({ picker: false });
-    else if (u.legend) store.set({ legend: false });
-    else if (u.page) openPage(null);
-    else if (u.card) sky.current?.hideCard();
-    else if (u.intro) closeIntro('esc');
-    else sky.current?.dismiss();
-    return;
-  }
-  if (u.page || e.metaKey || e.ctrlKey || e.altKey) return;
-  const ae = document.activeElement, onCtl = ae && ae.matches && ae.matches('button,a,input');
-  if (onCtl && (k === ' ' || k === 'enter')) return;
-  if (k === '?' || (k === '/' && e.shiftKey)) { store.set({ legend: !u.legend }); return; }
-  if (u.intro) {
-    if (k === 'pagedown' || k === 'arrowdown') { e.preventDefault(); closeIntro('scroll'); goTo(SECTIONS[0].id); return; }
-    if (/^[1-7]$/.test(k)) { closeIntro('key'); goTo(SECTIONS[+k - 1].id); return; }
-    if (FLY.includes(k) || k === 'enter') { closeIntro('key'); sky.current?.freeFly(); }
-  }
+const images = {
+  hire: () => import('./content/projects.js').then((m) => m.PROJECTS.map((p) => p.th || p.logo).filter(Boolean)),
+  story: () => import('./content/stops.js').then((m) => m.FIRST_IMAGES),
 }
+const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+const decode = (src) => new Promise((res) => { const im = new Image(); im.src = src; (im.decode ? im.decode() : Promise.reject()).then(res, res) })
+
+const pending = {}
+function prepare(v) {
+  if (v === 'gate') return Promise.resolve()
+  if (!pending[v]) {
+    const code = loaders[v]().then((m) => { mods[v] = m.default })
+    const imgs = images[v]().then((list) => Promise.race([Promise.all(list.map(decode)), wait(2500)]))
+    pending[v] = Promise.all([code, imgs])
+  }
+  return pending[v]
+}
+const TITLES = { gate: 'Mayank Thite, Data Analyst', hire: 'Mayank Thite, Data Analyst · Recruiter view', story: 'Mayank Thite, Data Analyst · The story' }
+// If a view's code can't load (offline, or a newer deploy replaced the files), fall back to a full page load.
+const hardLoad = (v) => { location.hash = v === 'gate' ? '' : v; location.reload() }
+const fromHash = () => { const h = location.hash.slice(1); return h === 'hire' || h === 'story' ? h : 'gate' }
 
 export default function App() {
-  const cv = useRef(null);
-  const [ready, setReady] = useState(false);
-  const intro = useStore((s) => s.intro), page = useStore((s) => s.page);
+  const [view, setView] = useState(null)
+  const [booted, setBooted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const busy = useRef(false)
+  const viewRef = useRef(null)
+  const nowRef = useRef(null)
+  usePointerFx()
 
+  // Start: the intro page renders right away. A deep link (#hire, #story) shows a small loader
+  // while that view's code and first images arrive. Other views' code is fetched when the browser is idle.
   useEffect(() => {
-    const api = createSky(cv.current); sky.current = api; setReady(true);
-    const h = location.hash.slice(1);
-    if (!route(h, true) && matchMedia('(prefers-reduced-motion: reduce)').matches) { closeIntro('reduced'); openPage('text'); }
-    const onHash = () => { const h = location.hash.slice(1); if (byId[h] && store.get().active !== h) route(h, false); else if (h === 'recap' || h === 'text') route(h, false); };
-    addEventListener('hashchange', onHash);
-    addEventListener('keydown', onKey);
-    return () => { removeEventListener('hashchange', onHash); removeEventListener('keydown', onKey); api.destroy(); sky.current = null; };
-  }, []);
+    const first = fromHash()
+    const show = () => {
+      viewRef.current = first
+      setView(first); skyView(first); setLoading(false); document.title = TITLES[first]
+      document.body.dataset.view = first
+      restartIntro(); setBooted(true)
+      const idle = window.requestIdleCallback || ((f) => setTimeout(f, 2000))
+      setTimeout(() => idle(() => { loaders.hire(); loaders.story() }), 3000)
+    }
+    if (first === 'gate') show()
+    else { setLoading(true); prepare(first).then(show, () => { pending[first] = null; location.hash = ''; location.reload() }) }
+  }, [])
 
-  useEffect(() => { document.body.classList.toggle('intro-off', !intro); }, [intro]);
-  useEffect(() => { document.body.classList.toggle('page-open', !!page); }, [page]);
+  const go = useCallback(async (v, opts = {}) => {
+    if (v === viewRef.current || busy.current) return
+    busy.current = true
+    const B = document.body
+    glide(0.6, 0.42); B.classList.add('leaving')
+    const slow = setTimeout(() => setLoading(true), 700)
+    try { await Promise.all([prepare(v), wait(RM ? 0 : 440)]) } catch { hardLoad(v); return }
+    clearTimeout(slow); setLoading(false)
+    B.classList.add('entering'); B.classList.remove('leaving')
+    viewRef.current = v
+    flushSync(() => setView(v))
+    B.dataset.view = v; skyView(v); scrollTo(0, 0); document.title = TITLES[v]
+    // Move keyboard and screen reader focus to the new view's heading.
+    const h = document.querySelector('main h1'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }) }
+    if (!opts.fromHash) history.pushState(null, '', v === 'gate' ? location.pathname + location.search : '#' + v)
+    requestAnimationFrame(() => requestAnimationFrame(() => { B.classList.remove('entering'); glide(1, 1.1); busy.current = false }))
+  }, [])
 
+  // Back/forward buttons and in-page #hire / #story links.
+  useEffect(() => {
+    const onHash = () => go(fromHash(), { fromHash: true })
+    const onClick = (e) => {
+      const a = e.target.closest('a[href="#hire"],a[href="#story"]')
+      if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return
+      e.preventDefault(); go(a.getAttribute('href').slice(1))
+    }
+    addEventListener('hashchange', onHash); addEventListener('popstate', onHash); document.addEventListener('click', onClick)
+    return () => { removeEventListener('hashchange', onHash); removeEventListener('popstate', onHash); document.removeEventListener('click', onClick) }
+  }, [go])
+
+  const onStop = useCallback((i, s) => { if (nowRef.current) scramble(nowRef.current, i < 0 || !s ? '' : s.when + ' · ' + s.title) }, [])
+  const intent = useCallback((v) => { prepare(v) }, [])
+
+  const toggleStories = (e) => {
+    const ds = [...document.querySelectorAll('details.more')]; const open = !ds.every((d) => d.open)
+    ds.forEach((d) => { d.open = open }); e.currentTarget.textContent = open ? 'Close all stories' : 'Open all stories'
+  }
+  const toContact = () => {
+    const smooth = RM ? 'auto' : 'smooth'
+    if (view === 'story') document.querySelector('.stop:last-of-type')?.scrollIntoView({ behavior: smooth })
+    else scrollTo({ top: 0, behavior: smooth })
+  }
+
+  const View = view && view !== 'gate' ? mods[view] : null
   return (
     <>
-      <a className="skip" href="#text" onClick={(e) => { e.preventDefault(); closeIntro('skip'); openPage('text'); }}>Read the portfolio as text</a>
-      <canvas id="field" ref={cv} tabIndex={0}
-        aria-label="A sky of seven data constellations. Hold to fly, press 1 to 7 to jump, or use W A S D to fly freely." />
-      {ready && (
-        <>
-          <Labels />
-          <TopBar />
-          <Intro />
-          <Dock />
-          <Legend />
-          <Sheet />
-          <StarCard />
-          <Tutorial />
-          <Toast />
-          <Pages />
-        </>
+      {view && view !== 'gate' && (
+        <header className="bar">
+          <button className="who" type="button" onClick={() => go('gate')}>Mayank Thite</button>
+          {view === 'story' && <span className="now" ref={nowRef} />}
+          <span className="sp" />
+          {view === 'story' && <button className="lnk" type="button" onClick={toggleStories}>Open all stories</button>}
+          {view === 'story' && <a className="lnk" href="#hire">Recruiter version</a>}
+          {view === 'hire' && <a className="lnk" href="#story">Read the story</a>}
+          <button className="lnk" type="button" onClick={toContact}>Contact</button>
+        </header>
       )}
+      <main>
+        {(view === 'gate' || (view === null && fromHash() === 'gate')) && <Gate go={go} intent={intent} ready={booted} />}
+        {View && <View go={go} onStop={onStop} />}
+      </main>
+      {loading && <div className="tload" role="status"><span className="orb" /><span>Loading</span></div>}
     </>
-  );
+  )
 }
-
