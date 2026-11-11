@@ -1,0 +1,2061 @@
+<title>Pune to Toronto</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap">
+<style>
+:root{
+  --red:#d7261e;--blue:#a9c4f2;--blue-d:#4f78bf;--pink:#f4c6d6;
+  --scrim:rgba(10,10,12,.95);--lb-bd:rgba(255,255,255,.18);
+  --sans:"Archivo","Mukta",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --ease:cubic-bezier(.215,.61,.355,1);
+  --bar:52px;--strip:0px;
+  --sl:env(safe-area-inset-left,0px);--sr:env(safe-area-inset-right,0px);
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+}
+/* theme: the look follows the local time of the place. Every colour that changes is a token below, so a phase is a token swap.
+   :root carries the active phase. Home takes Toronto's; India's shows only as the soft wash below */
+:root,.ph-day,.ph-dusk{
+  --paper:#fff;--map:#f6f5f3;--ink:#141416;--muted:#55575e;--rule:#e3e3e0;--res:#2a5491;--red-t:#d7261e;
+  --faint:#56585f;--dash:#a3a4a9;--dot:#cfcec9;--press:#d9d9d5;--kw:#7a3b8f;--kb:#55565c;--frame:rgba(20,20,22,.16);
+  --gh-bg:rgba(20,20,22,.18);--gh-bd:rgba(20,20,22,.6);--plate:rgba(255,255,255,0);--wx:#56657f;
+  color-scheme:light;
+}
+.ph-dusk{--map:#f5ede3;--red-t:#c41f17;--rule:#e6e0d7;--dot:#d3cdc4;--wx:#6a6378}
+.ph-night{
+  --paper:#1c1e23;--map:#121317;--ink:#ecebe7;--muted:#a3a5ad;--rule:#33363d;--res:#93b5ff;--red-t:#ff6f63;
+  --faint:#90939c;--dash:#6d7078;--dot:#3b3e46;--press:#3b3e46;--kw:#d6a8ea;--kb:#8d8f96;--frame:rgba(255,255,255,.2);
+  --gh-bg:rgba(236,235,231,.16);--gh-bd:rgba(236,235,231,.6);--plate:#f4f3f0;--wx:#d5ddef;
+  color-scheme:dark;
+}
+.fold{position:absolute;inset:0;opacity:0;pointer-events:none}
+.bar .fold{z-index:-1}
+/* the whole-screen cross-fade of a theme change at rest (view transition), and it never takes the pointer */
+::view-transition{pointer-events:none}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.6s;animation-timing-function:ease}
+.no-tt,.no-tt *{transition:none!important}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);color:var(--ink);overscroll-behavior:none}
+#app{position:fixed;inset:0;overflow:hidden;background:var(--map);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;touch-action:none;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
+#app *,#app *::before,#app *::after{box-sizing:border-box}
+#app button{font:inherit;color:inherit;cursor:pointer}
+#app :focus{outline:none}
+#app :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+/* hover and press feedback: quick, colour only (zero specificity, so a control's own transition still wins) */
+:where(#app button,#app a.tlink,#app a.ctl){transition:background-color .14s,border-color .14s,color .14s,text-decoration-color .14s}
+.sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* station list (visually hidden until focused) */
+.stations-nav{position:absolute;z-index:200;left:calc(12px + var(--sl));top:calc(12px + var(--st));background:var(--paper);border:1px solid var(--ink);padding:14px 18px;transform:translateY(calc(-100% - 40px));opacity:0}
+.stations-nav:focus-within{transform:none;opacity:1}
+.stations-nav h2{font:500 12px/1 var(--mono);color:var(--muted);margin:0 0 10px}
+.stations-nav ol{margin:0;padding:0 0 0 22px;font:500 14px/1.9 var(--sans)}
+.stations-nav a{color:var(--ink)}
+
+/* top bar */
+.bar{position:absolute;z-index:40;left:0;right:0;top:0;height:calc(var(--bar) + var(--st));padding:var(--st) calc(16px + var(--sr)) 0 calc(20px + var(--sl));
+  display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--paper);border-bottom:1px solid var(--rule)}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0 4px;height:44px;font-weight:600!important;font-size:15px!important;letter-spacing:-.005em;white-space:nowrap}
+.brand-mark{display:flex;align-items:center}
+.brand-mark i{display:block;width:12px;height:4px;background:var(--red)}
+.brand-mark i+i{background:var(--blue)}
+.brand-mark b{display:block;width:8px;height:8px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);margin:0 -1px}
+.is-map .brand{visibility:hidden}
+.bar-actions{display:flex;align-items:center;gap:4px}
+.tlink{height:44px;min-width:44px;padding:0 12px;border:0;background:none;display:inline-flex;align-items:center;gap:6px;color:var(--ink);text-decoration:none;font-size:14px!important;font-weight:500!important;white-space:nowrap;border-radius:2px}
+.tlink:hover{background:var(--map)}
+.tlink .ar{font:400 12px/1 var(--mono);color:var(--muted)}
+.tlink kbd{font:400 11px/1 var(--mono);color:var(--muted);border:1px solid var(--rule);padding:2px 4px;border-radius:2px}
+#app .tlink[aria-expanded="true"]{background:var(--ink);color:var(--paper)}
+.tlink[aria-expanded="true"] kbd{color:var(--paper);border-color:var(--kb)}
+.tsep{width:1px;height:20px;background:var(--rule);margin:0 6px}
+.is-map #btn-map,.is-map .tsep.ts-map{display:none}
+
+/* map */
+.mapwrap{position:absolute;inset:0;z-index:1}
+#map{position:absolute;inset:0;overflow:clip;contain:strict}
+/* each view is its own SVG moved by a CSS transform: panning and zooming then repaints the map without laying it out again */
+#map .view{position:absolute;left:0;top:0;width:1px;height:1px;transform-origin:0 0}
+#map .view svg{display:block;width:1px;height:1px;overflow:visible}
+#map text{font-family:var(--sans);text-rendering:geometricPrecision} /* scaled SVG text is then not laid out again on every zoom frame */
+.view{transition:opacity .4s var(--ease)}
+.view.off{opacity:0;pointer-events:none}
+.view.gone{display:none}
+.pin{transform:translate(calc(var(--x) * 1px),calc(var(--y) * 1px)) scale(var(--u))}
+.ln{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:calc(7px * var(--u))}
+.ln.red{stroke:var(--red)}
+.ln.blue{stroke:var(--blue)}
+.ln.arc{stroke:var(--muted);stroke-width:calc(1.6px * var(--u));stroke-linecap:butt}
+.lm path{fill:none;stroke:var(--ink);stroke-opacity:.4;stroke-width:1.1px;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
+#map .lm-l text{font:400 9.5px var(--mono);fill:var(--muted);letter-spacing:.02em}
+#map .rg text{font:500 11px var(--mono);fill:var(--faint);letter-spacing:.06em}
+#map .arc-l text{font:400 10.5px var(--mono);fill:var(--muted)}
+.lm,.lm-l,.rg,.arc-l{transition:opacity .5s var(--ease)}
+.is-ride .lm,.is-ride .lm-l,.is-ride .rg{opacity:.35}
+.stn{cursor:pointer}
+.stn .hit{fill:transparent}
+.stn .mk{fill:var(--paper);stroke-width:3px;transition:fill .15s}
+.stn.red .mk{stroke:var(--red)}
+.stn.blue .mk{stroke:var(--blue-d)}
+.stn.passed.red .mk{fill:var(--red)}
+.stn.passed.blue .mk{fill:var(--blue-d)}
+.stn .mk.ix{fill:var(--pink)!important;stroke:var(--ink);stroke-width:2px}
+.stn.cur .mk:not(.ix){fill:var(--paper);stroke:var(--ink);stroke-width:2.5px;r:10.5px}
+.stn .halo{fill:none;stroke:var(--ink);stroke-width:1px;opacity:0;r:16px;transition:opacity .3s}
+.stn.cur .halo{opacity:.3}
+.stn text{paint-order:stroke;stroke:var(--map);stroke-width:4px;stroke-linejoin:round}
+.refold .stn text{stroke:none} /* while the old floor fades out, a halo in the new floor colour would show as a blot */
+.stn .nm{font-weight:600;font-size:13.5px;fill:var(--ink);letter-spacing:-.005em}
+.stn.cur .nm{font-weight:700}
+#map .stn .yr{font:400 10.5px var(--mono);fill:var(--muted)}
+#map .stn .res{font:500 10.5px var(--mono);fill:var(--res);transition:opacity .3s var(--ease)}
+.is-ride #map .stn .res{opacity:0}
+#map .view.compact .stn .res{display:none}
+.stn .lbl{transition:opacity .3s var(--ease)}
+.is-ride .stn.clip .lbl,.is-ride .arc-l.clip text{opacity:0}
+#map .arc-l text{transition:opacity .3s var(--ease)}
+.stn:hover .nm{text-decoration:underline;text-decoration-thickness:1px}
+.stn .mk-in{fill:var(--blue-d);pointer-events:none;transition:fill .15s}
+.stn.passed .mk-in{fill:var(--paper)}
+.stn.cur .mk-in{fill:var(--ink)}
+.train{cursor:pointer}
+#map .view svg.train{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.train .tsc{transition:transform .6s var(--ease)}
+.is-map:not(.cue-off) .train .tsc{transform:scale(2.4)}
+/* the looping parts of the home cue are HTML over the map, so they animate on the compositor and leave the SVG untouched */
+.cuefx{position:absolute;z-index:2;left:0;top:0;width:0;height:0;pointer-events:none;transition:opacity .3s var(--ease)}
+.cuefx i{position:absolute;display:block}
+.cuefx .tp{left:calc(var(--tw) / -2);top:calc(var(--th) / -2);width:var(--tw);height:var(--th);border:1.5px solid var(--ink);border-radius:99px;opacity:0}
+.is-map:not(.cue-off):not(.demo) .cuefx .tp{animation:pulse 2s cubic-bezier(.215,.61,.355,1) infinite}
+.cuefx .cv{left:calc(var(--d) - var(--cw) * .92);top:calc(var(--cw) / -2);width:var(--cw);height:var(--cw);border:solid var(--paper);border-width:var(--cs) var(--cs) 0 0;border-radius:1px;transform:rotate(45deg);opacity:.3;animation:sweep 1.8s linear infinite}
+.cuefx .cv:nth-child(3){animation-delay:.3s}.cuefx .cv:nth-child(4){animation-delay:.6s}
+.cuefx .cv[hidden]{display:none}
+.demo .cuefx .cv{opacity:0!important;animation:none}
+.is-ride .cuefx{opacity:0}
+.cue-static .cuefx .cv{opacity:.95;animation:none}
+.cue-off .cuefx{display:none}
+.draw .cuefx{opacity:0;animation:fade .6s var(--ease) .2s forwards}
+@keyframes pulse{0%{opacity:.5;transform:scale(1)}100%{opacity:0;transform:scale(1.75)}}
+.train .plane{fill:var(--ink)}
+.ghost{position:absolute;z-index:2;left:0;top:0;width:44px;height:44px;border-radius:50%;background:var(--gh-bg);border:1.5px solid var(--gh-bd);opacity:0;pointer-events:none;transform:translate(-50%,-50%)}
+.keycap{position:absolute;z-index:2;left:0;top:0;width:32px;height:30px;border:1px solid var(--ink);border-bottom-width:2px;border-radius:3px;background:var(--paper);display:grid;place-items:center;font:400 15px/1 var(--mono);color:var(--ink);pointer-events:none;opacity:0;transition:opacity .5s var(--ease),background .12s,translate .12s}
+.key-on.is-map .keycap{opacity:1}
+.draw .keycap{opacity:0!important}
+.keycap.down{background:var(--press);translate:0 2px}
+.train .body{fill:var(--ink)}
+.train .lamp{fill:var(--paper)}
+.train .thit{fill:transparent}
+@keyframes sweep{0%{opacity:.3}12%{opacity:1}40%{opacity:.3}100%{opacity:.3}}
+.draw .ln.red,.draw .ln.blue{stroke-dasharray:1 1;animation:draw 1.5s var(--ease) forwards}
+.draw .ln.blue{animation-delay:.95s;stroke-dashoffset:1}
+.draw .ln.arc,.draw .arc-l{opacity:0;animation:fade .6s var(--ease) .75s forwards}
+.draw .stn,.draw .lm,.draw .lm-l,.draw .rg,.draw .train{opacity:0;animation:fade .6s var(--ease) forwards;animation-delay:calc(.25s + var(--d,0) * 110ms)}
+.draw .lm,.draw .lm-l,.draw .rg{animation-delay:1.4s}
+.draw .train{animation-delay:.2s}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+
+/* home title */
+.intro{position:absolute;z-index:20;left:calc(40px + var(--sl));top:calc(var(--bar) + var(--st) + clamp(24px,5vh,48px));pointer-events:none;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+.intro h1{margin:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 16px;font-weight:700;font-stretch:85%;font-size:clamp(40px,4.4vw,64px);line-height:.95;letter-spacing:-.02em}
+.intro h1 .mr{font-family:"Mukta",var(--sans);font-weight:500;font-stretch:100%;font-size:.36em;letter-spacing:0;color:var(--muted);transform:translateY(-.1em)}
+.intro .tag{margin:14px 0 0;font-size:clamp(17px,1.4vw,20px);line-height:1.35;max-width:34em;text-wrap:pretty}
+.is-ride .intro{opacity:0;transform:translateY(-8px);visibility:hidden;transition:opacity .25s var(--ease),transform .25s var(--ease),visibility 0s .25s}
+
+/* station: signage set on the map */
+.stage{position:absolute;z-index:10;left:0;top:0;width:600px;transition:opacity .3s var(--ease),visibility 0s 0s}
+.is-map .stage{opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s var(--ease),visibility 0s .25s}
+.board{position:relative;background:var(--paper);border:1px solid var(--ink)}
+.board::before{content:"";position:absolute;left:-1px;right:-1px;top:-1px;height:9px;background:var(--red)}
+.board.blue::before{background:var(--blue)}
+.board.ix::before{background:linear-gradient(90deg,var(--red) 0 50%,var(--blue) 50% 100%)}
+.b-main{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:22px 20px 12px}
+.b-name{margin:0;font-weight:700;font-stretch:80%;font-size:clamp(36px,3.4vw,54px);line-height:.92;letter-spacing:-.018em;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.b-name .mr{font-family:"Mukta",var(--sans);font-weight:500;font-stretch:100%;font-size:.4em;letter-spacing:0;color:var(--muted)}
+.b-sub{margin:8px 0 0;font-size:14.5px;font-weight:500;color:var(--muted);line-height:1.2}
+.b-meta{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:10px;padding-top:4px}
+.b-stop{margin:0;font:500 12px/1 var(--mono);white-space:nowrap}
+.b-plat{display:flex;align-items:center;gap:8px}
+.b-plat[hidden]{display:none}
+.pdots{display:flex}
+.pd{width:20px;height:22px;border:0;background:none;padding:0;display:grid;place-items:center}
+.pd i{display:block;width:9px;height:9px;border-radius:50%;border:1.5px solid var(--ink);background:var(--paper);transition:background-color .14s}
+.pd.on i{background:var(--ink)}
+.b-pl{font:400 11.5px/1 var(--mono);color:var(--muted);white-space:nowrap;min-width:5.5em;text-align:right}
+.b-way{display:grid;grid-template-columns:1fr auto 1fr;border-top:1px solid var(--ink);min-height:44px}
+.way{border:0;background:none;padding:0 16px;display:flex;align-items:center;gap:8px;font:500 12.5px/1.2 var(--mono)!important;text-align:left;min-height:44px;min-width:0}
+.way span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.way:hover:not([disabled]){background:var(--map)}
+.way.next{justify-content:flex-end;text-align:right}
+.way[disabled]{color:var(--muted);cursor:default}
+.b-yrs{align-self:center;font:500 13px/1 var(--mono);padding:0 12px;color:var(--ink)}
+.disp-wrap{position:relative;margin-top:24px}
+/* a display never clips: past its height it scrolls, with the gesture kept inside it */
+.disp{max-height:calc(var(--dh,320px) + 8px);margin:-4px;padding:4px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin}
+.disp[hidden]{display:none}
+.leaving{pointer-events:none}
+.stage.swap{opacity:0;transition:none}
+.disp.leaving{position:absolute;left:0;top:0;width:calc(100% + 8px)}
+.disp.z1{zoom:.9;max-height:calc((var(--dh,320px) + 8px) / .9)}.disp.z2{zoom:.8;max-height:calc((var(--dh,320px) + 8px) / .8)}
+.disp.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 40px),rgba(0,0,0,.06));mask-image:linear-gradient(#000 calc(100% - 40px),rgba(0,0,0,.06))}
+
+/* displays */
+.big{margin:0;font-size:clamp(24px,2.3vw,34px);line-height:1.2;font-weight:500;letter-spacing:-.015em;max-width:21em;text-wrap:pretty}
+.big.md{font-size:clamp(22px,1.9vw,28px)}
+.support{margin:16px 0 0;font-size:clamp(16px,1.2vw,18px);line-height:1.45;color:var(--muted);max-width:32em;text-wrap:pretty}
+.d-photo figure{margin:0;display:inline-flex;flex-direction:column;max-width:100%}
+.d-photo img{display:block;max-width:100%;max-height:calc(var(--dh,320px) - 26px);width:auto;height:auto;border:1px solid var(--frame)}
+.credit{margin-top:8px;font:400 10.5px/1.2 var(--mono);color:var(--muted);display:flex;justify-content:space-between;gap:16px}
+.story p{margin:0;font-size:clamp(17px,1.35vw,20px);line-height:1.5;max-width:31em;text-wrap:pretty}
+.story p+p{margin-top:14px}
+.story p.last{font-weight:500}
+.mlabel{margin:0 0 10px;font:500 12px/1.2 var(--mono);color:var(--muted)}
+.handled ol{list-style:none;margin:0;padding:0;counter-reset:h;max-width:420px}
+.handled li{counter-increment:h;display:flex;gap:16px;align-items:baseline;padding:9px 0;border-top:1px solid var(--rule);font-size:clamp(18px,1.5vw,22px);font-weight:500}
+.handled li:last-child{border-bottom:1px solid var(--rule)}
+.handled li::before{content:"0" counter(h);font:400 11px/1 var(--mono);color:var(--muted)}
+.ibi{display:flex;flex-direction:column;gap:16px}
+.ibi .launch{margin:0;display:flex;align-items:center;gap:14px;font:500 13px/1.3 var(--mono)}
+.ibi .launch img{display:block;height:40px;width:auto}
+/* team / find me */
+.team{margin:0}
+.team-img{position:relative;line-height:0}
+.team-img img{display:block;width:100%;height:auto;border:1px solid var(--frame)}
+.team-img .base{transition:opacity .45s var(--ease)}
+/* the blurred, greyed photo is its own still layer that fades in; the blur itself is never animated */
+.team-img .soft{position:absolute;left:0;top:0;width:100%;height:100%;filter:blur(2.5px) grayscale(.7);opacity:0;transition:opacity .45s var(--ease);pointer-events:none}
+.team-img .me{position:absolute;inset:0;clip-path:circle(4.8% at 85.2% 13%);opacity:0;transition:opacity .45s var(--ease);pointer-events:none}
+.team .ring{position:absolute;left:85.2%;top:13%;width:7.4%;aspect-ratio:1;border:1.5px solid var(--red);border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity .45s var(--ease);pointer-events:none}
+.team .me-l{position:absolute;left:calc(85.2% + 4.6%);top:13%;transform:translateY(-50%);font:500 11px/1 var(--mono);background:var(--paper);padding:4px 6px;border:1px solid var(--rule);opacity:0;transition:opacity .45s var(--ease);pointer-events:none}
+.team.find .base{opacity:0}
+.team.find .soft{opacity:.38}
+.team.find .me,.team.find .ring,.team.find .me-l{opacity:1}
+.team figcaption{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;font:400 10.5px/1.2 var(--mono);color:var(--muted)}
+.findme,.ctl{height:36px;padding:0 14px 0 10px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;font:500 12.5px/1 var(--mono)!important;display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.ctl{padding:0 14px}
+.findme:hover,.ctl:hover{border-color:var(--ink)}
+.findme i{display:block;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink)}
+.findme[aria-pressed="true"] i{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--paper),inset 0 0 0 6px var(--red)}
+/* three tests: stacked rows */
+.tests3{list-style:none;margin:0;padding:0;max-width:600px}
+.tests3 li{display:grid;grid-template-columns:28px 1fr auto;column-gap:12px;padding:12px 0;border-top:1px solid var(--rule)}
+.tests3 li:last-child{border-bottom:1px solid var(--ink)}
+.tests3 .mkr{grid-row:1/3;padding-top:5px}
+.tests3 .mkr i{display:block;width:13px;height:13px;border-radius:50%;border:1.5px solid var(--muted);background:var(--paper)}
+.tests3 .won .mkr i{border:3.5px solid var(--red);background:var(--red)}
+.tests3 h4{margin:0;font-size:17px;font-weight:600;line-height:1.3}
+.tests3 h4 span{font:400 11.5px/1 var(--mono);color:var(--muted);margin-right:8px}
+.tests3 .out{font:500 12.5px/1.6 var(--mono);color:var(--muted);white-space:nowrap;text-align:right}
+.tests3 .won .out{color:var(--ink)}
+.tests3 p{grid-column:2/4;margin:3px 0 0;font-size:15px;line-height:1.4;color:var(--muted);max-width:34em}
+/* key number */
+.kn{display:block;font:500 clamp(72px,7vw,112px)/.88 var(--mono);color:var(--red-t);letter-spacing:-.05em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kn-l{margin:14px 0 0;font:500 14px/1.4 var(--mono)}
+.closing{margin:22px 0 0;padding-top:16px;border-top:1px solid var(--rule);font-size:clamp(17px,1.35vw,20px);line-height:1.35;font-weight:500;max-width:28em}
+/* before / after */
+.ba{max-width:640px}
+.ba-row{display:grid;grid-template-columns:64px 1fr;align-items:start}
+.ba-row+.ba-row{margin-top:26px}
+.ba-k{font:500 12px/1 var(--mono);padding-top:3px}
+.ba-row.bf .ba-k{color:var(--muted)}
+.ba-l{position:relative;display:grid;grid-template-columns:repeat(5,1fr);list-style:none;margin:0;padding:0}
+.ba-l::before{content:"";position:absolute;left:7px;top:7px;height:0;width:calc(var(--n) / 5 * 100% - 100% / 5);border-top:5px solid var(--red);transform:translateY(-2px)}
+.bf .ba-l::before{border-top:3px dashed var(--dash);transform:translateY(-1px)}
+.ba-s{position:relative;padding-right:10px}
+.ba-s i{display:block;width:14px;height:14px;border-radius:50%;background:var(--paper);border:3px solid var(--red);position:relative}
+.bf .ba-s i{border:2.5px solid var(--dash)}
+.ba-s span{display:block;margin-top:9px;font-size:14px;line-height:1.3;font-weight:500;text-wrap:pretty}
+.bf .ba-s span{color:var(--muted);font-weight:400}
+.ba-n{margin:22px 0 0 64px;font:400 11.5px/1.4 var(--mono);color:var(--muted)}
+/* figure table */
+.figs{width:100%;max-width:520px;border-collapse:collapse;font:400 14px/1.3 var(--mono)}
+.figs td{padding:10px 0;border-bottom:1px solid var(--rule)}
+.figs tr:first-child td{border-top:1px solid var(--ink)}
+.figs td:first-child{font-family:var(--sans);font-size:15.5px;color:var(--ink)}
+.figs td+td{text-align:right;font-weight:500}
+.figs tr.hi td{border-bottom-color:var(--ink)}
+.figs tr.hi td+td{color:var(--red-t);font-size:18px}
+.certs{width:100%;max-width:560px;border-collapse:collapse}
+.certs td{padding:14px 0;border-bottom:1px solid var(--rule);vertical-align:baseline}
+.certs tr:first-child td{border-top:1px solid var(--ink)}
+.certs .cn{font-size:clamp(18px,1.45vw,21px);font-weight:500;line-height:1.25;padding-right:16px}
+.certs .cn span{display:block;font:400 11.5px/1 var(--mono);color:var(--muted);margin-bottom:6px}
+.certs .gp{text-align:right;white-space:nowrap;font:500 22px/1 var(--mono)}
+.certs .gp small{font-size:11.5px;color:var(--muted);margin-left:6px;font-weight:400}
+/* waffle */
+.waffle svg{display:block;width:100%;max-width:560px;height:auto}
+.waffle circle{fill:var(--dot)}
+.waffle .row{opacity:0}
+.waffle.play .row{animation:fade .35s var(--ease) forwards;animation-delay:calc(var(--r) * 28ms)}
+.waffle .pk{transition:fill .45s var(--ease) .75s}
+.waffle .me{transition:fill .45s var(--ease) 1.1s}
+.waffle.play .pk{fill:var(--blue-d)}
+.waffle.play .me{fill:var(--red)}
+.wleg{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:6px 18px;font:400 12px/1.3 var(--mono);color:var(--muted)}
+.wleg span{display:inline-flex;align-items:center;gap:7px}
+.wleg i{display:block;width:9px;height:9px;border-radius:50%;background:var(--dot)}
+.wleg .b i{background:var(--blue-d)}.wleg .r i{background:var(--red)}
+.waffle .support{margin-top:12px}
+/* projects index */
+.deps{list-style:none;margin:0;padding:0;max-width:680px;border-top:1px solid var(--ink)}
+.deps li{border-bottom:1px solid var(--rule)}
+.dep{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto 9em 16px;align-items:center;column-gap:18px;min-height:50px;padding:0 4px 0 2px;border:0;background:none;text-align:left}
+.dep:hover{background:var(--paper)}
+.dep .dn{font-size:17px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dep .dk{font-size:13.5px;color:var(--muted);white-space:nowrap}
+.dep .dy{font:400 12.5px/1.2 var(--mono);color:var(--muted);text-align:right}
+.dep .da{font:400 13px/1 var(--mono);color:var(--muted);text-align:right}
+.dep:hover .da{color:var(--ink)}
+/* project platform */
+.pj-b>.off{display:none}
+.pj-shot{display:block;padding:0;border:0;background:none;cursor:zoom-in;max-width:100%}
+.pj-shot img{display:block;max-width:100%;width:auto;height:auto;border:1px solid var(--frame)}
+.pj-sum .pj-hd{margin-top:14px}
+.pj-n{margin:0;font-weight:700;font-stretch:85%;font-size:clamp(26px,2.2vw,32px);line-height:1.05;letter-spacing:-.015em}
+.pj-m{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:4px 14px;font:400 12.5px/1.3 var(--mono);color:var(--muted)}
+.pj-sh{margin:8px 0 0;font-size:clamp(16px,1.2vw,18px);line-height:1.4;color:var(--muted);max-width:34em;text-wrap:pretty}
+.pj-how h4{margin:0 0 6px;font:500 12px/1.2 var(--mono);color:var(--muted);padding-top:8px;border-top:1px solid var(--ink)}
+.pj-fd{margin-top:16px}
+.pj-f{margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.3;font-weight:500;max-width:30em;text-wrap:pretty}
+.pj-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:16px}
+.pj-cols p{margin:0;font-size:14px;line-height:1.42;text-wrap:pretty}
+.pj-st{margin:14px 0 0;font:400 12.5px/1.5 var(--mono);color:var(--ink)}
+.pj-ft{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pj-ft .priv{font:400 12.5px/1 var(--mono);color:var(--muted);padding:0 6px}
+.pj-ft .sp{flex:1}
+/* screenshot overlay */
+.lb{position:absolute;z-index:80;inset:0;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:calc(64px + var(--st)) calc(16px + var(--sr)) calc(24px + var(--sb)) calc(16px + var(--sl));cursor:zoom-out;touch-action:none}
+.lb[hidden]{display:none}
+.lb img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border:1px solid var(--lb-bd)}
+.lb-x{position:absolute;top:calc(14px + var(--st));right:calc(16px + var(--sr))}
+
+/* contact */
+.contact{width:100%;max-width:600px;border-collapse:collapse}
+.contact td{padding:8px 0;border-bottom:1px solid var(--rule);vertical-align:middle}
+.contact tr:first-child td{border-top:1px solid var(--ink)}
+.contact .k{font:400 12.5px/1 var(--mono);color:var(--muted);width:92px}
+.contact .v{font:500 15px/1.3 var(--mono);word-break:break-all}
+.contact .v a{color:var(--ink)}
+.contact .a{text-align:right;white-space:nowrap;width:1%}
+.cfb{margin:10px 0 0;font:400 12.5px/1.4 var(--mono);color:var(--ink);min-height:1.4em}
+.again{margin-top:18px}
+.again .ctl i{display:block;width:10px;height:10px;border-radius:50%;border:2px solid var(--red)}
+.seep{margin-top:20px}
+
+/* query panel */
+.qp{position:absolute;z-index:60;right:calc(20px + var(--sr));top:calc(var(--bar) + var(--st) + 12px);width:min(660px,calc(100vw - 40px));max-height:calc(100% - var(--bar) - var(--st) - 24px - var(--sb));overflow:auto;
+  background:var(--paper);border:1px solid var(--ink);border-top:9px solid var(--ink);touch-action:pan-y;overscroll-behavior:contain;padding:18px 20px 20px}
+.qp[hidden]{display:none}
+.qh{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.qh h2{margin:0;font-weight:700;font-stretch:80%;font-size:34px;line-height:1;letter-spacing:-.015em}
+.qh p{margin:8px 0 0;font-size:14px;color:var(--muted);max-width:30em}
+.qx{flex:none;height:36px;padding:0 10px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;display:inline-flex;align-items:center;gap:8px;font:500 12.5px/1 var(--mono)!important}
+.qx kbd{font:400 11px/1 var(--mono);color:var(--muted);border:1px solid var(--rule);padding:2px 4px;border-radius:2px}
+.qq{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.qb{width:100%;text-align:left;border:1px solid var(--rule);background:var(--paper);padding:10px 12px 10px 14px;font:400 12.5px/1.5 var(--mono)!important;white-space:pre-wrap;border-left:3px solid var(--rule)}
+.qb:hover{border-color:var(--ink)}
+.qb[aria-pressed="true"]{border-color:var(--ink);border-left-color:var(--red);background:var(--map)}
+.qb .kw{color:var(--kw)}
+.qm{margin:16px 0 6px;font:400 12px/1 var(--mono);color:var(--muted);display:flex;justify-content:space-between}
+.qt{width:100%;border-collapse:collapse;font-size:14px}
+.qt th{text-align:left;font:500 12px/1 var(--mono);color:var(--muted);padding:0 12px 8px 0;border-bottom:1px solid var(--ink);white-space:nowrap}
+.qt td{padding:8px 12px 8px 0;border-bottom:1px solid var(--rule);vertical-align:top;line-height:1.35}
+.qt td.num,.qt th.num{text-align:right;font-family:var(--mono)}
+.qt td.mono{font-family:var(--mono);font-size:13px;white-space:nowrap}
+.qt td.res{font-family:var(--mono);font-size:13px;color:var(--res);white-space:nowrap}
+.qt td.found{color:var(--muted);font-size:13.5px}
+.qt tr.go{cursor:pointer}
+.qt tr.go:hover td{background:var(--map)}
+.qt .rb{border:0;background:none;padding:0;font-weight:600!important;text-align:left;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
+.qt tr.go:hover .rb{text-decoration-color:var(--ink)}
+
+.strip{display:none}
+.strip .s-red{stroke:var(--red)}.strip .s-blue{stroke:var(--blue)}.strip .s-arc{stroke:var(--muted)}
+.strip .s-ix{fill:var(--pink);stroke:var(--ink)}
+.strip .s-st{fill:var(--paper)}.strip .s-st.red{stroke:var(--red)}.strip .s-st.blue{stroke:var(--blue-d)}
+.strip .s-st.red.past{fill:var(--red)}.strip .s-st.blue.past{fill:var(--blue-d)}
+.strip .s-cur{stroke:var(--ink)}.strip .s-tr{fill:var(--ink)}.strip text{fill:var(--muted)}
+.ibi .launch img{background:var(--plate);padding:3px 5px;border-radius:2px;box-sizing:content-box}
+
+/* home: when India's time of day differs from Toronto's, a soft wash of light or shade over the India side of the map,
+   strongest at its far edge and gone by the middle. Sized from script; only its opacity ever animates */
+.wash{position:absolute;left:0;top:0;width:55%;height:100%;opacity:0;pointer-events:none;transition:opacity .6s var(--ease)}
+.wash.tall{width:100%;height:55%}
+.wash.w-night{--wc:20,28,51}.wash.w-day{--wc:255,217,160}.wash.w-dusk{--wc:242,164,107}
+.wash{background:linear-gradient(var(--wd,to right),rgba(var(--wc,0,0,0),1) 0,rgba(var(--wc,0,0,0),.86) 14%,rgba(var(--wc,0,0,0),.66) 28%,rgba(var(--wc,0,0,0),.45) 42%,rgba(var(--wc,0,0,0),.26) 56%,rgba(var(--wc,0,0,0),.12) 70%,rgba(var(--wc,0,0,0),.04) 84%,rgba(var(--wc,0,0,0),0) 100%)}
+.wash.tall{--wd:to bottom}
+.is-map .wash.on.w-night{opacity:.13}.is-map .wash.on.w-day{opacity:.09}.is-map .wash.on.w-dusk{opacity:.1}
+.wx{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none;transition:opacity .3s var(--ease)}
+.wx.hold{opacity:0}
+
+/* local clocks: one on the sign, one near each end of the line at home. Each is a button that cycles the theme */
+.clk{border:0;background:none;padding:4px 0;margin:-4px 0;font:400 11.5px/1.3 var(--mono)!important;color:var(--muted);white-space:nowrap;text-align:left}
+#app .clk{color:var(--muted)}
+#app .clk:hover{color:var(--ink)}
+.b-subrow{display:flex;flex-wrap:nowrap;align-items:baseline;column-gap:14px;margin-top:8px;min-width:0}
+.b-subrow .b-sub{margin:0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.b-subrow .clk{flex:none}
+.b-subrow.tight .cw{display:none}
+.hclk{position:absolute;z-index:21;padding:8px 2px;margin:0;transition:opacity .3s var(--ease),visibility 0s 0s}
+.is-ride .hclk{opacity:0;visibility:hidden;transition:opacity .2s var(--ease),visibility 0s .2s}
+#clk-in{left:calc(28px + var(--sl));bottom:calc(14px + var(--sb))}
+#clk-ca{right:calc(28px + var(--sr));bottom:calc(14px + var(--sb))}
+
+/* MOCKUP ONLY: test panel for the owner to try themes and weather. Remove before the real site */
+.tp-b{position:absolute;z-index:45;right:calc(12px + var(--sr));top:calc(var(--bar) + var(--st) + 10px);height:26px;padding:0 8px;border:1px dashed var(--muted);background:var(--paper);border-radius:2px;font:500 11px/1 var(--mono)!important;color:var(--muted)}
+#app .tp-b{color:var(--muted)}
+#app .tp-b[aria-expanded="true"]{color:var(--ink);border-style:solid;border-color:var(--ink)}
+.tp{position:absolute;z-index:45;right:calc(12px + var(--sr));top:calc(var(--bar) + var(--st) + 42px);max-width:calc(100% - 24px - var(--sl) - var(--sr));background:var(--paper);border:1px dashed var(--ink);padding:8px;display:flex;flex-direction:column;gap:6px;touch-action:manipulation}
+.tp[hidden]{display:none}
+.tp-r{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.tp-r b{font:500 11px/1 var(--mono);color:var(--muted);width:4.6em}
+.tp-r button{height:32px;padding:0 9px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;font:400 12px/1 var(--mono)!important;color:var(--ink)}
+.tp-r button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+
+/* Toronto: at a glance */
+.facts .k{width:104px;vertical-align:top;padding-top:9px;white-space:nowrap}
+.facts .v{font:400 15px/1.4 var(--sans);word-break:normal;text-wrap:pretty}
+/* Toronto: skills, grouped; a skill used somewhere rides there */
+.skills{max-width:640px}
+.sg{overflow:hidden;padding:9px 0 10px;border-top:1px solid var(--rule)}
+.sg:first-child{border-top-color:var(--ink)}
+.sg:last-child{border-bottom:1px solid var(--rule)}
+.sg .mlabel{margin:0 0 4px}
+.sl{list-style:none;margin:0 0 0 -13px;padding:0;display:flex;flex-wrap:wrap}
+.sl li{padding:0 12px;border-left:1px solid var(--rule);font-size:15.5px;font-weight:500;line-height:30px;white-space:nowrap}
+.sk{border:0;background:none;padding:0;font-weight:500!important;text-decoration:underline;text-decoration-color:var(--rule);text-decoration-thickness:1px;text-underline-offset:4px}
+.sk:hover{text-decoration-color:var(--ink)}
+.sk .n{display:inline-block;font:400 11px/1 var(--mono);color:var(--muted);margin-left:6px}
+
+@media (min-width:900px) and (max-height:819.98px){
+  .b-main{padding:17px 18px 9px}
+  .b-name{font-size:clamp(34px,3vw,44px)}
+  .b-way,.way{min-height:40px}
+  .disp-wrap{margin-top:18px}
+  .big{font-size:clamp(22px,2vw,28px)}
+  .story p{font-size:16px;line-height:1.45}
+  .story p+p{margin-top:10px}
+  .mlabel{margin-bottom:6px}
+  .kn{font-size:clamp(64px,6vw,88px)}
+  .dep{min-height:44px}
+  .pj-sum .pj-hd{margin-top:12px}
+  .pj-n{font-size:27px}
+  .pj-sh{font-size:15.5px;margin-top:6px}
+  .pj-fd,.pj-cols{margin-top:12px}
+  .pj-f{font-size:18px}
+  .pj-st{margin-top:10px}
+  .pj-ft{margin-top:12px}
+  .pj-cols p{font-size:13.5px}
+  .waffle svg{max-width:min(560px,calc((var(--dh) - 96px) * 2.667))}
+  .tests3 li{padding:7px 0}
+  .tests3 h4{font-size:16px}
+  .tests3 p{font-size:14px;margin-top:1px}
+  .figs td{padding:8px 0}
+  .contact td{padding:6px 0}
+  .facts .k{padding-top:7px}
+  .handled li{padding:7px 0;font-size:19px}
+}
+/* ---------- phone ---------- */
+@media (max-width:899.98px){
+  :root{--strip:34px}
+  .bar{padding:var(--st) calc(6px + var(--sr)) 0 calc(10px + var(--sl))}
+  .brand{font-size:14.5px!important;gap:8px}
+  .is-map .brand{visibility:visible}
+  #btn-map,.tsep,.gh-top,.tlink .ar,#btn-q kbd{display:none!important}
+  .tlink{padding:0 9px;font-size:14px!important}
+  .intro{left:0;right:0;top:auto;bottom:0;padding:28px calc(16px + var(--sr)) calc(20px + var(--sb)) calc(16px + var(--sl));background:linear-gradient(transparent,var(--map) 26px)}
+  .intro h1{font-size:40px}
+  @media (max-height:700px){ .intro{padding-top:22px;padding-bottom:calc(14px + var(--sb))} .intro h1{font-size:33px} .intro .tag{font-size:15px;line-height:1.32;margin-top:8px} }
+  .intro .tag{font-size:16.5px;margin-top:10px}
+  .is-ride .intro{transform:translateY(8px)}
+  .strip{display:block;position:absolute;z-index:30;left:0;right:0;top:calc(var(--bar) + var(--st));height:var(--strip);padding:3px calc(16px + var(--sr)) 0 calc(16px + var(--sl));
+    background:var(--paper);border:0;border-bottom:1px solid var(--rule);transition:opacity .25s}
+  .is-map .strip{opacity:0;visibility:hidden;pointer-events:none}
+  .strip svg{display:block;width:100%;height:28px;overflow:visible}
+  /* the sign takes the screen below a short band of map, on its own floor so no line runs under the text */
+  .stage{left:0!important;width:100%!important;bottom:0;padding:0 calc(16px + var(--sr)) calc(10px + var(--sb)) calc(16px + var(--sl))}
+  .stage::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:-14px;bottom:0;background:linear-gradient(transparent,var(--map) 14px);transition:opacity .3s var(--ease)}
+  .refold .stage::before{opacity:0;transition:none} /* the fading old floor shows through instead, so there is no edge at the sign */
+  .b-main{padding:15px 12px 2px;flex-direction:column;gap:2px}
+  .b-name{font-size:30px}
+  .b-sub{font-size:13.5px}
+  .b-subrow{margin-top:3px;column-gap:12px}
+  .b-meta{flex-direction:row;align-items:center;justify-content:space-between;width:100%;padding-top:0}
+  .pd{width:26px;height:36px}
+  .b-pl{display:none}
+  .b-plat.many .b-pl{display:inline;min-width:0}
+  .b-plat.many .pd{width:19px}
+  .b-plat.many{gap:4px}
+  .b-way{grid-template-columns:1fr 1fr;min-height:42px}
+  .b-yrs{display:none}
+  .way{padding:0 12px;font-size:12px!important;min-height:42px}
+  .b-stop .yr-m{display:inline}
+  .b-stop.many .yr-m{display:none}
+  .disp-wrap{margin-top:12px}
+  .disp.more{-webkit-mask-image:linear-gradient(#000 calc(100% - 44px),rgba(0,0,0,.06));mask-image:linear-gradient(#000 calc(100% - 44px),rgba(0,0,0,.06))}
+  .big{font-size:21px;line-height:1.22}
+  .big.md{font-size:19px}
+  .support{font-size:15px;margin-top:10px}
+  .story p{font-size:15.5px;line-height:1.45}
+  .story p+p{margin-top:10px}
+  .mlabel{margin-bottom:6px}
+  .handled li{font-size:17px;padding:7px 0}
+  .kn{font-size:72px}
+  .team .me-l{left:auto;right:calc(14.8% + 4.6%)}
+  .kn-l{margin-top:10px}
+  .closing{margin-top:14px;padding-top:12px;font-size:16px}
+  .tests3 li{grid-template-columns:20px 1fr auto;column-gap:8px;padding:8px 0}
+  .tests3 .mkr{padding-top:4px}
+  .tests3 h4{font-size:15px}
+  .tests3 .out{font-size:11.5px}
+  .tests3 p{font-size:13.5px;line-height:1.38}
+  .ba-row{grid-template-columns:1fr;row-gap:8px}
+  .ba-row+.ba-row{margin-top:14px}
+  .ba-s span{font-size:12.5px;margin-top:7px}
+  .ba-n{margin:14px 0 0}
+  .figs td{padding:7px 0}
+  .figs td:first-child{font-size:14.5px}
+  .figs{font-size:13px}
+  .certs td{padding:10px 0}
+  .certs .cn{font-size:16.5px}
+  .certs .gp{font-size:19px}
+  .dep{grid-template-columns:minmax(0,1fr) auto 14px;grid-template-rows:auto auto;column-gap:10px;row-gap:2px;min-height:46px;padding:6px 2px}
+  .dep .dn{font-size:15.5px;grid-column:1/3;grid-row:1}
+  .dep .dk{font-size:12.5px;grid-column:1;grid-row:2;white-space:normal}
+  .dep .dy{grid-column:2;grid-row:2;font-size:12px;white-space:nowrap}
+  .dep .da{grid-column:3;grid-row:1/3}
+  .pj-shot,.pj-shot img{width:100%}
+  .pj-shot img{object-fit:cover;object-position:top}
+  .d-photo img{max-height:calc(var(--dh,320px) - 34px)}
+  .pj-sum .pj-hd{margin-top:10px}
+  .pj-n{font-size:22px}
+  .pj-m{margin-top:4px;font-size:12px}
+  .pj-sh{font-size:15px;margin-top:6px}
+  .pj-fd,.pj-cols{margin-top:10px}
+  .pj-f{font-size:16.5px}
+  .pj-st{margin-top:10px;font-size:12px}
+  .pj-ft{margin-top:10px}
+  .pj-ft .ctl{height:34px}
+  .waffle .support{font-size:14.5px;margin-top:8px}
+  .wleg{margin-top:8px}
+  .pj-cols{grid-template-columns:1fr;gap:10px}
+  .pj-how h4{margin-bottom:4px;padding-top:6px}
+  .pj-cols p{font-size:13.5px}
+  .contact td{padding:6px 0}
+  .contact .k{width:72px}
+  .contact .v{font-size:13.5px}
+  .facts .k{width:88px;padding-top:7px}
+  .facts .v{font-size:14px}
+  .sg{padding:7px 0 8px}
+  .sl li{font-size:14.5px;line-height:32px}
+  #clk-in{left:calc(16px + var(--sl));top:calc(var(--bar) + var(--st) + 4px);bottom:auto}
+  #clk-ca{right:calc(16px + var(--sr));bottom:auto;top:var(--cat,auto)}
+  .tp-b{right:calc(10px + var(--sr))}
+  /* MOCKUP ONLY: in a station the Test button sits at the end of the strip, off the map band */
+  .is-ride .tp-b{top:calc(var(--bar) + var(--st) + 4px);z-index:46}
+  .strip{padding-right:calc(70px + var(--sr))}
+  .is-ride .tp{top:calc(var(--bar) + var(--st) + var(--strip) + 6px)}
+  .again{margin-top:12px}
+  .seep{margin-top:14px}
+  .qp{left:0;right:0;top:calc(var(--bar) + var(--st));bottom:0;width:auto;max-height:none;border-left:0;border-right:0;border-bottom:0;padding:16px calc(16px + var(--sr)) calc(20px + var(--sb)) calc(16px + var(--sl))}
+  .qh h2{font-size:30px}
+  .qb{font-size:12px!important}
+  .qt{font-size:13.5px}
+  .qt td.found{font-size:13px}
+}
+@media (max-width:899.98px) and (max-height:700px){
+  .b-main{padding-top:13px}
+  .b-way,.way{min-height:40px}
+  .disp-wrap{margin-top:10px}
+  .dep{min-height:42px;padding:4px 2px}
+}
+@media (max-width:379.98px){
+  .bar{padding-left:calc(8px + var(--sl));padding-right:calc(2px + var(--sr))}
+  .brand{font-size:14px!important;gap:7px;padding:0 2px}
+  .tlink{padding:0 7px;font-size:13.5px!important}
+  .b-name{font-size:28px}
+  .story p{font-size:15px}
+  .big.md{font-size:18.5px}
+  .seep{margin-top:10px}
+}
+.yr-m{display:none}
+@media (prefers-reduced-motion:reduce){
+  #app *,#app *::before,#app *::after{transition-duration:0s!important;transition-delay:0s!important;animation-duration:0s!important;animation-delay:0s!important}
+}
+</style>
+
+<div id="app" class="is-map">
+  <nav class="stations-nav" aria-label="List of stations">
+    <h2>List of stations</h2>
+    <ol>
+      <li><a href="#map">Network map</a></li>
+      <li><a href="#s1">Pune, growing up</a></li>
+      <li><a href="#s2">Snapper, 2019</a></li>
+      <li><a href="#s3">IBI platform, 2020</a></li>
+      <li><a href="#s4">IBI checkout, 2020</a></li>
+      <li><a href="#s5">Full-stack dev, 2020 to 2023</a></li>
+      <li><a href="#mumbai">Mumbai interchange, 2023</a></li>
+      <li><a href="#s6">Waterloo, 2023 to 2024</a></li>
+      <li><a href="#s7">Amazon, 2025</a></li>
+      <li><a href="#s8">Projects, 2024 to now</a></li>
+      <li><a href="#s9">Toronto, now</a></li>
+      <li><a href="#s9/4">Skills</a></li>
+      <li><a href="#query">Query the line</a></li>
+    </ol>
+  </nav>
+  <div id="live" class="sr" role="status" aria-live="polite"></div>
+
+  <header class="bar">
+    <span class="fold" id="fold-bar" aria-hidden="true"></span>
+    <button class="brand" type="button" data-act="map" aria-label="Mayank Thite, network map"><span class="brand-mark" aria-hidden="true"><i></i><b></b><i></i></span>Mayank Thite</button>
+    <div class="bar-actions">
+      <button class="tlink" type="button" id="btn-map" data-act="map">Map <kbd>M</kbd></button>
+      <span class="tsep ts-map" aria-hidden="true"></span>
+      <button class="tlink" type="button" id="btn-q" data-act="query" aria-expanded="false" aria-controls="qp">Query <kbd>Q</kbd></button>
+      <span class="tsep" aria-hidden="true"></span>
+      <a class="tlink" href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener">Resume <span class="ar" aria-hidden="true">↗</span></a>
+      <a class="tlink" href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener">LinkedIn <span class="ar" aria-hidden="true">↗</span></a>
+      <a class="tlink gh-top" href="https://github.com/Mayank-thite" target="_blank" rel="noopener">GitHub <span class="ar" aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+
+  <div class="mapwrap" id="mapwrap">
+    <div class="fold" id="fold"></div><div class="wash" id="wash" aria-hidden="true"></div>
+    <div class="ghost" id="ghost" aria-hidden="true"></div>
+    <div class="keycap" id="keycap" aria-hidden="true">→</div>
+    <div class="cuefx" id="cuefx" aria-hidden="true"><i class="tp"></i><i class="cv"></i><i class="cv"></i><i class="cv"></i></div>
+    <div id="map" role="img" aria-label="Route map from Pune to Toronto with ten stations"><div class="view" id="view-wide"><svg id="cam-wide"></svg><svg class="train" id="trn-wide" aria-hidden="true"></svg></div><div class="view gone" id="view-tall"><svg id="cam-tall"></svg><svg class="train" id="trn-tall" aria-hidden="true"></svg></div></div>
+    <canvas class="wx" id="wx" aria-hidden="true"></canvas>
+    <button class="clk hclk" type="button" id="clk-in" data-place="pune"></button>
+    <button class="clk hclk" type="button" id="clk-ca" data-place="toronto"></button>
+  </div>
+
+  <section class="intro" id="intro" aria-labelledby="who">
+    <h1 id="who"><span class="nm">Mayank Thite</span> <span class="mr" lang="mr">मयंक थिटे</span></h1>
+    <p class="tag">Data analyst with 4+ years of experience in operational data analysis, root-cause analysis and dashboarding. Based in Toronto.</p>
+  </section>
+
+  <button class="strip" id="strip" type="button" data-act="map" aria-label="Open the full map"><svg id="stripsvg" aria-hidden="true"></svg></button>
+
+  <main class="stage" id="stage" aria-labelledby="b-name">
+    <div class="board" id="board">
+      <div class="b-main">
+        <div>
+          <h2 class="b-name" id="b-name"><span id="b-nm"></span><span class="mr" id="b-mr" lang="mr"></span></h2>
+          <div class="b-subrow"><p class="b-sub" id="b-sub"></p><button class="clk" type="button" id="b-clk"></button></div>
+        </div>
+        <div class="b-meta">
+          <p class="b-stop" id="b-stop"></p>
+          <div class="b-plat" id="b-plat"><span class="pdots" id="pdots"></span><span class="b-pl" id="b-pl"></span></div>
+        </div>
+      </div>
+      <nav class="b-way" aria-label="Stations either side">
+        <button class="way prev" type="button" data-act="prev-st" id="w-prev"><span id="w-prev-l"></span></button>
+        <span class="b-yrs" id="b-yrs"></span>
+        <button class="way next" type="button" data-act="next-st" id="w-next"><span id="w-next-l"></span></button>
+      </nav>
+    </div>
+
+    <div class="disp-wrap" id="disp-wrap">
+      <!-- Pune -->
+      <div class="disp d-stmt" data-ex="s1-0" hidden>
+        <p class="big">My first build was a small quadcopter, made from the motors and circuit boards of old RC cars.</p>
+        <p class="support">Then C, a calculator and a business degree at Pune University.</p>
+      </div>
+      <div class="disp d-photo" data-ex="s1-1" hidden>
+        <figure><img decoding="async" src="img/G_fpjtUzKkg.jpg" alt="A small carbon-fibre quadcopter frame on a white background" width="900" height="602">
+          <figcaption class="credit"><span>A quadcopter frame. Mine was built from RC car parts.</span><span>Photo: Pawel Spychalski / Unsplash</span></figcaption></figure>
+      </div>
+      <div class="disp story" data-ex="s1-2" hidden>
+        <p>RC cars never stayed in one piece for long at our house. I wasn't interested in driving them. I wanted to see what was inside, so I kept the motors and boards in a box until I had enough to build something bigger.</p>
+        <p>Later I learned C, and my first program was a calculator, like everyone's. I wanted to run a company one day and figured that meant understanding money first, so I studied business at Pune University.</p>
+        <p class="last">I still take things apart to see how they work.</p>
+      </div>
+      <!-- Snapper -->
+      <div class="disp d-stmt" data-ex="s2-0" hidden>
+        <p class="big">I joined as a marketing intern. Around a dozen people, mostly developers, and nobody had a fixed job description.</p>
+      </div>
+      <div class="disp d-team" data-ex="s2-1" hidden>
+        <figure class="team" id="team">
+          <div class="team-img">
+            <img decoding="async" class="base" src="img/snapper-team.jpg" alt="The Snapper Future Tech team, around a dozen people, smiling for a group photo" width="900" height="201">
+            <img decoding="async" class="soft" src="img/snapper-team.jpg" alt="" aria-hidden="true" width="900" height="201">
+            <img decoding="async" class="me" src="img/snapper-team.jpg" alt="" aria-hidden="true" width="900" height="201">
+            <span class="ring" aria-hidden="true"></span><span class="me-l" aria-hidden="true">Me</span>
+          </div>
+          <figcaption><span>The Snapper team, 2019</span><button class="findme" type="button" id="findme" aria-pressed="false"><i aria-hidden="true"></i><span>Find me</span></button></figcaption>
+        </figure>
+      </div>
+      <div class="disp handled" data-ex="s2-2" hidden>
+        <h3 class="mlabel">What I handled</h3>
+        <ol><li>Design</li><li>Video</li><li>The WordPress site</li><li>Client outreach</li></ol>
+      </div>
+      <div class="disp ibi" data-ex="s2-3" hidden>
+        <p class="big">Evenings with the founders turned into the Indian Blockchain Institute, a school where engineers building blockchain products taught live classes.</p>
+        <p class="launch"><img decoding="async" src="img/ibi-logo.png" alt="Indian Blockchain Institute logo" width="300" height="104">I helped launch it.</p>
+      </div>
+      <!-- IBI platform -->
+      <div class="disp d-stmt" data-ex="s3-0" hidden>
+        <p class="big">COVID stopped live classes. The school had to work online, and the old setup couldn't.</p>
+      </div>
+      <div class="disp ba" data-ex="s3-1" hidden>
+        <div class="ba-row bf" role="group" aria-label="Before, five steps">
+          <div class="ba-k">Before</div>
+          <ol class="ba-l" style="--n:5" role="list">
+            <li class="ba-s"><i></i><span>Bank transfer</span></li><li class="ba-s"><i></i><span>Developer checks payment by hand</span></li><li class="ba-s"><i></i><span>Course unlocked</span></li><li class="ba-s"><i></i><span>PDF quiz</span></li><li class="ba-s"><i></i><span>Marked one by one</span></li>
+          </ol>
+        </div>
+        <div class="ba-row" role="group" aria-label="After, four steps">
+          <div class="ba-k">After</div>
+          <ol class="ba-l" style="--n:4" role="list">
+            <li class="ba-s"><i></i><span>Checkout</span></li><li class="ba-s"><i></i><span>Instant access</span></li><li class="ba-s"><i></i><span>Quiz marks itself</span></li><li class="ba-s"><i></i><span>Certificate</span></li>
+          </ol>
+        </div>
+        <p class="ba-n">Proper hosting, LearnDash for courses and a checkout students could finish on their own.</p>
+      </div>
+      <div class="disp d-num" data-ex="s3-2" hidden>
+        <span class="kn" data-count="27" aria-label="plus 27 percent">+27%</span>
+        <p class="kn-l">course completions after the rebuild</p>
+        <p class="closing">The site still runs on this design today.</p>
+      </div>
+      <div class="disp d-photo" data-ex="s3-3" hidden>
+        <figure><img decoding="async" src="img/ibi-hero.jpg" alt="Screenshot of the Indian Blockchain Institute website home page" width="900" height="563">
+          <figcaption class="credit"><span>indianblockchaininstitute.com</span><span>Screenshot of the live site</span></figcaption></figure>
+      </div>
+      <!-- IBI checkout -->
+      <div class="disp d-stmt" data-ex="s4-0" hidden>
+        <p class="big">People picked a course, saw the price and left.</p>
+        <p class="support">I built Power BI dashboards on sales, retention, drop-off, cart abandonment, traffic and ads. Every week, with leadership, they showed the same thing.</p>
+      </div>
+      <div class="disp d-tests" data-ex="s4-1" hidden>
+        <h3 class="mlabel">We tested three ways in</h3>
+        <ol class="tests3">
+          <li class="lose"><div class="mkr" aria-hidden="true"><i></i></div><h4><span>1</span>Free courses</h4><div class="out">Didn't work</div><p>Filled up fast. Almost nobody finished, because nothing was at stake.</p></li>
+          <li class="lose"><div class="mkr" aria-hidden="true"><i></i></div><h4><span>2</span>Monthly plans</h4><div class="out">Didn't work</div><p>People recorded a whole course in a day and cancelled. We blocked recording; they found a jugaad anyway.</p></li>
+          <li class="won"><div class="mkr" aria-hidden="true"><i></i></div><h4><span>3</span>A small sample, then a discount</h4><div class="out">Won</div><p>A small sample program first, then a discount on the full course.</p></li>
+        </ol>
+      </div>
+      <div class="disp d-num" data-ex="s4-2" hidden>
+        <span class="kn" data-count="175" aria-label="plus 175 percent">+175%</span>
+        <p class="kn-l">course sales after the change</p>
+        <p class="closing">Most of the fix wasn't code. It came from asking why until the answer was obvious.</p>
+      </div>
+      <!-- Full-stack dev -->
+      <div class="disp d-stmt" data-ex="s5-0" hidden>
+        <p class="big">After the rebuild I moved from marketing to development.</p>
+      </div>
+      <div class="disp d-figs" data-ex="s5-1" hidden>
+        <table class="figs">
+          <tbody>
+            <tr><td>Production sites</td><td>3</td></tr>
+            <tr><td>Daily hits</td><td>~10,000</td></tr>
+            <tr><td>Active users</td><td>400</td></tr>
+            <tr><td>Funnel tracking</td><td>GA + Microsoft Clarity</td></tr>
+            <tr class="hi"><td>Conversion</td><td>+25%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="disp d-stmt" data-ex="s5-2" hidden>
+        <p class="big md">I built the frontend and worked on the smart contracts for a state government's blockchain e-tendering pilot.</p>
+        <p class="support">Every contract and bid was recorded on the chain.</p>
+      </div>
+      <div class="disp story" data-ex="s5-3" hidden>
+        <p>The acceptance letter from Conestoga came in the middle of the government project.</p>
+      </div>
+      <!-- Mumbai -->
+      <div class="disp d-stmt" data-ex="mumbai-0" hidden>
+        <p class="big">Leaving a job I was good at, at a company I'd helped grow, wasn't easy.</p>
+      </div>
+      <div class="disp d-photo" data-ex="mumbai-1" hidden>
+        <figure><img decoding="async" src="img/csmia-t2.jpg" alt="Terminal 2 of Mumbai's airport" width="900" height="420">
+          <figcaption class="credit"><span>Mumbai airport</span><span>Photo: @CSMIA / Facebook</span></figcaption></figure>
+      </div>
+      <!-- Waterloo -->
+      <div class="disp d-stmt" data-ex="s6-0" hidden>
+        <p class="big">Waterloo was colder than anything I'd known.</p>
+        <p class="support">I liked being back in a classroom. The professors knew their subjects deeply and the coursework didn't let you coast.</p>
+      </div>
+      <div class="disp d-certs" data-ex="s6-1" hidden>
+        <h3 class="mlabel">Conestoga College, two postgraduate certificates</h3>
+        <table class="certs"><tbody>
+          <tr><td class="cn"><span>Certificate 1</span>Computer Applications Development</td><td class="gp">3.89<small>GPA</small></td></tr>
+          <tr><td class="cn"><span>Certificate 2</span>Big Data Solutions Architecture</td><td class="gp">3.81<small>GPA</small></td></tr>
+        </tbody></table>
+      </div>
+      <div class="disp d-photo" data-ex="s6-2" hidden>
+        <figure><img decoding="async" src="img/5C3h-vtELBE.jpg" alt="An ION light rail train in Waterloo" width="900" height="1125">
+          <figcaption class="credit"><span>Waterloo's ION train</span><span>Photo: Crawford Passy / Unsplash</span></figcaption></figure>
+      </div>
+      <div class="disp d-stmt" data-ex="s6-3" hidden>
+        <p class="big md">It's where I first built my retail analytics and stock sentiment projects, the ones I later rebuilt on public data.</p>
+        <div class="seep"><button class="ctl" type="button" data-act="go-projects">See Projects <span aria-hidden="true">→</span></button></div>
+      </div>
+      <!-- Amazon -->
+      <div class="disp waffle" data-ex="s7-0" hidden>
+        <svg id="waffle" role="img" aria-label="600 dots, one per applicant. 24 are highlighted as picked, and one of those is me."></svg>
+        <p class="wleg" aria-hidden="true"><span><i></i>More than 600 applied</span><span class="b"><i></i>24 picked</span><span class="r"><i></i>Me</span></p>
+        <p class="support">Amazon picked 24 people from more than 600 to launch Canada's first fully robotics-integrated sort centre. I was one of them.</p>
+      </div>
+      <div class="disp d-stmt" data-ex="s7-1" hidden>
+        <p class="big md">I'm an Operations Analyst at Canada's first fully robotics-integrated sort centre. When the numbers move, I work out why in Excel and SQL.</p>
+        <p class="support">I monitor 1,000 robotic drive units, 40 induct stations (half manual, half automated) and the conveyor system.</p>
+      </div>
+      <div class="disp d-num" data-ex="s7-2" hidden>
+        <span class="kn" data-count="98.5" aria-label="98.5 percent or more">98.5%+</span>
+        <p class="kn-l">throughput accuracy against SLA</p>
+      </div>
+      <div class="disp d-photo" data-ex="s7-3" hidden>
+        <figure><img decoding="async" src="img/sort-floor-drive-units.jpg" alt="Robotic drive units moving across an Amazon sort floor" width="900" height="510">
+          <figcaption class="credit"><span>Robotic sort floor</span><span>Photo: Amazon / Amazon Science</span></figcaption></figure>
+      </div>
+      <div class="disp story" data-ex="s7-4" hidden>
+        <p>I started at Amazon on the floor in early 2025, which meant I learned how the building works from the ground up before the robotics site opened. I also wrote SOPs for the floor and train new associates.</p>
+        <p class="last">Watching that floor run brought back the feeling from those RC cars.</p>
+      </div>
+      <!-- Projects: generated from PR -->
+      <div id="pj-slot"></div>
+      <!-- Toronto -->
+      <div class="disp d-stmt" data-ex="s9-0" hidden>
+        <p class="big">I'm looking for data analyst, BI and junior data engineering roles anywhere in Canada. If that sounds like your team, I'd love to hear from you.</p>
+      </div>
+      <div class="disp story" data-ex="s9-1" hidden>
+        <p>At Snapper I rebuilt the course platform and completions went up 27%. Then we changed how courses were sold and sales went up 175%.</p>
+        <p>At Amazon I help keep a sort floor of 1,000 robots at 98.5%+ throughput accuracy.</p>
+        <p class="last">I'd like to do this kind of work full time on a data team.</p>
+      </div>
+      <div class="disp d-facts" data-ex="s9-2" hidden>
+        <table class="contact facts"><tbody>
+          <tr><td class="k">Now</td><td class="v">Operations Analyst, Amazon Canada, since 2025</td></tr>
+          <tr><td class="k">Before</td><td class="v">Full-Stack Developer, Snapper Future Tech, 2020 to 2023</td></tr>
+          <tr><td class="k">Experience</td><td class="v">4+ years</td></tr>
+          <tr><td class="k">Education</td><td class="v">Two postgraduate certificates, Conestoga College (GPA 3.89 and 3.81). BBA, Savitribai Phule Pune University</td></tr>
+          <tr><td class="k">Based in</td><td class="v">Toronto</td></tr>
+          <tr><td class="k">Open to</td><td class="v">Roles across Canada</td></tr>
+          <tr><td class="k">Looking for</td><td class="v">Data analyst, BI analyst or developer, junior data engineer</td></tr>
+        </tbody></table>
+      </div>
+      <div class="disp skills" data-ex="s9-3" id="skills" hidden></div>
+      <div class="disp d-contact" data-ex="s9-4" hidden>
+        <table class="contact"><tbody>
+          <tr><td class="k">Email</td><td class="v" id="em">mayankthite.ca@gmail.com</td><td class="a"><button class="ctl" type="button" id="copy">Copy</button></td></tr>
+          <tr><td class="k">LinkedIn</td><td class="v"><a href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener">/in/mayank-thite</a></td><td class="a"><a class="ctl" href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener" aria-label="Open LinkedIn">Open ↗</a></td></tr>
+          <tr><td class="k">GitHub</td><td class="v"><a href="https://github.com/Mayank-thite" target="_blank" rel="noopener">Mayank-thite</a></td><td class="a"><a class="ctl" href="https://github.com/Mayank-thite" target="_blank" rel="noopener" aria-label="Open GitHub">Open ↗</a></td></tr>
+          <tr><td class="k">Resume</td><td class="v"><a href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener">PDF, one page</a></td><td class="a"><a class="ctl" href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener" aria-label="Open resume PDF">Open ↗</a></td></tr>
+        </tbody></table>
+        <p class="cfb" id="cfb" role="status" aria-live="polite"></p>
+        <div class="again"><button class="ctl" type="button" data-act="ride-again"><i aria-hidden="true"></i>Ride again from Pune</button></div>
+      </div>
+    </div>
+  </main>
+
+  <div class="lb" id="lb" role="dialog" aria-modal="true" hidden>
+    <button class="qx lb-x" type="button" id="lb-x" aria-label="Close screenshot">Close <kbd>Esc</kbd></button>
+    <img id="lb-img" alt="" decoding="async">
+  </div>
+
+  <!-- MOCKUP ONLY: test panel for trying themes and weather. Remove before the real site -->
+  <button class="tp-b" type="button" id="tp-b" aria-expanded="false" aria-controls="tp">Test</button>
+  <div class="tp" id="tp" role="group" aria-label="Test theme and weather" hidden>
+    <div class="tp-r" data-k="phase"><b>Time</b><button type="button" data-v="">Auto</button><button type="button" data-v="day">Day</button><button type="button" data-v="dusk">Dusk</button><button type="button" data-v="night">Night</button></div>
+    <div class="tp-r" data-k="weather"><b>Weather</b><button type="button" data-v="">Auto</button><button type="button" data-v="clear">Clear</button><button type="button" data-v="rain">Rain</button><button type="button" data-v="snow">Snow</button></div>
+  </div>
+
+  <section class="qp" id="qp" role="dialog" aria-modal="false" aria-labelledby="qp-t" hidden>
+    <div class="qh">
+      <div><h2 id="qp-t" tabindex="-1">Query the line</h2><p>These run in the page, on the same data the map and stations are built from.</p></div>
+      <button class="qx" type="button" data-act="query-close" aria-label="Close query panel">Close <kbd>Esc</kbd></button>
+    </div>
+    <ul class="qq" id="qq"></ul>
+    <p class="qm" id="qm"></p>
+    <div id="qr"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+var app=document.getElementById('app');
+var $=function(id){return document.getElementById(id);};
+var rmq=window.matchMedia('(prefers-reduced-motion: reduce)');
+var reduced=rmq.matches;
+try{rmq.addEventListener("change",function(e){reduced=e.matches;wxSetup();});}catch(e){}
+
+/* ---------- data: one source for the map, the stations and the query panel ---------- */
+var CATS=[['sd','Software development'],['de','Data engineering'],['an','Analytics'],['ds','Data science'],['ml','Machine learning']];
+var PR=[
+ {t:'Recap',when:'2025',y:2025,sh:['sh-recap',1200,750,"Screenshot of the Recap app: one event's shared photo gallery"],c:['sd'],short:"An event photo app. Guests scan a QR code and share one gallery, even offline.",what:"Guests at an event scan a QR code and start shooting, like passing around a disposable camera. The host sets how many shots each guest gets, and every photo lands in one shared gallery with reactions, tags and optional host approval.",how:"React and Vite on the front end, Node.js and Express on the back end, PostgreSQL and private storage on Supabase, Sharp for resizing and Redis for caching. It installs like an app as a PWA.",fix:"Venue signal is patchy, so photos that fail to upload wait on the phone and the service worker sends them later. Photos stay private behind links that expire, and caching those links in Redis keeps most interactions under 100 ms.",stack:['React','Node.js','PostgreSQL','Supabase','Redis','PWA']},
+ {t:'Ask Toronto 311',when:'2026',y:2026,sh:['sh-ask-toronto-311',1200,540,"Ask Toronto 311 answering a question: a line chart of pothole and road damage requests by month for 2024 and 2025"],c:['sd','ml'],short:"Ask a question about Toronto's 311 requests in plain English and get the answer from the data.",f:"With short notes about the data's traps, Claude Haiku got 97 of 100 test questions right, for about a cent in total. A free model running on a laptop got 83.",what:"Toronto publishes almost a million 311 requests, but getting answers out of them takes SQL and knowing the data's quirks. This tool lets anyone ask in plain English, and it shows the query behind every answer so it can be checked.",how:"A language model writes one SQL query from the table layout, a page of notes about the data and a few similar solved questions. A checker and a read-only database login make sure it can only read. I tested free Qwen models and Claude on 100 questions with hand-checked answers.",fix:"Most wrong answers ran fine and just returned the wrong number, so letting the model retry on errors fixed nothing. What helped was writing down the data's traps, like dead animals being filed under \"Cadaver\".",stack:['Python','PostgreSQL','LLMs','Claude API','Ollama'],repo:'https://github.com/Mayank-thite/ask-toronto-311',live:'https://mayank-thite.github.io/ask-toronto-311/'},
+ {t:'Canada economy pipeline',when:'2026',y:2026,sh:['sh-canada-econ-pipeline',1200,750,"Screenshot of the Canada economy dashboard: policy rate, inflation, unemployment and the dollar"],c:['de','an'],short:"A dashboard that refreshes itself every weekday with Canada's rates, inflation, jobs and dollar.",f:"Across 28 rate changes since 2017, the dollar moved in the expected direction 20 times, but usually by no more than on a normal day.",what:"Shows in one place whether the Bank of Canada rate is above or below inflation, and whether the dollar reacts when the rate changes.",how:"Python pulls the official Bank of Canada and Statistics Canada data, PostgreSQL stores it, dbt cleans and tests it, and GitHub Actions runs it on a schedule.",fix:"Its data checks could have missed one feed going out of date, and it wasn't picking up Statistics Canada's yearly corrections to past numbers. Both are fixed.",stack:['Python','PostgreSQL','dbt','GitHub Actions'],repo:'https://github.com/Mayank-thite/canada-econ-pipeline',live:'https://mayank-thite.github.io/canada-econ-pipeline/'},
+ {t:'Course drop-off analysis',when:'2026',y:2026,sh:['sh-course-dropoff-analysis',1200,750,"Screenshot of the course drop-off analysis page and its headline figures"],c:['an','ml'],short:"Finds when online students drop out and who to call before they do.",f:"Half of withdrawals happen in the first four weeks. A day 28 call list flags students who go on to quit at twice the normal rate.",what:"An online university wants to know when students drop out and who an advisor should call while there's still time. I used public data on 32,593 Open University enrolments.",how:"SQL in PostgreSQL finds the patterns, then a Python model ranks students by risk on day 28. I tested it on a later intake it had never seen.",fix:"The first version counted some students who had already left as still enrolled, which made it look more accurate than it was. I removed them and rebuilt the model on cleaner signals.",stack:['SQL','PostgreSQL','Python','scikit-learn','Power BI'],repo:'https://github.com/Mayank-thite/course-dropoff-analysis'},
+ {t:'Retail analytics engine',when:'2024, rebuilt 2026',y:2024,sh:['sh-retail-analytics-engine',1200,750,"Screenshot of the retail analytics page with revenue and stock figures"],c:['de','an'],short:"Two years of wholesale sales turned into demand, customer and stock decisions.",f:"The standard reorder formula set stock too low for 647 of the 828 products that bring in 80% of revenue.",what:"Answers when demand peaks, who the best customers are and how much stock a UK online gift wholesaler should keep.",how:"Spark cleans the raw invoices into tidy tables and logs every rule it applies. SQL and Python do the analysis, and the results feed a Power BI report.",fix:"The textbook reorder formula assumes steady demand, but most of these products sell in bursts, so I used real sales history instead. An early \"holiday effect\" only showed the shop was closed, so I compared whole holiday weeks.",stack:['PySpark','Spark SQL','Pandas','Power BI'],repo:'https://github.com/Mayank-thite/retail-analytics-engine'},
+ {t:'Stock sentiment pipeline',when:'2024, rebuilt 2026',y:2024,sh:['sh-stock-sentiment-pipeline',1200,750,"Screenshot of the stock sentiment page and its headline results"],c:['de','ds'],short:"Streams news headlines and checks whether their tone moves share prices.",f:"Good news lines up with a stock's price on the same day, but it doesn't help predict the next day.",what:"Tests whether the tone of the news tells you anything about where a stock is going, across NASDAQ-100 companies and 47,913 company-days.",how:"Headlines stream through Kafka, Spark scores how positive or negative each one is, and SQL in Hive matches them to that day's price change.",fix:"My first numbers treated every stock as independent, but stocks move together on big news days. Accounting for that cut the strength of the result roughly in half.",stack:['Python','Kafka','Spark','HiveQL','statsmodels'],repo:'https://github.com/Mayank-thite/stock-sentiment-pipeline'},
+ {t:'Statistics and modeling',when:'2026',y:2026,sh:['sh-statistics-and-modeling',1200,563,"Chart from the statistics and modeling project: test-set cost by call threshold"],c:['ds','ml'],short:"Tests whether a model that picks which bank customers to call beats calling everyone.",f:"The model looked strong in testing, but on later calls it didn't beat simply calling everyone at the costs I assumed.",what:"Uses a bank's public phone-campaign data to check whether a model would actually save the bank effort. It also covers statistical tests and regression on a bike-sharing dataset.",how:"Python notebooks with statsmodels, scikit-learn and LightGBM, backed by a small tested code package.",fix:"Testing on a random mix of calls made the model look good. Training on earlier calls and predicting later ones, the way a bank would use it, showed it was much weaker.",stack:['Python','statsmodels','scikit-learn','LightGBM'],repo:'https://github.com/Mayank-thite/statistics-and-modeling'}];
+function cat(k){for(var i=0;i<CATS.length;i++)if(CATS[i][0]===k)return CATS[i];}
+
+/* stops: y = first year (sort key), result = confirmed figure, tools = tools named in the copy */
+var ST=[
+ {id:'s1',n:1,name:'Pune',mr:'पुणे',sub:'Taking things apart',years:'Growing up',line:'red',plats:['Statement','Photo','The story behind it'],tools:['C']},
+ {id:'s2',n:2,name:'Snapper',sub:'Snapper Future Tech',years:'2019',y:2019,line:'red',plats:['Statement','Team photo','What I handled','The story behind it'],tools:['WordPress']},
+ {id:'s3',n:3,name:'IBI platform',sub:'Indian Blockchain Institute',years:'2020',y:2020,line:'red',plats:['Statement','Before and after','The result','The live site'],result:'+27% completions',tools:['LearnDash']},
+ {id:'s4',n:4,name:'IBI checkout',sub:'Indian Blockchain Institute',years:'2020',y:2020,line:'red',plats:['Why people left','Three ways in','The result'],result:'+175% sales',tools:['Power BI','A/B testing']},
+ {id:'s5',n:5,name:'Full-stack dev',sub:'Snapper Future Tech',years:'2020–23',y:2020,line:'red',plats:['Statement','The figures','Government pilot','The story behind it'],result:'+25% conversion',tools:['Google Analytics','Microsoft Clarity']},
+ {id:'mumbai',n:0,name:'Mumbai',sub:'Change for the Canada line',years:'2023',y:2023,line:'ix',plats:['Statement','The airport']},
+ {id:'s6',n:6,name:'Waterloo',sub:'Conestoga College',years:'2023–24',y:2023,line:'blue',plats:['Statement','Certificates','Photo','Where projects started']},
+ {id:'s7',n:7,name:'Amazon',sub:'Amazon Canada',years:'2025',y:2025,line:'blue',plats:['One of 24','The job','The number','The sort floor','The story behind it'],result:'98.5%+ accuracy',tools:['Excel','SQL']},
+ {id:'s8',n:8,name:'Projects',sub:'Side projects',years:'2024–now',y:2024,line:'blue',plats:['All projects'].concat(PR.map(function(p){return p.t;}))},
+ {id:'s9',n:9,name:'Toronto',sub:'End of the line, for now',years:'Now',y:2026,line:'blue',plats:['Statement','The short version','At a glance','Skills','Contact']}
+];
+var LAST=ST.length-1, PJ=8;
+
+/* skills, grouped. Where each one was used is worked out from ST[].tools and PR[].stack, through the names below */
+var SKILLS=[
+ ['Data analysis and BI',['SQL','Power BI','DAX','Excel (Power Query)','Google Analytics','Microsoft Clarity','A/B testing']],
+ ['Languages and frameworks',['Python (Pandas)','JavaScript','React','Node.js','Apache Spark','Kafka','Hive','HDFS']],
+ ['Cloud and databases',['PostgreSQL','AWS (S3, Glue, Athena)','GCP','Supabase','Redis','ETL pipeline design']],
+ ['Tools',['Git and GitHub','Docker']],
+ ['Working with people',['Stakeholder reporting','Root-cause analysis','Training and onboarding']]
+];
+var ALIAS={'Python (Pandas)':['Python','Pandas'],'Apache Spark':['Spark','PySpark','Spark SQL'],'Hive':['HiveQL'],'Excel (Power Query)':['Excel']};
+var CANON={}; Object.keys(ALIAS).forEach(function(k){ALIAS[k].forEach(function(a){CANON[a]=k;});});
+/* one list of (tool, place) pairs, used by the Skills platform and by the tools table of the query panel */
+var USES=[];
+(function(){
+  var seen={};
+  function add(t,at,go){var c=CANON[t]||t, key=c+'|'+at; if(seen[key]) return; seen[key]=1; USES.push({tool:c,at:at,_go:go});}
+  ST.forEach(function(s,i){(s.tools||[]).forEach(function(t){add(t,s.name,[i,0]);});});
+  PR.forEach(function(p,k){p.stack.forEach(function(t){add(t,p.t,[PJ,k+1]);});});
+})();
+function usesOf(skill){return USES.filter(function(u){return u.tool===skill;});}
+var PLANE='M12.8 0C12.8-.8 11.6-1.2 10-1.2L2.4-1.2L-5.4-11.4L-7.2-11.4L-2.8-1.2L-9-1L-12-4.6L-13.3-4.6L-12.4-.8L-13 0L-12.4.8L-13.3 4.6L-12 4.6L-9 1L-2.8 1.2L-7.2 11.4L-5.4 11.4L2.4 1.2L10 1.2C11.6 1.2 12.8.8 12.8 0Z';
+
+var ART={
+ gate:'M0 44H64M4 44V15L8 10H16L20 15V44M44 44V15L48 10H56L60 15V44M8 10V6M12 10V6M16 10V6M48 10V6M52 10V6M56 10V6M20 19H44M20 23H44M26 44V32Q32 24 38 32V44M10 26V32M54 26V32',
+ ridge:'M0 40C18 38 30 32 42 27C52 23 60 18 68 12H92C99 15 106 21 118 27C132 33 148 37 170 40M71 12V9H75V12M85 12V9H89V12M40 40C70 36 92 33 112 34C132 35 150 38 160 40',
+ viaduct:'M0 6H200M0 10H200M14 10L18 15V36M26 10L22 15V36M64 10L68 15V36M76 10L72 15V36M114 10L118 15V36M126 10L122 15V36M164 10L168 15V36M176 10L172 15V36M-6 36H206',
+ cntower:'M-12 0H12M-7 0L-2.2-112M7 0L2.2-112M-11-112H11L8.5-121H-8.5ZM-2.2-121L-1.4-150M2.2-121L1.4-150M-3.2-150H3.2V-155H-3.2ZM0-155V-190M-9-116.5H9',
+ skyline:'M-8 0H178M0 0V-24H11V-31H19V-19H27V-48H39V-54H45V-48H50V-38H60V-62H70V-28H79V-42H91V-72H101V-34H111V-24H122V-46H133V-31H147V-20H159V-14H170V0',
+ waves:'M0 0q6-4 12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0M12 9q6-4 12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0t12 0M30 18q6-4 12 0t12 0t12 0t12 0t12 0t12 0t12 0',
+ streetcar:'M-8-6H82M44 8L60-6M4 8H66Q70 8 70 12V25H0V12Q0 8 4 8ZM7 12H17V18H7ZM21 12H31V18H21ZM35 12H45V18H35ZM49 12H59V18H49ZM0 21H70M11 25a3 3 0 0 0 6 0M53 25a3 3 0 0 0 6 0M-8 29H82'
+};
+
+
+var LAYOUTS={
+ wide:{
+  pts:[[120,560],[270,560],[480,460],[630,460],[840,360],[980,360],[1200,360],[1340,360],[1550,460],[1700,460]],
+  lab:['n2','n','n','n','n','s','s','s','s','s'],
+  red:'M120 560H310Q330 560 344.1 545.9L415.9 474.1Q430 460 450 460H670Q690 460 704.1 445.9L775.9 374.1Q790 360 810 360H980',
+  arc:'M980 360Q1090 160 1200 360',
+  blue:'M1200 360H1380Q1400 360 1414.1 374.1L1485.9 445.9Q1500 460 1520 460H1700',
+  track:'M120 560H310Q330 560 344.1 545.9L415.9 474.1Q430 460 450 460H670Q690 460 704.1 445.9L775.9 374.1Q790 360 810 360H980Q1090 160 1200 360H1380Q1400 360 1414.1 374.1L1485.9 445.9Q1500 460 1520 460H1700',
+  arcL:[1090,248,'middle'],
+  lm:[
+   {k:'gate',x:88,y:604,sc:1,label:'Shaniwar Wada',lx:120,ly:666},
+   {k:'ridge',x:10,y:700,sc:1.05,label:'Sinhagad',lx:100,ly:760},
+   {k:'viaduct',x:452,y:500,sc:1,label:'Pune Metro viaduct',lx:552,ly:556},
+   {k:'skyline',x:1560,y:440,sc:.9,label:'Financial District',lx:1640,ly:362},
+   {k:'cntower',x:1760,y:440,sc:1,label:'CN Tower',lx:1760,ly:238},
+   {k:'waves',x:1600,y:560,sc:1,label:'Lake Ontario',lx:1672,ly:600},
+   {k:'streetcar',x:1224,y:452,sc:.9,label:'Streetcar',lx:1256,ly:500}
+  ],
+  rg:[['India',24,800,'start'],['Canada',1176,560,'start']],
+  bbox:[8,222,1800,812],
+  hit:20
+ },
+ tall:{
+  pts:[[70,60],[70,125],[70,190],[70,255],[70,320],[70,414],[230,540],[230,600],[230,660],[230,720]],
+  lab:['e2','e','e','e','e','s','e','e','e','e'],
+  red:'M70 60V414',
+  arc:'M70 414Q230 374 230 540',
+  blue:'M230 540V720',
+  track:'M70 60V414Q230 374 230 540V720',
+  arcL:[242,452,'start'],
+  // landmarks sit clear of the station labels, which grow as the map shrinks on small phones
+  lm:[
+   {k:'gate',x:330,y:44,sc:.85,label:'Shaniwar Wada',lx:357,ly:104},
+   {k:'ridge',x:300,y:162,sc:.92,label:'Sinhagad',lx:378,ly:150},
+   {k:'viaduct',x:300,y:262,sc:.7,label:'Pune Metro viaduct',lx:370,ly:310},
+   {k:'skyline',x:22,y:735,sc:.8,label:'Financial District',lx:70,ly:650},
+   {k:'cntower',x:200,y:735,sc:.92,label:'CN Tower',lx:160,ly:546},
+   {k:'waves',x:24,y:762,sc:1,label:'Lake Ontario',lx:96,ly:806},
+   {k:'streetcar',x:320,y:750,sc:.75,label:'Streetcar',lx:352,ly:800}
+  ],
+  rg:[['India',240,22,'middle'],['Canada',22,595,'start']],
+  bbox:[10,8,470,815],
+  hit:26
+ }
+};
+
+/* ---------- state ---------- */
+var state={mode:'map',i:0,p:0}, visited=false, busyUntil=0, V={}, stageLay=null;
+function isPhone(){return window.innerWidth<900;}
+function curView(mode){return (isPhone()&&(mode||state.mode)==='map')?V.tall:V.wide;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function easeOut(t){return 1-Math.pow(1-t,3);}
+
+/* ---------- geometry helpers ---------- */
+var R=Math.PI/180, EARTH=6371.0088, STEP=1;
+function haversine(a,b){var p1=a[0]*R,p2=b[0]*R,dp=p2-p1,dl=(b[1]-a[1])*R,h=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);return 2*EARTH*Math.asin(Math.sqrt(h));}
+var BOM=[19.0887,72.8679], YYZ=[43.6777,-79.6248]; // airport coordinates
+var GC_KM=Math.round(haversine(BOM,YYZ)/10)*10;
+var ARC_LABEL='BOM to YYZ, 2023, '+GC_KM.toLocaleString('en-CA')+' km';
+/* track lookup table: one point per unit of length, read by the train every frame instead of getPointAtLength */
+function buildLUT(v){
+  var n=Math.ceil(v.total/STEP)+1, X=new Float32Array(n), Y=new Float32Array(n);
+  for(var k=0;k<n;k++){var q=v.track.getPointAtLength(Math.min(v.total,k*STEP));X[k]=q.x;Y[k]=q.y;}
+  v.lx=X; v.ly=Y; v.ln=n;
+}
+function ptAt(v,len,o){
+  var f=Math.max(0,Math.min(v.ln-1,len/STEP)), k=Math.min(v.ln-2,f|0), t=f-k;
+  o[0]=v.lx[k]+(v.lx[k+1]-v.lx[k])*t; o[1]=v.ly[k]+(v.ly[k+1]-v.ly[k])*t; return o;
+}
+var PA=[0,0],PB=[0,0],PC=[0,0];
+function angAt(v,len){ptAt(v,Math.max(0,len-1.5),PA);ptAt(v,Math.min(v.total,len+1.5),PB);return Math.atan2(PB[1]-PA[1],PB[0]-PA[0])*180/Math.PI;}
+
+/* ---------- label placement ---------- */
+function labPos(side,n,ix){
+  var x=0,a='middle',ys=[],k;
+  if(side==='n'||side==='n2'){var b=side==='n2'?-34:-18;for(k=0;k<n;k++) ys.push(b-(n-1-k)*13);}
+  else if(side==='s'){var f=ix?30:29;for(k=0;k<n;k++) ys.push(f+k*13);}
+  else {x=side==='e2'?32:side==='w'?(ix?-22:-18):(ix?22:18);a=side==='w'?'end':'start';var g=n===3?-4:2;for(k=0;k<n;k++) ys.push(g+k*13);}
+  return {x:x,a:a,ys:ys};
+}
+function setSide(v,i,side){
+  var g=v.pins[i], tx=g._tx.filter(function(t){return !(v.compact&&t.classList.contains('res'));}), lp=labPos(side,tx.length,ST[i].line==='ix');
+  tx.forEach(function(t,k){t.setAttribute('x',lp.x);t.setAttribute('y',lp.ys[k]);t.setAttribute('text-anchor',lp.a);});
+  v.side[i]=side;
+}
+
+/* ---------- map views ---------- */
+function buildView(name){
+  var v=V[name]||{name:name,g:$('view-'+name),svg:$('cam-'+name),cam:null,raf:0,trainLen:0};
+  var L=v.L=LAYOUTS[name], h='';
+  function lmG(list){return '<g class="lm">'+list.map(function(m){return '<path transform="translate('+m.x+' '+m.y+') scale('+m.sc+')" d="'+ART[m.k]+'"/>';}).join('')+'</g>';}
+  function lmL(list){return '<g class="lm-l">'+list.map(function(m){return '<g class="pin" style="--x:'+m.lx+';--y:'+m.ly+'"><text text-anchor="middle">'+esc(m.label)+'</text></g>';}).join('')+'</g>';}
+  function rgG(r){return '<g class="rg"><g class="pin" style="--x:'+r[1]+';--y:'+r[2]+'"><text text-anchor="'+r[3]+'">'+r[0]+'</text></g></g>';}
+  h+=lmG(L.lm);
+  h+='<path class="ln red" pathLength="1" d="'+L.red+'"/><path class="ln arc" d="'+L.arc+'"/><path class="ln blue" pathLength="1" d="'+L.blue+'"/>';
+  h+='<path class="track" d="'+L.track+'" fill="none" stroke="none"/>';
+  var pins='';
+  ST.forEach(function(s,i){
+    var p=L.pts[i], ix=s.line==='ix';
+    var mk=ix?'<rect class="mk ix" x="-13" y="-7.5" width="26" height="15" rx="7.5"/>':'<circle class="halo" r="16"/><circle class="mk" r="6.5"/>';
+    if(i===PJ) mk+='<circle class="mk-in" r="2.4"/>'; // Projects: one station holding several things, marked by a centre dot
+    pins+='<g class="pin stn '+s.line+'" data-i="'+i+'" style="--x:'+p[0]+';--y:'+p[1]+';--d:'+i+'"><circle class="hit" r="'+L.hit+'"/>'+mk+
+      '<text class="nm lbl">'+esc(s.name)+'</text>'+
+      '<text class="yr lbl">'+esc(ix?'Interchange, '+s.years:s.years)+'</text>'+
+      (s.result?'<text class="res lbl">'+esc(s.result)+'</text>':'')+'</g>';
+  });
+  h+=lmL(L.lm)+rgG(L.rg[0])+rgG(L.rg[1])+pins;
+  h+='<g class="arc-l"><g class="pin" style="--x:'+L.arcL[0]+';--y:'+L.arcL[1]+'"><text text-anchor="'+L.arcL[2]+'">'+esc(ARC_LABEL)+'</text></g></g>';
+  v.svg.innerHTML=h;
+  // the train is its own small svg on its own layer: moving it is a transform, so the map is never repainted for it
+  v.train=$('trn-'+name);
+  v.train.innerHTML='<g class="tsc"><circle class="thit" r="'+L.hit+'"/>'+
+    '<g class="tb"><rect class="body" x="-8.5" y="-3.8" width="17" height="7.6" rx="3.8"/><circle class="lamp" cx="5.4" cy="0" r="1.5"/></g>'+
+    '<path class="plane" d="'+PLANE+'"/></g>';
+  v.track=v.g.querySelector('.track'); v.tb=v.train.querySelector('.tb'); v.plane=v.train.querySelector('.plane'); v.dir=1; v.arc=v.g.querySelector('.ln.arc'); v.arcG=v.g.querySelector('.arc-l');
+  v.pins=[].slice.call(v.g.querySelectorAll('.stn'));
+  v.pins.forEach(function(g){g._tx=[].slice.call(g.querySelectorAll('text.lbl'));});
+  v.side=[]; L.lab.forEach(function(sd,i){setSide(v,i,sd);});
+  v.total=v.track.getTotalLength();
+  buildLUT(v);
+  v.stLen=L.pts.map(function(p){var best=0,bd=1e9;for(var k=0;k<v.ln;k++){var dx=v.lx[k]-p[0],dy=v.ly[k]-p[1],d=dx*dx+dy*dy;if(d<bd){bd=d;best=k*STEP;}}return best;});
+  v.stLen[0]=0; v.stLen[LAST]=v.total;
+  v.samples=[]; for(var l=0;l<=v.total;l+=8){ptAt(v,l,PC);v.samples.push([PC[0],PC[1]]);}
+  measureView(v);
+  V[name]=v; return v;
+}
+function measureView(v){
+  function u(a,b){if(!a)return b;var x=Math.min(a.x,b.x),y=Math.min(a.y,b.y);return {x:x,y:y,w:Math.max(a.x+a.w,b.x+b.w)-x,h:Math.max(a.y+a.h,b.y+b.h)-y};}
+  v.boxes=v.pins.map(function(g){var b={x:-16,y:-16,w:32,h:32};[].forEach.call(g.querySelectorAll('text:not(.res)'),function(t){var r=t.getBBox();b=u(b,{x:r.x-3,y:r.y-2,w:r.width+6,h:r.height+4});});return b;});
+  var at=v.g.querySelector('.arc-l text').getBBox(); v.arcBox={x:at.x,y:at.y,w:at.width,h:at.height};
+}
+function placeTrain(v,len){
+  var dl=len-v.trainLen; if(Math.abs(dl)>0.01) v.dir=dl>0?1:-1;
+  v.trainLen=len;
+  var L5=v.stLen[5],L6=v.stLen[6],f=(len-L5)/(L6-L5),po=(f<=0||f>=1)?0:Math.min(1,f/.12,(1-f)/.12);
+  if(po!==v.planeOp){ v.plane.style.opacity=po.toFixed(3); v.tb.style.opacity=(1-po).toFixed(3); v.planeOp=po; }
+  ptAt(v,len,PC);
+  // at the two ends of the flight, take the tangent of the straight track only, so the train waits level at the platform
+  var ang=Math.abs(len-L6)<1.5?angAt(v,L6+3):Math.abs(len-L5)<1.5?angAt(v,L5-3):angAt(v,len);
+  // one transform write, and only when something moved by more than a hundredth of a pixel
+  var k=+v.u||1, x=PC[0], y=PC[1];
+  if(k!==v.tk||!(Math.abs(x-v.tx)<=.01&&Math.abs(y-v.ty)<=.01&&Math.abs(ang-v.ta)<=.02)){
+    v.tx=x; v.ty=y; v.ta=ang; v.tk=k;
+    v.train.style.transform='translate('+x.toFixed(3)+'px,'+y.toFixed(3)+'px) rotate('+ang.toFixed(3)+'deg) scale('+k+')';
+  }
+  var fl=v.dir<0?'rotate(180)':''; if(v.plane.getAttribute('transform')!==fl) v.plane.setAttribute('transform',fl);
+}
+function markStations(v){
+  var show=state.mode==='ride'||visited;
+  v.pins.forEach(function(g,i){g.classList.toggle('cur',show&&i===state.i);g.classList.toggle('passed',show&&i<state.i);});
+}
+/* hide station labels that a ride camera would crop at the screen edge */
+function clipLabels(v,c){
+  var on=state.mode==='ride'&&v===V.wide, W=innerWidth, top=barBottom()+stripH(), u=Math.pow(c.s,-0.7), tx=c.fx-c.s*c.x, ty=c.fy-c.s*c.y;
+  v.pins.forEach(function(g,i){
+    var b=v.boxes[i], p=v.L.pts[i], X=tx+c.s*(p[0]+u*b.x), Y=ty+c.s*(p[1]+u*b.y), cut=on&&i!==state.i&&(X<2||X+c.s*u*b.w>W-2||Y<top);
+    g.classList.toggle('clip',cut);
+  });
+  var ab=v.arcBox, aX=tx+c.s*(v.L.arcL[0]+u*ab.x), aY=ty+c.s*(v.L.arcL[1]+u*ab.y);
+  var ac=on&&(aX<2||aX+c.s*u*ab.w>W-2||aY<top); v.arcG.classList.toggle('clip',ac);
+}
+function applyCam(v,c,exact){
+  var tx=c.fx-c.s*c.x, ty=c.fy-c.s*c.y, u=Math.pow(c.s,-0.7);
+  var tr='translate('+tx.toFixed(3)+'px,'+ty.toFixed(3)+'px) scale('+c.s.toFixed(5)+')';
+  if(tr!==v.tr){ v.tr=tr; v.g.style.transform=tr; }
+  // the counter-scale restyles every label and line. It lives on the inner svg, is held during the home cue (which starts
+  // and ends at the same zoom), and while moving is only rewritten when it has drifted by more than 0.4%, which no one can
+  // see; the end of every move writes the exact value
+  if(!cue.running&&(exact?u.toFixed(4)!==v.u:Math.abs(u/(+v.u||1)-1)>.004)){ v.u=u.toFixed(4); v.svg.style.setProperty('--u',v.u); v.arc.style.strokeDasharray=(6*u).toFixed(2)+' '+(5*u).toFixed(2); }
+  v.cam=c;
+  if(v===V.wide&&keyOn) placeKeycap();
+  if(!cue.stopped&&!cue.running&&state.mode==='map'&&v===curView()) placeCueFx(v);
+}
+/* pulse and chevrons sit on the first stretch of track, Pune to Snapper, which is straight in both layouts */
+function placeCueFx(v){
+  var c=v.cam, P=v.L.pts[0], Q=v.L.pts[1], p=screenOf(v,P[0],P[1]), su=c.s*(+v.u), fx=$('cuefx');
+  var ang=Math.atan2(Q[1]-P[1],Q[0]-P[0])*180/Math.PI, nose=8.5*2.4*su+3;
+  fx.style.transform='translate('+p.x.toFixed(1)+'px,'+p.y.toFixed(1)+'px) rotate('+ang.toFixed(1)+'deg)';
+  fx.style.setProperty('--tw',(19*2.4*su).toFixed(1)+'px'); fx.style.setProperty('--th',(9.6*2.4*su).toFixed(1)+'px');
+  fx.style.setProperty('--cw',(7.07*su).toFixed(1)+'px'); fx.style.setProperty('--cs',(2.4*su).toFixed(2)+'px');
+  [].forEach.call(fx.querySelectorAll('.cv'),function(el,k){var d=[.32,.5,.68][k]*(v.stLen[1]-v.stLen[0])*c.s; el.style.setProperty('--d',d.toFixed(1)+'px'); el.hidden=d-4*su<nose;});
+}
+/* while the camera only pans (or barely zooms) the map is a composited layer, so each frame is a transform, not a repaint.
+   It is dropped at rest, so the map re-rasterises sharp at its final zoom */
+function layerOn(v,on){ on=!!on; if(v.layer!==on){ v.layer=on; v.g.style.willChange=on?'transform':''; } }
+function lerpCam(A,B,e){return {x:A.x+(B.x-A.x)*e,y:A.y+(B.y-A.y)*e,s:A.s*Math.pow(B.s/A.s,e),fx:A.fx+(B.fx-A.fx)*e,fy:A.fy+(B.fy-A.fy)*e};}
+/* camera and train curve: a critically damped spring in time, normalised to land exactly at the end. It starts soft (or at
+   the finger's speed, v0, in move-lengths per duration), brakes gently and never overshoots. Same curve at any frame rate */
+var SPRING=6;
+function springCurve(v0){
+  var w=SPRING; v0=Math.max(0,Math.min(w,v0||0));
+  function f(x){return 1-(1+(w-v0)*x)*Math.exp(-w*x);}
+  var n=f(1); return function(t){return t>=1?1:f(t)/n;};
+}
+function moveTo(v,target,trainTo,dur,v0){
+  cancelAnimationFrame(v.raf);
+  var from=v.cam||target, t0=performance.now(), l0=v.trainLen, ease=springCurve(v0);
+  layerOn(v,dur&&Math.abs(Math.log(target.s/from.s))<.25);
+  if(!dur){applyCam(v,target,true);placeTrain(v,trainTo);layerOn(v,false);return;}
+  (function frame(now){
+    var t=Math.min(1,Math.max(0,(now-t0)/dur)), e=ease(t);
+    if(t>=1){ applyCam(v,target,true); placeTrain(v,trainTo); layerOn(v,false); return; }
+    applyCam(v,lerpCam(from,target,e)); placeTrain(v,l0+(trainTo-l0)*e);
+    v.raf=requestAnimationFrame(frame);
+  })(t0);
+}
+
+/* ---------- camera targets and sign placement ---------- */
+function barBottom(){return document.querySelector('.bar').getBoundingClientRect().bottom;}
+function stripH(){return isPhone()?(parseFloat(getComputedStyle(app).getPropertyValue('--strip'))||44):0;}
+function homeRect(){
+  var W=innerWidth,H=innerHeight,bar=barBottom(),ir=$('intro').getBoundingClientRect(), t=getComputedStyle($('intro')).transform, dy=0;
+  if(t&&t!=='none'){dy=new DOMMatrix(t).m42;}
+  if(isPhone()) return {l:14,t:bar+36,r:W-14,b:ir.top-dy-36};
+  return {l:28,t:ir.bottom-dy+16,r:W-28,b:H-50};
+}
+function rideScale(){var W=innerWidth,H=innerHeight;return isPhone()?Math.max(.72,Math.min(.95,W/470)):Math.max(.62,Math.min(1.15,Math.min(W/1200,H/1050)));}
+function camTarget(v,st,fyFrac){
+  var W=innerWidth,H=innerHeight,bar=barBottom();
+  if(st.mode==='map'){
+    var r=homeRect(), b=v.L.bbox, w=r.r-r.l, h=Math.max(80,r.b-r.t), s=Math.min(w/(b[2]-b[0]),h/(b[3]-b[1]));
+    return {x:(b[0]+b[2])/2,y:(b[1]+b[3])/2,s:s,fx:r.l+w/2,fy:r.t+h/2};
+  }
+  var p=v.L.pts[st.i];
+  if(v.name==='tall') return {x:p[0],y:p[1],s:1.4,fx:W/2,fy:H*.3};
+  if(isPhone()) return phoneCam(v,st.i);
+  return {x:p[0],y:p[1],s:rideScale(),fx:W*.22,fy:bar+(fyFrac==null?.5:fyFrac)*(H-bar)};
+}
+/* phone: the map shows in a band under the strip, the sign fills the rest */
+/* the band is as tall as the stop's own labels need (within limits), so it is never half empty and the sign gets the rest */
+function phoneSpan(v,i,s){
+  var p=v.L.pts[i], b=v.boxes[i], su=Math.pow(s,0.3), top=Math.min(-16*su,su*b.y), bot=Math.max(16*su,su*(b.y+b.h));
+  if(i===5||i===6) top=Math.min(top,s*(v.L.arcL[1]-p[1])+su*v.arcBox.y); // keep the flight arc and its label in view
+  [i-1,i+1].forEach(function(j){ // a neighbour on screen keeps its label inside the band
+    var q=v.L.pts[j], c=v.boxes[j]; if(!q||!c||Math.abs(s*(q[0]-p[0]))>innerWidth/2-24) return;
+    var dy=s*(q[1]-p[1]); top=Math.min(top,dy+su*c.y); bot=Math.max(bot,dy+su*(c.y+c.h));
+  });
+  return [top,bot];
+}
+function phoneBand(i){
+  if(i==null) i=state.i;
+  var top=barBottom()+stripH(), mx=Math.round(Math.max(98,Math.min(190,(innerHeight-top)*.19))), sp=phoneSpan(V.wide,i,rideScale());
+  return [top,top+Math.min(mx,Math.max(84,Math.ceil(sp[1]-sp[0]+24)))];
+}
+function phoneCam(v,i){
+  var bd=phoneBand(i), t0=bd[0]+10, room=bd[1]-10-t0, p=v.L.pts[i], s=rideScale(), top=0, bot=0;
+  for(var k=0;k<4;k++){
+    var sp=phoneSpan(v,i,s); top=sp[0]; bot=sp[1];
+    if(bot-top<=room) break;
+    s*=room/(bot-top);
+  }
+  return {x:p[0],y:p[1],s:s,fx:innerWidth/2,fy:t0+(room-(bot-top))/2-top};
+}
+/* screen-space obstacles (line, stations, labels) for a camera */
+function obstacles(v,c){
+  var tx=c.fx-c.s*c.x, ty=c.fy-c.s*c.y, u=Math.pow(c.s,-0.7), out=[], rr=3.5*u*c.s+12;
+  v.samples.forEach(function(q){var X=tx+c.s*q[0],Y=ty+c.s*q[1];out.push([X-rr,Y-rr,X+rr,Y+rr]);});
+  function box(px,py,b){var X=tx+c.s*(px+u*b.x),Y=ty+c.s*(py+u*b.y);out.push([X-6,Y-6,X+c.s*u*b.w+6,Y+c.s*u*b.h+6]);}
+  v.L.pts.forEach(function(p,i){box(p[0],p[1],v.boxes[i]);});
+  box(v.L.arcL[0],v.L.arcL[1],v.arcBox);
+  return out;
+}
+function band(obs,x0,x1,top,bot){
+  var mn=Infinity,mx=-Infinity;
+  obs.forEach(function(o){if(o[2]<x0||o[0]>x1||o[3]<top||o[1]>bot)return;mn=Math.min(mn,o[1]);mx=Math.max(mx,o[3]);});
+  return [mn,mx];
+}
+function planStage(st){
+  var v=V.wide, W=innerWidth, H=innerHeight, bar=barBottom(), gap=22;
+  var boardH=$('board').offsetHeight||140, dispGap=parseFloat(getComputedStyle($('disp-wrap')).marginTop)||24;
+  if(isPhone()){
+    var bd=phoneBand(st.i), pb=parseFloat(getComputedStyle($('stage')).paddingBottom)||10;
+    return {cam:phoneCam(v,st.i),left:0,top:bd[1],width:W,dh:Math.max(96,H-bd[1]-boardH-dispGap-pb)};
+  }
+  var x0=Math.round(W*.37), width=Math.min(680,W-x0-56), x1=x0+width, topL=bar+20, botL=H-22;
+  function regions(c){var b=band(obstacles(v,c),x0,x1,bar,H);if(!isFinite(b[0]))b=[c.fy,c.fy];return {above:[topL,b[0]-gap],below:[b[1]+gap,botL]};}
+  var r1=regions(camTarget(v,st,.5)), side=(r1.below[1]-r1.below[0])>=(r1.above[1]-r1.above[0])?'below':'above';
+  var c2=camTarget(v,st,side==='below'?.3:.84);
+  if(side==='above'){ var bb=band(obstacles(v,c2),0,W,-1e5,1e5)[1]; if(isFinite(bb)&&bb>H-10) c2.fy-=Math.min(bb-(H-10),(H-bar)*.2); }
+  // keep the line and labels clear of the top bar across the whole width
+  var tb=band(obstacles(v,c2),0,W,-1e5,1e5)[0];
+  if(isFinite(tb)&&tb<bar+12) c2.fy+=Math.min(bar+12-tb,(H-bar)*.25);
+  else if(isFinite(tb)&&side==='below'&&tb>bar+16) c2.fy-=Math.min(tb-(bar+16),(H-bar)*.12);
+  var r2=regions(c2)[side];
+  if(side==='below') r2[0]=Math.max(r2[0],c2.fy+44); else r2[1]=Math.min(r2[1],c2.fy-44);
+  var h=r2[1]-r2[0];
+  var dh=Math.min(side==='below'?460:400,h-boardH-dispGap), top=side==='below'?r2[0]:Math.max(r2[0],r2[1]-(boardH+dispGap+dh));
+  return {cam:c2,left:x0,top:top,width:width,dh:Math.max(120,dh),side:side};
+}
+function applyStage(lay){
+  var s=$('stage'); stageLay=lay;
+  s.style.left=lay.left+'px'; s.style.top=Math.round(lay.top)+'px'; s.style.width=lay.width+'px';
+  s.style.setProperty('--dh',Math.floor(lay.dh)+'px');
+}
+function targetFor(v,st){ if(v===V.wide&&st.mode==='ride'){return (LAYC[layKey(st.i)]||planStage(st)).cam;} return camTarget(v,st); }
+/* sign layouts per station for this window size, measured when the page is idle, so a move never measures in its first frame */
+var LAYC={}, paintTok=0, themeT=0;
+function layKey(i){return i+'|'+innerWidth+'x'+innerHeight;}
+function warmLayouts(){
+  idle(function(){
+    if(busy()||pv.active||cue.running){ setTimeout(warmLayouts,600); return; }
+    var st=$('stage'), w0=st.style.width;
+    if(!isPhone()) st.style.width=Math.min(680,innerWidth-Math.round(innerWidth*.37)-56)+'px';
+    for(var i=0;i<=LAST;i++){ var k=layKey(i); if(!LAYC[k]){ renderBoard(i,0); LAYC[k]=planStage({mode:'ride',i:i,p:0}); } }
+    st.style.width=w0; renderBoard();
+  });
+}
+
+/* ---------- strip (phone) ---------- */
+function buildStrip(){
+  var s=$('stripsvg'), w=s.getBoundingClientRect().width||358, pad=8, h=28, y=10;
+  if(w<50) return;
+  var xs=ST.map(function(_,i){return pad+i*(w-2*pad)/LAST;});
+  var o='<path class="s-red" d="M'+xs[0]+' '+y+'H'+xs[5]+'" stroke-width="4" stroke-linecap="round"/>'+
+    '<path class="s-arc" d="M'+xs[5]+' '+y+'Q'+((xs[5]+xs[6])/2)+' '+(y-13)+' '+xs[6]+' '+y+'" stroke-width="1.4" stroke-dasharray="3 3" fill="none"/>'+
+    '<path class="s-blue" d="M'+xs[6]+' '+y+'H'+xs[LAST]+'" stroke-width="4" stroke-linecap="round"/>';
+  xs.forEach(function(x,i){var st=ST[i];
+    if(st.line==='ix') o+='<rect class="s-ix" x="'+(x-8)+'" y="'+(y-5)+'" width="16" height="10" rx="5" stroke-width="1.5"/>';
+    else o+='<circle class="s-st '+st.line+'" data-s="'+i+'" cx="'+x+'" cy="'+y+'" r="4.5" stroke-width="2.5"/>';});
+  o+='<circle class="s-cur" id="strip-cur" cx="'+xs[0]+'" cy="'+y+'" r="8" fill="none" stroke-width="2"/><circle class="s-tr" id="strip-train" cx="'+xs[0]+'" cy="'+y+'" r="3.2"/>';
+  o+='<text x="'+xs[0]+'" y="'+(h-1)+'" font-family="IBM Plex Mono,monospace" font-size="9.5">Pune</text><text x="'+xs[LAST]+'" y="'+(h-1)+'" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="9.5">Toronto</text>';
+  s.setAttribute('viewBox','0 0 '+w+' '+h); s.innerHTML=o; s._xs=xs; updateStrip();
+}
+function updateStrip(){
+  var s=$('stripsvg'); if(!s._xs) return; var x=s._xs[state.i];
+  s.querySelectorAll('circle[data-s]').forEach(function(c){c.classList.toggle('past',+c.getAttribute('data-s')<state.i);});
+  $('strip-cur').setAttribute('cx',x); $('strip-train').setAttribute('cx',x);
+}
+
+/* ---------- projects: index + one platform each, built from PR ---------- */
+function kindsOf(p){return p.c.map(function(c){return cat(c)[1];}).join(', ');}
+function buildProjects(){
+  var h='<div class="disp pidx" data-ex="s8-0" hidden><ol class="deps">'+PR.map(function(p,k){return '<li><button type="button" class="dep" data-pj="'+(k+1)+'"><span class="dn">'+esc(p.t)+'</span><span class="dk">'+esc(kindsOf(p))+'</span><span class="dy">'+esc(p.when)+'</span><span class="da" aria-hidden="true">→</span></button></li>';}).join('')+'</ol></div>';
+  PR.forEach(function(p,k){
+    var links=(p.live?'<a class="ctl" href="'+p.live+'" target="_blank" rel="noopener">Live ↗</a>':'')+(p.repo?'<a class="ctl" href="'+p.repo+'" target="_blank" rel="noopener">GitHub ↗</a>':'<span class="priv">Private repo</span>');
+    var hd='<h3 class="pj-n">'+esc(p.t)+'</h3><p class="pj-m"><span>'+esc(p.when)+'</span><span>'+esc(kindsOf(p))+'</span></p>';
+    h+='<div class="disp pj" data-ex="s8-'+(k+1)+'" hidden><div class="pj-b">'+
+      '<div class="pj-sum"><button type="button" class="pj-shot" aria-label="Open the screenshot larger"><img src="img/'+p.sh[0]+'.jpg" alt="'+esc(p.sh[3])+'" width="'+p.sh[1]+'" height="'+p.sh[2]+'" loading="lazy" decoding="async"></button>'+
+        '<div class="pj-hd">'+hd+'</div><p class="pj-sh">'+esc(p.short)+'</p></div>'+
+      '<div class="pj-how off" aria-hidden="true"><div class="pj-hd">'+hd+'</div>'+
+        (p.f?'<div class="pj-fd"><h4>What I found</h4><p class="pj-f">'+esc(p.f)+'</p></div>':'')+
+        '<div class="pj-cols"><div><h4>What it\'s for</h4><p>'+esc(p.what)+'</p></div><div><h4>How I built it</h4><p>'+esc(p.how)+'</p></div><div><h4>Problems along the way</h4><p>'+esc(p.fix)+'</p></div></div>'+
+        '<p class="pj-st">'+p.stack.map(esc).join(', ')+'</p></div>'+
+      '</div><div class="pj-ft">'+links+'<span class="sp"></span><button type="button" class="ctl pj-t">Details</button></div></div>';
+  });
+  $('pj-slot').outerHTML=h;
+}
+/* Toronto, Skills: grouped lists; a skill used somewhere names how many places and rides to the first */
+function listJoin(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];}
+function buildSkills(){
+  $('skills').innerHTML=SKILLS.map(function(g){
+    return '<div class="sg"><h3 class="mlabel">'+esc(g[0])+'</h3><ul class="sl">'+g[1].map(function(k){
+      var u=usesOf(k); if(!u.length) return '<li>'+esc(k)+'</li>';
+      var at=u.map(function(x){return x.at;}), n=u.length;
+      return '<li><button type="button" class="sk" data-go="'+u[0]._go.join(',')+'" title="'+esc('Used at '+listJoin(at))+'" aria-label="'+esc(k+', used at '+listJoin(at)+'. Go to '+at[0]+'.')+'">'+esc(k)+'<span class="n" aria-hidden="true">'+n+(n===1?' place':' places')+'</span></button></li>';
+    }).join('')+'</ul></div>';
+  }).join('');
+}
+/* a project platform shows its screenshot first; Details swaps in what I found and how it was built */
+function setHow(d,on){
+  if(!d) return; var b=d.querySelector('.pj-t'); if(!b) return;
+  var sum=d.querySelector('.pj-sum'), how=d.querySelector('.pj-how'), was=b.textContent!=='Details';
+  sum.classList.toggle('off',on); how.classList.toggle('off',!on);
+  sum.setAttribute('aria-hidden',on?'true':'false'); how.setAttribute('aria-hidden',on?'false':'true');
+  b.textContent=on?'Summary':'Details';
+  fitDisplay(d);
+  if(was!==on) animIn(on?how:sum,0,8,0,260);
+}
+/* the screenshot takes whatever height the text under it leaves (on phone it is cropped from the top), so the summary
+   does not scroll */
+function fitShot(d){
+  var im=d&&d.querySelector('.pj-shot img'); if(!im) return;
+  im.style.maxHeight='';
+  if(!stageLay||d.querySelector('.pj-sum.off')) return;
+  var room=stageLay.dh+8-(d.scrollHeight-im.offsetHeight)-2;
+  im.style.maxHeight=Math.max(isPhone()?96:140,Math.floor(room))+'px';
+}
+
+/* ---------- screenshot overlay ---------- */
+var lbOpen=false, lbReturn=null;
+function openShot(img){
+  lbReturn=document.activeElement; lbOpen=true;
+  var L=$('lb-img'); L.src=img.getAttribute('src'); L.alt=img.alt; L.width=img.width; L.height=img.height;
+  L.setAttribute('width',img.getAttribute('width')); L.setAttribute('height',img.getAttribute('height'));
+  $('lb').setAttribute('aria-label',img.alt); $('lb').hidden=false; animIn($('lb'),0,0,0,200);
+  $('lb-x').focus();
+}
+function closeShot(){
+  if(!lbOpen) return; lbOpen=false; $('lb').hidden=true;
+  var r=lbReturn&&document.contains(lbReturn)?lbReturn:null; if(r) try{r.focus();}catch(e){}
+}
+
+/* ---------- Amazon: 600 applicants, 24 picked, one is me ---------- */
+function buildWaffle(){
+  var cols=40, rows=15, p=14, r=4.3, h='';
+  for(var y=0;y<rows;y++){h+='<g class="row" style="--r:'+y+'">';for(var x=0;x<cols;x++){var n=y*cols+x;h+='<circle cx="'+(x*p+p/2)+'" cy="'+(y*p+p/2)+'" r="'+r+'"'+(n===0?' class="me"':n<24?' class="pk"':'')+'/>';}h+='</g>';}
+  var s=$('waffle'); s.setAttribute('viewBox','0 0 '+(cols*p)+' '+(rows*p)); s.innerHTML=h;
+}
+
+/* ---------- board and displays ---------- */
+/* EASE_SOFT starts gently and settles (things that travel); EASE_OUT for things that only fade away */
+var EASE_SOFT='cubic-bezier(.3,0,.12,1)', EASE_OUT='cubic-bezier(.215,.61,.355,1)';
+function animIn(el,dx,dy,delay,dur){
+  if(reduced||!el||!el.animate) return;
+  el.animate([{opacity:0,transform:'translate('+dx+'px,'+dy+'px)'},{opacity:1,transform:'none'}],{duration:dur||420,delay:delay||0,easing:EASE_SOFT,fill:'backwards'});
+}
+var countRaf=0;
+function countUp(el){
+  cancelAnimationFrame(countRaf); if(!el) return;
+  var full=el.getAttribute('data-full')||el.textContent; el.setAttribute('data-full',full);
+  var m=full.match(/^(\+?)([\d.]+)(.*)$/); if(!m||reduced){el.textContent=full;return;}
+  var target=parseFloat(m[2]), dec=(m[2].split('.')[1]||'').length, t0=performance.now()+200, d=1100;
+  (function f(now){var t=Math.max(0,Math.min(1,(now-t0)/d));var tx=t>=1?full:m[1]+(target*easeOut(t)).toFixed(dec)+m[3]; if(tx!==el.textContent) el.textContent=tx;if(t<1)countRaf=requestAnimationFrame(f);})(performance.now());
+}
+/* desktop scales a tall display down a little; anything still taller scrolls (on phone it always scrolls) */
+function fitDisplay(d){
+  if(!d) return; d.classList.remove('z1','z2'); d.scrollTop=0; fitShot(d);
+  if(!isPhone()){ var dh=(stageLay?stageLay.dh:9999)+8;
+    if(d.scrollHeight>dh+1){d.classList.add('z1'); if(d.scrollHeight*.9>dh+1){d.classList.remove('z1');d.classList.add('z2');}} }
+  updMore(d);
+}
+function updMore(d){ if(d) d.classList.toggle('more',d.scrollHeight-d.clientHeight-d.scrollTop>2); }
+function curDisp(){return document.querySelector('#disp-wrap .disp:not([hidden]):not(.leaving)');}
+function renderBoard(i,p){
+  if(i==null){ i=state.i; p=state.p; }
+  var s=ST[i], n=s.plats.length;
+  var bd=$('board'); bd.className='board'+(s.line==='blue'?' blue':s.line==='ix'?' ix':'');
+  $('b-nm').textContent=s.name; $('b-mr').textContent=s.mr||''; $('b-mr').hidden=!s.mr;
+  $('b-sub').textContent=s.sub||''; $('b-sub').hidden=!s.sub;
+  $('b-stop').innerHTML=(s.n?'Stop '+s.n+' of 9':'Interchange')+'<span class="yr-m">, '+esc(s.years.toLowerCase()==='now'||s.years==='Growing up'?s.years.toLowerCase():s.years)+'</span>';
+  $('b-yrs').textContent=s.years;
+  var prev=i>0?ST[i-1].name:'Map', next=i<LAST?ST[i+1].name:'End of the line';
+  $('w-prev-l').textContent='← '+prev; $('w-prev').setAttribute('aria-label',i>0?'Previous station: '+prev:'Back to the map');
+  $('w-next-l').textContent=i<LAST?next+' →':next; $('w-next').disabled=i===LAST;
+  $('w-next').setAttribute('aria-label',i<LAST?'Next station: '+next:'End of the line');
+  var dts='';
+  for(var k=0;k<n;k++) dts+='<button type="button" class="pd'+(k===p?' on':'')+'" data-plat="'+k+'" aria-label="Platform '+(k+1)+' of '+n+': '+esc(s.plats[k])+'"'+(k===p?' aria-current="true"':'')+'><i></i></button>';
+  $('pdots').innerHTML=dts; $('b-pl').textContent=(p+1)+' of '+n; $('b-plat').hidden=n<2; $('b-plat').classList.toggle('many',n>5); $('b-stop').classList.toggle('many',n>5);
+}
+/* a still copy of what is leaving fades out over the new content, so nothing blinks out between two states */
+function fadeCopy(el,dx){
+  if(reduced||!el||!el.animate||el.hidden) return;
+  var c, st=el.scrollTop, d=curDisp();
+  if(el.id==='stage'){ // only the sign and the display in view, not every hidden display
+    c=el.cloneNode(false); c.appendChild($('board').cloneNode(true));
+    var w=$('disp-wrap').cloneNode(false); if(d){var dc=d.cloneNode(true);w.appendChild(dc);} c.appendChild(w);
+  } else c=el.cloneNode(true);
+  c.removeAttribute('id'); c.removeAttribute('data-ex'); [].forEach.call(c.querySelectorAll('[id]'),function(n){n.removeAttribute('id');});
+  c.setAttribute('aria-hidden','true'); c.setAttribute('inert',''); c.classList.add('leaving');
+  // start from wherever a drag left it (the clone carries the drag's inline styles), so nothing jumps back first
+  var op0=parseFloat(el.style.opacity); if(isNaN(op0)) op0=1; var tr0=el.style.transform||'none';
+  c.style.opacity=''; c.style.transform='';
+  el.parentNode.insertBefore(c,el.nextSibling); c.scrollTop=st; if(dc) dc.scrollTop=d.scrollTop;
+  c.animate([{opacity:op0,transform:tr0},{opacity:0,transform:(tr0==='none'?'':tr0+' ')+'translateX('+dx+'px)'}],{duration:200,easing:EASE_OUT,fill:'forwards'}).onfinish=function(){c.remove();};
+}
+function showDisplay(prev){
+  var s=ST[state.i], key=s.id+'-'+state.p, shown=null;
+  if(prev&&prev.mode==='ride'&&prev.i===state.i&&prev.p!==state.p) fadeCopy(curDisp(),(state.p<prev.p?1:-1)*14);
+  document.querySelectorAll('#disp-wrap .disp:not(.leaving)').forEach(function(d){var on=d.getAttribute('data-ex')===key;d.hidden=!on;d.style.transform='';d.style.opacity='';if(on)shown=d;});
+  var stationChanged=!prev||prev.mode!=='ride'||prev.i!==state.i;
+  if(stationChanged){ animIn($('board'),0,10,prev&&prev.mode==='ride'?220:160); animIn(shown,0,12,prev&&prev.mode==='ride'?320:260); }
+  else animIn(shown,(state.p<prev.p?-1:1)*14,0,0,340);
+  if(shown&&shown.classList.contains('pj')) setHow(shown,false);
+  fitDisplay(shown);
+  var kn=shown&&shown.querySelector('.kn'); if(kn) countUp(kn);
+  if(shown&&shown.classList.contains('waffle')){shown.classList.remove('play');void shown.offsetWidth;shown.classList.add('play');}
+  if(key!=='s2-1') setFind(false);
+  warm(state.i);
+}
+/* when the page is idle, load and decode the images of this station and the next, so a move never waits on a decode */
+var idle=window.requestIdleCallback||function(f){return setTimeout(f,200);};
+function warm(i){
+  idle(function(){
+    var ims=[];
+    [i,i+1].forEach(function(k){ if(ST[k]&&k!==PJ) ims.push.apply(ims,document.querySelectorAll('[data-ex^="'+ST[k].id+'-"] img')); });
+    // project screenshots only once at Projects: this platform's and the next one's
+    if(i===PJ) [state.p,state.p+1].forEach(function(p){ ims.push.apply(ims,document.querySelectorAll('[data-ex="s8-'+p+'"] img')); });
+    ims.forEach(function(im){ if(im.loading==='lazy') im.loading='eager'; if(im.decode) im.decode().catch(function(){}); });
+  });
+}
+
+/* ---------- state ---------- */
+/* #s3 is a station's first platform, #s3/2 its second, and so on */
+function hashFor(st){return st.mode==='map'?'map':ST[st.i].id+(st.p>0?'/'+(st.p+1):'');}
+function setState(next,opts){
+  opts=opts||{};
+  var prev={mode:state.mode,i:state.i,p:state.p};
+  if(prev.mode===next.mode&&prev.i===next.i&&(next.mode==='map'||prev.p===next.p)) return false;
+  state={mode:next.mode,i:next.i,p:next.p||0};
+  if(state.mode==='ride'){visited=true;stopCue();}
+  app.classList.toggle('is-map',state.mode==='map'); app.classList.toggle('is-ride',state.mode==='ride');
+  updateClocks();
+  var moved=prev.mode!==state.mode||prev.i!==state.i;
+  var dur=reduced||opts.instant?0:(moved?(Math.abs(prev.i-state.i)>3?900:800):0);
+  // a phase change during a move lands at 210 ms, when the old sign has faded and the new one has not yet appeared
+  // from home the sign is not shown yet, so the swap can go at once; between stations it waits for the sign's own fade
+  clearTimeout(themeT); if(moved&&dur&&prev.mode==='ride') themeT=setTimeout(function(){applyTheme('move');},210); else applyTheme(moved&&dur?'move':'snap');
+  // station to station with a known layout: the camera starts at once, and the sign is rebuilt after the first frame
+  var lay=state.mode==='ride'?LAYC[layKey(state.i)]:null, defer=!!(lay&&moved&&dur&&prev.mode==='ride');
+  if(state.mode==='ride'){ if(prev.mode==='ride'&&prev.i!==state.i) fadeCopy($('stage'),0); if(defer) $('stage').classList.add('swap'); else renderBoard(); }
+  if(moved){
+    app.classList.remove('draw');
+    var vOld=curView(prev.mode), vNew=curView(state.mode);
+    var tgt;
+    if(state.mode==='ride'){ if(!defer){ lay=planStage(state); LAYC[layKey(state.i)]=lay; applyStage(lay); } tgt=lay.cam; } else tgt=camTarget(vNew,state);
+    clipLabels(V.wide,state.mode==='ride'?tgt:(V.wide.cam||tgt));
+    if(vOld!==vNew){ // phone: cross-fade between the portrait overview and the ride map
+      cancelAnimationFrame(vNew.raf); applyCam(vNew,tgt); placeTrain(vNew,vNew.stLen[state.i]);
+      vNew.g.classList.remove('gone'); vNew.g.classList.add('off'); vNew.g.getBoundingClientRect(); vNew.g.classList.remove('off'); vOld.g.classList.add('off');
+      markStations(vNew);
+    } else moveTo(vNew,tgt,vNew.stLen[state.i],dur,(opts.v0||0)*dur);
+    vNew.base=tgt;
+    if(state.mode==='map') placeWash(vNew,tgt);
+    if(dur) wxHoldFor(dur+60); else wxSetup();
+  }
+  busyUntil=performance.now()+(moved?Math.max(dur,reduced?160:0):(reduced?160:380));
+  markStations(V.wide); if(V.tall) markStations(V.tall); updateStrip();
+  if(defer){ var tok=++paintTok; requestAnimationFrame(function(){ requestAnimationFrame(function(){ if(tok!==paintTok) return; renderBoard(); applyStage(lay); $('stage').classList.remove('swap'); showDisplay(prev); }); }); }
+  else if(state.mode==='ride'){ paintTok++; $('stage').classList.remove('swap'); showDisplay(prev); }
+  announce();
+  // a new station adds a history entry; a platform change within a station only updates the link
+  if(!opts.fromHash){var h=hashFor(state); if(location.hash.slice(1)!==h){ if(opts.replace||!moved) history.replaceState(null,'','#'+h); else location.hash=h; }}
+  return true;
+}
+function announce(){
+  var t;
+  if(state.mode==='map') t='Network map. Ten stations from Pune to Toronto.';
+  else{var s=ST[state.i];t=(s.n?'Stop '+s.n+' of 9, ':'Interchange, ')+s.name+', '+s.years+'.'+(s.plats.length>1?' Platform '+(state.p+1)+' of '+s.plats.length+', '+s.plats[state.p]+'.':'');}
+  $('live').textContent=t;
+}
+function busy(){return performance.now()<busyUntil;}
+/* zone 'st' (a phone swipe on the strip, map band or sign) moves a whole station; otherwise platforms first, then stations */
+function peek(dir,zone){
+  if(state.mode==='map') return dir>0?{mode:'ride',i:visited?state.i:0,p:0}:null;
+  if(zone==='st'){ if(dir>0) return state.i<LAST?{mode:'ride',i:state.i+1,p:0}:null; return state.i>0?{mode:'ride',i:state.i-1,p:0}:{mode:'map',i:0,p:0}; }
+  var n=ST[state.i].plats.length;
+  if(dir>0){ if(state.p<n-1) return {mode:'ride',i:state.i,p:state.p+1}; if(state.i<LAST) return {mode:'ride',i:state.i+1,p:0}; return null; }
+  if(state.p>0) return {mode:'ride',i:state.i,p:state.p-1};
+  if(state.i>0) return {mode:'ride',i:state.i-1,p:ST[state.i-1].plats.length-1};
+  return {mode:'map',i:0,p:0};
+}
+function step(dir,zone,v0){
+  stopCue();
+  if(busy()) return false;
+  var ns=peek(dir,zone); if(!ns) return false;
+  pv.active=false;
+  return setState(ns,{v0:v0});
+}
+function goMap(){ stopCue(); if(state.mode!=='map') setState({mode:'map',i:state.i,p:0}); }
+function goStation(i,p){ stopCue(); if(state.mode==='ride'&&state.i===i&&state.p===(p||0)) return; setState({mode:'ride',i:i,p:p||0}); }
+
+/* ---------- drag-follow preview ---------- */
+var pv={active:false,dir:0,a:0,key:'',B:null};
+function signEls(){return [$('board'),$('disp-wrap')];}
+function preview(dir,a,zone){
+  if(busy()) return;
+  stopCue();
+  var v=curView(), ns=peek(dir,zone); pv.active=true; pv.dir=dir; pv.a=a;
+  var base=v.base||v.cam;
+  if(!ns){ var c=Object.assign({},base); c.fx-=dir*a*40; cancelAnimationFrame(v.raf); applyCam(v,c); return; }
+  if(ns.mode!==state.mode||ns.i!==state.i){
+    // the target camera is planned once per gesture, so dragging does no layout reads
+    var key=state.mode+state.i+'>'+ns.i;
+    if(pv.key!==key){ pv.key=key; pv.B=(curView(ns.mode)===v)?targetFor(v,ns):camTarget(v,{mode:'ride',i:ns.i}); layerOn(v,Math.abs(Math.log(pv.B.s/base.s))<.25); wxPause(); }
+    cancelAnimationFrame(v.raf);
+    applyCam(v,lerpCam(base,pv.B,a)); placeTrain(v,v.stLen[state.i]+(v.stLen[ns.i]-v.stLen[state.i])*a);
+    if(state.mode==='ride'){var op=Math.max(0,1-a*2.4).toFixed(3);signEls().forEach(function(el){el.style.opacity=op;});}
+  } else {
+    var d=curDisp(); if(d){d.style.transform='translateX('+(-dir*a*56).toFixed(2)+'px)';d.style.opacity=(1-a*2).toFixed(3);}
+  }
+}
+/* touchmove and wheel can fire at 120 to 240 Hz: the newest value is kept and applied once per frame */
+var pvRaf=0, pvNext=null, pvTrack=[];
+function queuePreview(dir,a,zone){
+  pvNext=[dir,a,zone]; pvTrack.push([performance.now(),dir*a]); if(pvTrack.length>12) pvTrack.shift();
+  if(!pvRaf) pvRaf=requestAnimationFrame(function(){ pvRaf=0; var n=pvNext; pvNext=null; if(n) preview(n[0],n[1],n[2]); });
+}
+function flushPreview(){ if(pvRaf){ cancelAnimationFrame(pvRaf); pvRaf=0; } var n=pvNext; pvNext=null; if(n) preview(n[0],n[1],n[2]); }
+function resetTrack(){ pvTrack=[]; }
+/* signed speed of the preview, in progress per ms, over the last 80 ms of the gesture */
+function trackSpeed(){
+  var n=pvTrack.length; if(n<2) return 0; var b=pvTrack[n-1], a=b;
+  for(var k=n-2;k>=0&&b[0]-pvTrack[k][0]<=80;k--) a=pvTrack[k];
+  return b[0]>a[0]?(b[1]-a[1])/(b[0]-a[0]):0;
+}
+function cancelPreview(){
+  if(pvRaf){ cancelAnimationFrame(pvRaf); pvRaf=0; } pvNext=null;
+  if(!pv.active) return; pv.active=false;
+  // return with the same curve, carrying the finger's speed back toward rest
+  var v=curView(), back=Math.max(0,-trackSpeed()*pv.dir), dur=reduced?0:340;
+  if(v.base) moveTo(v,v.base,v.stLen[state.i],dur,pv.a>.002?back*dur/pv.a:0);
+  pv.key='';
+  var els=signEls(), d=curDisp(); if(d) els.push(d);
+  els.forEach(function(el){ // ease back from wherever the drag left it
+    var tr=el.style.transform||'none', op=el.style.opacity||'1';
+    if(!reduced&&el.animate&&(tr!=='none'||op!=='1')) el.animate([{transform:tr,opacity:op},{transform:'none',opacity:1}],{duration:280,easing:EASE_SOFT});
+    el.style.transform=''; el.style.opacity='';
+  });
+  wxSetup();
+}
+/* a committed drag goes on at the speed the finger had, instead of stopping and starting again */
+function commitAfterPreview(dir,zone){
+  flushPreview(); pv.key='';
+  var sp=Math.max(0,trackSpeed()*dir), a=pv.active?pv.a:0;
+  var ok=step(dir,zone,a<.98?sp/(1-a):0);
+  if(!ok&&pv.active){ cancelPreview(); return; }
+  var els=signEls(), d=curDisp(); if(d) els.push(d); els.forEach(function(el){el.style.transform='';el.style.opacity='';});
+}
+
+/* ---------- home cue: a ghost gesture drags the map toward Snapper ---------- */
+var cue={stopped:false,timer:0,raf:0,runs:0,running:false}, keyOn=false;
+function ghostMode(){return isPhone()||!window.matchMedia('(hover: hover) and (pointer: fine)').matches;}
+function screenOf(v,mx,my){var c=v.cam;return {x:c.fx+c.s*(mx-c.x),y:c.fy+c.s*(my-c.y)};}
+function placeKeycap(){var v=V.wide,P=v.L.pts[0],Q=v.L.pts[1];if(!v.cam)return;var p=screenOf(v,P[0]+(Q[0]-P[0])*.5,P[1]);$('keycap').style.transform='translate('+(p.x-16).toFixed(1)+'px,'+(p.y+18).toFixed(1)+'px)';}
+function setupCue(){
+  keyOn=!cue.stopped&&!ghostMode()&&state.mode==='map'&&!visited;
+  app.classList.toggle('key-on',keyOn); if(keyOn) placeKeycap();
+}
+function scheduleCue(ms){clearTimeout(cue.timer); if(cue.stopped||reduced) return; cue.timer=setTimeout(runCue,ms);}
+function runCue(){
+  if(cue.stopped) return;
+  if(state.mode!=='map'||visited||pv.active||document.hidden||busy()||qOpen){scheduleCue(4000);return;}
+  var v=curView(), base=v.base||v.cam, L0=v.stLen[0], dL=v.stLen[1]-L0, ghost=ghostMode(), g=$('ghost');
+  var P=v.L.pts[0], ps=screenOf(v,P[0],P[1]);
+  var B=ghost?{x:P[0],y:P[1],s:base.s*1.5,fx:ps.x,fy:ps.y}:targetFor(v,{mode:'ride',i:0,p:0});
+  if(ghost){
+    var Q=v.L.pts[1], qs=screenOf(v,Q[0],Q[1]), lr=0, x0, y0;
+    [0,1].forEach(function(i){[].forEach.call(v.pins[i].querySelectorAll('text'),function(t){lr=Math.max(lr,t.getBoundingClientRect().right);});});
+    if(v.name==='tall'){y0=(ps.y+qs.y)/2;x0=Math.min(innerWidth-30,lr+52+130);}
+    else{y0=ps.y+48;x0=Math.min(innerWidth-30,ps.x+70+130);}
+    g.style.left=x0+'px'; g.style.top=y0+'px';
+  }
+  cue.running=true; cue.runs++; app.classList.add('demo');
+  var t0=performance.now(), D=2200;
+  function cl(x){return Math.max(0,Math.min(1,x));}
+  function eio(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;}
+  function finish(){cue.running=false;app.classList.remove('demo');g.style.opacity='0';$('keycap').classList.remove('down');if(v.base)applyCam(v,v.base);v.dir=1;v.trainLen=v.stLen[state.i];placeTrain(v,v.stLen[state.i]);}
+  cue.finish=finish;
+  (function f(now){
+    if(cue.stopped) return;
+    var t=now-t0, gg;
+    if(t<400) gg=0; else if(t<1400) gg=eio((t-400)/1000); else gg=1-easeOut(cl((t-1400)/800));
+    applyCam(v,lerpCam(base,B,0.35*gg)); placeTrain(v,L0+0.6*dL*gg);
+    if(ghost){
+      var op=t<1400?cl(t/250):1-cl((t-1400)/400), sc=1-0.14*(t<1400?cl((t-250)/150):1-cl((t-1400)/150)), dx=-130*(t<1400?gg:1);
+      g.style.opacity=op.toFixed(3); g.style.transform='translate(-50%,-50%) translateX('+dx.toFixed(1)+'px) scale('+sc.toFixed(3)+')';
+    } else $('keycap').classList.toggle('down',t>380&&t<1400);
+    if(t<D) cue.raf=requestAnimationFrame(f); else {finish();scheduleCue(4000);}
+  })(t0);
+}
+function stopCue(){
+  if(cue.stopped) return; cue.stopped=true; clearTimeout(cue.timer); cancelAnimationFrame(cue.raf);
+  if(cue.running&&cue.finish) cue.finish();
+  keyOn=false; app.classList.add('cue-off'); app.classList.remove('cue-static','key-on');
+}
+
+/* ---------- Find me ---------- */
+function setFind(on){
+  var t=$('team'), b=$('findme'); if(!t) return;
+  t.classList.toggle('find',on); b.setAttribute('aria-pressed',on?'true':'false');
+  b.querySelector('span').textContent=on?'Show everyone':'Find me';
+}
+
+/* ---------- copy email ---------- */
+function copyEmail(){
+  var em=$('em').textContent.trim(), fb=$('cfb');
+  function fail(){
+    try{var r=document.createRange();r.selectNodeContents($('em'));var s=window.getSelection();s.removeAllRanges();s.addRange(r);}catch(e){}
+    fb.textContent='Couldn\'t reach the clipboard. The address is selected, so press Ctrl+C or ⌘C.';
+  }
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(em).then(function(){fb.textContent='Copied '+em+'.';},fail);
+    } else fail();
+  }catch(e){fail();}
+}
+
+/* ---------- query the line: a tiny evaluator over the same data ---------- */
+var TABLES={
+  line:ST.map(function(s,i){return {stop:s.name,year:s.years,result:s.result||null,_year:s.y||0,_go:[i,0]};}),
+  projects:PR.map(function(p,k){return {project:p.t,kind:kindsOf(p),found:p.f||null,year:p.when,_year:p.y,_go:[PJ,k+1]};}),
+  tools:USES
+};
+var QUERIES=[
+  {select:['stop','year','result'],from:'line',where:{col:'result',op:'notnull'},order:{col:'year',dir:'asc'}},
+  {select:['project','kind','found'],from:'projects',order:{col:'year',dir:'desc'}},
+  {select:['tool',{agg:'count',as:'stops'}],from:'tools',group:'tool',order:{col:'stops',dir:'desc'}}
+];
+function sqlOf(q){
+  var cols=q.select.map(function(c){return typeof c==='string'?c:'count(*) AS '+c.as;}).join(', ');
+  return 'SELECT '+cols+' FROM '+q.from+(q.where?' WHERE '+q.where.col+' IS NOT NULL':'')+(q.group?' GROUP BY '+q.group:'')+(q.order?' ORDER BY '+q.order.col+(q.order.dir==='desc'?' DESC':''):'')+';';
+}
+function runQuery(q){
+  var rows=TABLES[q.from].map(function(r,k){var o=Object.assign({},r);o._k=k;return o;});
+  if(q.where&&q.where.op==='notnull') rows=rows.filter(function(r){return r[q.where.col]!=null;});
+  if(q.group){
+    var m={},order=[];
+    rows.forEach(function(r){var g=r[q.group];if(!m[g]){m[g]={_rows:[],_k:order.length,_go:r._go};m[g][q.group]=g;order.push(g);}m[g]._rows.push(r);});
+    rows=order.map(function(g){var o=m[g];q.select.forEach(function(c){if(typeof c!=='string'&&c.agg==='count')o[c.as]=o._rows.length;});return o;});
+  }
+  if(q.order){
+    var col=q.order.col, dir=q.order.dir==='desc'?-1:1;
+    rows.sort(function(a,b){var x=a['_'+col]!=null?a['_'+col]:a[col],y=b['_'+col]!=null?b['_'+col]:b[col];if(x<y)return -dir;if(x>y)return dir;return a._k-b._k;});
+  }
+  var cols=q.select.map(function(c){return typeof c==='string'?c:c.as;});
+  return {cols:cols,rows:rows.map(function(r){var o={_go:r._go};cols.forEach(function(c){o[c]=r[c];});return o;})};
+}
+function hiSql(s){return esc(s).replace(/\b(SELECT|FROM|WHERE|IS NOT NULL|GROUP BY|ORDER BY|DESC|AS|count)\b/g,'<span class="kw">$1</span>');}
+var qOpen=false, qPushed=false, qSel=0, qReturn=null;
+function renderQ(){
+  $('qq').innerHTML=QUERIES.map(function(q,k){return '<li><button type="button" class="qb" data-q="'+k+'" aria-pressed="'+(k===qSel)+'">'+hiSql(sqlOf(q))+'</button></li>';}).join('');
+  var t0=performance.now(), r=runQuery(QUERIES[qSel]), ms=performance.now()-t0, n=r.rows.length;
+  $('qm').innerHTML='<span>'+n+' row'+(n===1?'':'s')+' in '+(ms<0.1?'under 0.1':ms.toFixed(1))+' ms</span><span>Select a row to ride there</span>';
+  var h='<table class="qt"><thead><tr>'+r.cols.map(function(c){return '<th'+(c==='stops'?' class="num"':'')+' scope="col">'+c+'</th>';}).join('')+'</tr></thead><tbody>';
+  r.rows.forEach(function(row){
+    h+='<tr class="go" data-go="'+row._go.join(',')+'">'+r.cols.map(function(c,k){var v=row[c];v=v==null?'':String(v);
+      var cls=c==='stops'?'num':c==='year'?'mono':c==='result'?'res':c==='found'?'found':'';
+      return '<td'+(cls?' class="'+cls+'"':'')+'>'+(k===0?'<button type="button" class="rb">'+esc(v)+'</button>':esc(v))+'</td>';}).join('')+'</tr>';
+  });
+  $('qr').innerHTML=h+'</tbody></table>';
+}
+function openQuery(opts){
+  opts=opts||{};
+  if(!qOpen){ qReturn=document.activeElement; }
+  qOpen=true; stopCue(); renderQ(); $('qp').hidden=false; $('btn-q').setAttribute('aria-expanded','true');
+  if(!opts.fromHash&&location.hash!=='#query'){ history.pushState(null,'','#query'); qPushed=true; }
+  if(!opts.noFocus) $('qp-t').focus();
+  $('live').textContent='Query panel open. Three saved queries.';
+}
+function closeQuery(opts){
+  opts=opts||{}; if(!qOpen) return;
+  qOpen=false; $('qp').hidden=true; $('btn-q').setAttribute('aria-expanded','false');
+  if(!opts.fromHash&&location.hash==='#query'){ if(qPushed&&!opts.keepHistory){ qPushed=false; history.back(); } else { qPushed=false; history.replaceState(null,'','#'+hashFor(state)); } }
+  else qPushed=false;
+  if(!opts.noFocus){ var r=qReturn&&document.contains(qReturn)&&qReturn!==document.body?qReturn:$('btn-q'); try{r.focus();}catch(e){} }
+}
+
+/* ---------- local time, theme and weather ---------- */
+/* each stop belongs to a place; the place gives the clock, the phase of the day and the weather */
+var PLACES={
+  pune:{name:'Pune',tz:'Asia/Kolkata',wx:'pune',lat:18.52,lon:73.86},
+  mumbai:{name:'Mumbai',tz:'Asia/Kolkata',wx:'pune',lat:19.08,lon:72.88},
+  waterloo:{name:'Waterloo',tz:'America/Toronto',wx:'waterloo',lat:43.46,lon:-80.52},
+  toronto:{name:'Toronto',tz:'America/Toronto',wx:'toronto',lat:43.65,lon:-79.38}
+};
+var STOP_PLACE=['pune','pune','pune','pune','pune','mumbai','waterloo','toronto','toronto','toronto'];
+var MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var TF={};
+function localTime(tz,d){
+  var f=TF[tz]||(TF[tz]=new Intl.DateTimeFormat('en-GB',{timeZone:tz,year:'numeric',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZoneName:'shortOffset'})), o={};
+  f.formatToParts(d).forEach(function(p){o[p.type]=p.value;});
+  var h=(+o.hour)%24, om=/GMT([+-]\d+)(?::(\d+))?/.exec(o.timeZoneName||''), off=om?(+om[1])+(om[1].charAt(0)==='-'?-1:1)*(+(om[2]||0))/60:0;
+  var doy=Math.round((Date.UTC(+o.year,+o.month-1,+o.day)-Date.UTC(+o.year,0,1))/864e5)+1;
+  return {h:h+(+o.minute)/60,month:+o.month,doy:doy,off:off,hm:(h<10?'0':'')+h+':'+o.minute};
+}
+/* sunrise and sunset in local clock hours, from latitude, longitude and day of the year (a close approximation) */
+function sunHours(P,doy,off){
+  var dec=23.44*R*Math.sin(2*Math.PI*(284+doy)/365), x=-Math.tan(P.lat*R)*Math.tan(dec), w=Math.acos(Math.max(-1,Math.min(1,x)))/R/15;
+  var B=2*Math.PI*(doy-81)/364, eot=9.87*Math.sin(2*B)-7.53*Math.cos(B)-1.5*Math.sin(B), noon=12+(off*15-P.lon)/15-eot/60;
+  return [noon-w,noon+w];
+}
+/* day, dusk or dawn (about 35 minutes either side of sunrise and sunset), or night */
+function phaseAt(P,t){
+  var s=sunHours(P,t.doy,t.off), b=.6;
+  return t.h<s[0]-b||t.h>s[1]+b?'night':t.h<s[0]+b||t.h>s[1]-b?'dusk':'day';
+}
+/* typical weather for the month, no network. The real site can replace this table with a live report */
+function typicalWeather(wx,month){
+  if(wx==='pune') return month>=6&&month<=9?'rain':'clear';
+  return month===12||month<=3?'snow':month===4||month===5||month===11?'rain':'clear';
+}
+/* the one source of conditions: {phase, weather} for a place now (plus what the clock shows) */
+function conditionsAt(key,d){
+  var P=PLACES[key], t=localTime(P.tz,d||new Date());
+  return {phase:phaseAt(P,t),weather:typicalWeather(P.wx,t.month),time:t.hm,month:t.month};
+}
+/* overrides: the clock button cycles the theme; the test panel and __ride.preview set both */
+var OV={phase:null,weather:null};
+function eff(key){var c=conditionsAt(key); return {phase:OV.phase||c.phase,weather:OV.weather||c.weather,time:c.time,month:c.month,auto:c};}
+function wxWord(key,w){return w==='snow'?'snow':w==='rain'?(PLACES[key].wx==='pune'?'monsoon rain':'light rain'):'clear';}
+var MODE_NAME={'':'Auto',day:'Day',dusk:'Dusk',night:'Night'};
+function nextMode(m){return m===null?'day':m==='day'?'night':null;}
+function setPh(el,p){ if(!el||el._ph===p) return; if(el._ph) el.classList.remove('ph-'+el._ph); el.classList.add('ph-'+p); el._ph=p; }
+/* a phase change is a token swap. 'snap' swaps at once; 'fade' (the page is still: a clock press, the test panel, the minute
+   tick) cross-fades the whole screen as one picture on the compositor; 'move' (during a camera move) swaps under the sign's
+   own fade and cross-fades only the map floor, as an opacity layer. No colour is animated, so nothing restyles per frame.
+   Home is one theme, Toronto's, where he lives; India's time of day shows as the wash */
+var vtOn=false;
+function applyTheme(how){
+  var home=state.mode==='map', root=eff(home?'toronto':STOP_PLACE[state.i]).phase, de=document.documentElement;
+  setWash(home?eff('pune').phase:root,root);
+  if(de._ph===root) return;
+  function swap(){ setPh(de,root); }
+  if(reduced||how==='snap'||!de._ph){ swap(); return; }
+  if(how==='fade'&&document.startViewTransition&&!vtOn){
+    vtOn=true;
+    try{ var t=document.startViewTransition(swap); t.finished.then(done,done); }catch(e){ done(); swap(); }
+    return;
+  }
+  floorFade(); swap();
+  function done(){ vtOn=false; }
+}
+/* the old colours of the floor and the top bar stay on top for a moment and fade out */
+var foldT=0;
+function floorFade(){
+  var a=$('app'); a.classList.add('refold'); clearTimeout(foldT); foldT=setTimeout(function(){a.classList.remove('refold');},600);
+  [$('fold'),$('fold-bar')].forEach(function(o){
+    if(!o.animate) return;
+    o.style.backgroundColor=getComputedStyle(o.id==='fold'?$('app'):o.parentNode).backgroundColor;
+    o.animate([{opacity:1},{opacity:0}],{duration:600,easing:'ease'});
+  });
+}
+/* the wash: shade when it is night in India and day here, light when it is day there and night here, a warm tint at dusk.
+   Changing its colour fades it out first, so only opacity ever animates */
+var washT=0;
+function setWash(there,here){
+  var w=$('wash'), k=there===here?'':there, on=w.classList.contains('on');
+  if(k===(w._k||'')) return;
+  clearTimeout(washT);
+  function put(){ if(k&&w._c!==k){ if(w._c) w.classList.remove('w-'+w._c); w.classList.add('w-'+k); w._c=k; } w.classList.toggle('on',!!k); } // turned off, it keeps its colour while it fades
+  w._k=k;
+  if(on&&k&&!reduced){ w.classList.remove('on'); washT=setTimeout(put,600); } else put();
+}
+function clockText(el,key,board){
+  var e=eff(key), P=PLACES[key], m=OV.phase===null?'':OV.phase, nx=nextMode(OV.phase);
+  // on the sign the place name is left out where it is the station's own name; the weather word can be hidden by width
+  var nm=board&&P.name===ST[state.i].name?'':P.name+' ', w=', '+wxWord(key,e.weather), txt=nm+e.time+w;
+  if(el._t!==txt){ el._t=txt; el.innerHTML=esc(nm+e.time)+'<span class="cw">'+esc(w)+'</span>'; }
+  var lab=P.name+' local time '+e.time+'. '+(OV.weather?'Weather set for testing: '+wxWord(key,e.weather)+'.':'Typical '+MONTHS[e.month-1]+' weather: '+wxWord(key,e.weather)+', not a live report.')+
+    ' Theme: '+MODE_NAME[m]+'. Activate to switch to '+MODE_NAME[nx===null?'':nx]+'.';
+  el.setAttribute('aria-label',lab); el.title=lab;
+}
+function updateClocks(){
+  clockText($('b-clk'),STOP_PLACE[state.i],true); clockText($('clk-in'),'pune'); clockText($('clk-ca'),'toronto');
+  // the sign's sub line never wraps: on a narrow phone the clock drops its weather word (still in its label) when the
+  // line would not fit. Worked out from character counts, so it reads no layout
+  if(isPhone()){ var sub=(ST[state.i].sub||'').length*7, clk=$('b-clk')._t.length*6.9; $('b-clk').parentNode.classList.toggle('tight',sub+12+clk>innerWidth-56); }
+  else $('b-clk').parentNode.classList.remove('tight');
+}
+function refreshTheme(){ applyTheme('fade'); updateClocks(); wxSetup(); syncTest(); }
+var tickT=0;
+function tick(){ refreshTheme(); clearTimeout(tickT); tickT=setTimeout(tick,60000-Date.now()%60000+50); }
+/* home: where India ends and Canada starts on screen, halfway between Mumbai's labels and Waterloo's. The wash runs from
+   the far India edge to a little past it (never less than 45% of the map), and the two places' weather meets there */
+var HOME_MID=0;
+function placeWash(v,c){
+  if(!c) return;
+  var tall=v.name==='tall', u=Math.pow(c.s,-0.7), A=v.L.pts[5], B=v.L.pts[6], ba=v.boxes[5], bb=v.boxes[6], b=v.L.bbox;
+  var m0=tall?A[1]+u*(ba.y+ba.h):A[0]+u*(ba.x+ba.w), m1=tall?B[1]-10*u:B[0]+u*bb.x, mid=(m0+m1)/2; // on the tall map Waterloo's labels sit beside it
+  var sc=function(m){return tall?c.fy+c.s*(m-c.y):c.fx+c.s*(m-c.x);}, e0=sc(tall?b[1]:b[0]), e1=sc(tall?b[3]:b[2]);
+  HOME_MID=sc(mid);
+  var w=$('wash'); w.classList.toggle('tall',tall);
+  w.style[tall?'height':'width']=Math.round(Math.max(HOME_MID+.15*(e1-e0),e0+.5*(e1-e0)))+'px'; w.style[tall?'width':'height']='';
+}
+
+/* weather: one canvas over the map. Thin rain streaks or slow snow, drawn only while a place shown has that weather */
+var WX={raf:0,sys:[],last:0,hold:0,W:0,H:0,dpr:1,key:''};
+function wxRegions(){
+  var W=innerWidth,H=innerHeight,top=barBottom(),out=[],skip=null;
+  if(state.mode==='map'){
+    // each place's weather over its own side, thinning out over a band either side of the middle so there is no cut
+    var tall=isPhone(), sp=HOME_MID||(tall?(top+H)/2:W/2), fw=Math.round((tall?H-top:W)*.16);
+    out.push({key:'pune',r:tall?[0,top,W,sp]:[0,top,sp,H],fade:tall?[0,sp-fw,0,sp]:[sp-fw,0,sp,0]});
+    out.push({key:'toronto',r:tall?[0,sp,W,H]:[sp,top,W,H],fade:tall?[0,sp+fw,0,sp]:[sp+fw,0,sp,0]});
+    if(!isPhone()) skip=$('intro').getBoundingClientRect();
+  } else {
+    var bot=isPhone()?phoneBand()[1]+14:H;
+    out.push({key:STOP_PLACE[state.i],r:[0,isPhone()?top+stripH():top,W,bot]});
+    if(!isPhone()) skip=$('stage').getBoundingClientRect();
+  }
+  out.forEach(function(o){o.w=eff(o.key).weather; o.skip=skip;});
+  return out.filter(function(o){return o.w!=='clear';});
+}
+function wxMake(o){
+  var r=o.r, A=Math.max(0,(r[2]-r[0])*(r[3]-r[1])), n=Math.round(A/(o.w==='rain'?9000:7000)), ps=[];
+  for(var k=0;k<n;k++) ps.push(o.w==='rain'?{x:r[0]+Math.random()*(r[2]-r[0]+60),y:r[1]+Math.random()*(r[3]-r[1]),v:520+Math.random()*220,l:9+Math.random()*7}
+    :{x:r[0]+Math.random()*(r[2]-r[0]),y:r[1]+Math.random()*(r[3]-r[1]),v:18+Math.random()*26,rad:.9+Math.random()*1.4,ph:Math.random()*6.3,w:.4+Math.random()*.8,a:6+Math.random()*10});
+  var de=document.documentElement; o.ps=ps; o.col=getComputedStyle(de).getPropertyValue('--wx').trim()||'#56657f';
+  o.night=de._ph==='night'; o.grad=null; return o;
+}
+function wxStop(){ cancelAnimationFrame(WX.raf); WX.raf=0; }
+function wxSetup(){
+  var cv=$('wx'), ctx=cv.getContext('2d');
+  wxStop();
+  if(!ctx) return;
+  var dpr=Math.min(1.5,window.devicePixelRatio||1), W=innerWidth, H=innerHeight; // thin streaks and soft dots need no more
+  if(WX.W!==W||WX.H!==H||WX.dpr!==dpr){ WX.W=W; WX.H=H; WX.dpr=dpr; cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr); }
+  ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height);
+  if(reduced||document.hidden||WX.hold) return;
+  // only rebuild the particles when something they depend on changed
+  var regs=wxRegions(), key=regs.map(function(o){return o.key+o.w+o.r.map(Math.round).join(',')+document.documentElement._ph;}).join('|');
+  if(key!==WX.key){ WX.key=key; WX.sys=regs.map(wxMake); } else WX.sys.forEach(function(o,k){o.skip=regs[k].skip;});
+  if(!WX.sys.length) return;
+  WX.ctx=ctx; WX.last=WX.next=performance.now(); WX.raf=requestAnimationFrame(wxFrame);
+}
+function wxPause(){ wxStop(); } // keeps the last frame on screen
+/* drawn at most 60 times a second whatever the display's rate (motion is in px per second, so it looks the same); each
+   region is cleared on its own instead of the whole canvas */
+var WX_STEP=1000/60;
+function wxFrame(now){
+  WX.raf=requestAnimationFrame(wxFrame);
+  if(now<WX.next-2) return;
+  WX.next=Math.max(WX.next+WX_STEP,now-WX_STEP);
+  var ctx=WX.ctx, dt=Math.min(.1,(now-WX.last)/1000); WX.last=now;
+  ctx.setTransform(WX.dpr,0,0,WX.dpr,0,0);
+  WX.sys.forEach(function(o){
+    var r=o.r, sk=o.skip; ctx.clearRect(r[0],r[1],r[2]-r[0],r[3]-r[1]); ctx.save(); ctx.beginPath(); ctx.rect(r[0],r[1],r[2]-r[0],r[3]-r[1]);
+    if(sk&&sk.width) ctx.rect(sk.right+12,sk.top-12,-(sk.width+24),sk.height+24); // a hole where the sign or the title is
+    ctx.clip('evenodd'); ctx.beginPath();
+    if(o.w==='rain'){
+      ctx.strokeStyle=o.col; ctx.globalAlpha=o.night?.32:.24; ctx.lineWidth=1;
+      o.ps.forEach(function(p){ p.y+=p.v*dt; p.x-=p.v*dt*.14;
+        if(p.y-p.l>r[3]){ p.y=r[1]-Math.random()*40; p.x=r[0]+Math.random()*(r[2]-r[0]+60); }
+        ctx.moveTo(p.x,p.y); ctx.lineTo(p.x+p.l*.14,p.y-p.l); });
+      ctx.stroke();
+    } else {
+      ctx.fillStyle=o.col; ctx.globalAlpha=o.night?.6:.45;
+      o.ps.forEach(function(p){ p.y+=p.v*dt; p.ph+=p.w*dt;
+        if(p.y-3>r[3]){ p.y=r[1]-3; p.x=r[0]+Math.random()*(r[2]-r[0]); }
+        var x=p.x+Math.sin(p.ph)*p.a; ctx.moveTo(x+p.rad,p.y); ctx.arc(x,p.y,p.rad,0,6.2832); });
+      ctx.fill();
+    }
+    if(o.fade){ // rub out toward the middle: one gradient fill, inside this region's clip only
+      var f=o.fade;
+      if(!o.grad){ o.grad=ctx.createLinearGradient(f[0],f[1],f[2],f[3]); o.grad.addColorStop(0,'rgba(0,0,0,0)'); o.grad.addColorStop(1,'#000'); }
+      ctx.globalCompositeOperation='destination-out'; ctx.globalAlpha=1; ctx.fillStyle=o.grad;
+      ctx.fillRect(Math.min(f[0],f[2]),f[1]===f[3]?r[1]:Math.min(f[1],f[3]),Math.abs(f[2]-f[0])||r[2]-r[0],Math.abs(f[3]-f[1])||r[3]-r[1]);
+      ctx.globalCompositeOperation='source-over';
+    }
+    ctx.restore();
+  });
+}
+/* during a move between stations the weather fades out, so the camera keeps every frame */
+function wxHoldFor(ms){
+  clearTimeout(WX.hold); wxStop(); $('wx').classList.add('hold');
+  WX.hold=setTimeout(function(){ WX.hold=0; $('wx').classList.remove('hold'); wxSetup(); },ms);
+}
+document.addEventListener('visibilitychange',function(){ if(document.hidden) wxStop(); else wxSetup(); });
+
+/* MOCKUP ONLY: the test panel sets the theme and weather everywhere until set back to Auto. Remove before the real site */
+function syncTest(){
+  [].forEach.call(document.querySelectorAll('#tp .tp-r'),function(r){ var k=r.getAttribute('data-k');
+    [].forEach.call(r.querySelectorAll('button'),function(b){ b.setAttribute('aria-pressed',String((OV[k]||'')===b.getAttribute('data-v'))); }); });
+}
+function toggleTest(on){ $('tp').hidden=!on; $('tp-b').setAttribute('aria-expanded',String(on)); }
+
+/* ---------- routing ---------- */
+function route(h,opts){
+  opts=opts||{};
+  if(h==='query'){ openQuery({fromHash:true}); return; }
+  if(qOpen) closeQuery({fromHash:true,noFocus:true});
+  if(h===''||h==='map'||h==='express'){
+    if(h==='express') history.replaceState(null,'','#map');
+    setState({mode:'map',i:state.i,p:0},{fromHash:true,instant:opts.instant}); return;
+  }
+  var m=/^([a-z0-9]+)(?:\/(\d+))?$/.exec(h), i=-1; if(!m) return;
+  ST.forEach(function(s,k){if(s.id===m[1])i=k;}); if(i<0) return;
+  var p=m[2]?Math.max(0,Math.min(ST[i].plats.length-1,+m[2]-1)):0;
+  setState({mode:'ride',i:i,p:p},{fromHash:true,instant:opts.instant});
+  var canon=hashFor(state); if(h!==canon) history.replaceState(null,'','#'+canon);
+}
+window.addEventListener('hashchange',function(){closeShot();route(location.hash.slice(1));});
+
+/* ---------- input ---------- */
+document.addEventListener('click',function(e){
+  if(lbOpen){ if(e.target.closest('#lb')) closeShot(); return; }
+  var qb=e.target.closest('.qb'); if(qb){ qSel=+qb.getAttribute('data-q'); renderQ(); var nb=document.querySelector('.qb[data-q="'+qSel+'"]'); if(nb) nb.focus(); return; }
+  var tr=e.target.closest('tr[data-go]'); if(tr){ var g=tr.getAttribute('data-go').split(',').map(Number); closeQuery({noFocus:true,keepHistory:true}); history.replaceState(null,'','#'+hashFor(state)); goStation(g[0],g[1]); return; }
+  var a=e.target.closest('[data-act]');
+  if(a){
+    var act=a.getAttribute('data-act');
+    if(act==='map'){ closeQuery({noFocus:true}); goMap(); }
+    else if(act==='query'){ if(qOpen) closeQuery(); else openQuery(); }
+    else if(act==='query-close') closeQuery();
+    else if(act==='prev-st'){ if(state.i>0) goStation(state.i-1,0); else goMap(); }
+    else if(act==='next-st'){ if(state.i<LAST) goStation(state.i+1,0); }
+    else if(act==='go-projects') goStation(PJ,0);
+    else if(act==='ride-again') goStation(0,0);
+    return;
+  }
+  var pd=e.target.closest('[data-plat]'); if(pd){ goStation(state.i,+pd.getAttribute('data-plat')); return; }
+  var dp=e.target.closest('.dep'); if(dp){ goStation(PJ,+dp.getAttribute('data-pj')); return; }
+  var sk=e.target.closest('.sk'); if(sk){ var sg=sk.getAttribute('data-go').split(',').map(Number); goStation(sg[0],sg[1]); return; }
+  var ck=e.target.closest('.clk'); if(ck){ OV.phase=nextMode(OV.phase); refreshTheme(); $('live').textContent='Theme: '+MODE_NAME[OV.phase||'']+'.'; return; }
+  // MOCKUP ONLY: test panel (remove with the panel)
+  if(e.target.closest('#tp-b')){ toggleTest($('tp').hidden); return; }
+  var tb=e.target.closest('#tp button[data-v]'); if(tb){ OV[tb.parentNode.getAttribute('data-k')]=tb.getAttribute('data-v')||null; refreshTheme(); return; }
+  if(e.target.closest('#tp')) return;
+  var tg=e.target.closest('.pj-t'); if(tg){ setHow(tg.closest('.pj'),tg.textContent==='Details'); return; }
+  var sh=e.target.closest('.pj-shot'); if(sh){ openShot(sh.querySelector('img')); return; }
+  if(e.target.closest('#copy')){ copyEmail(); return; }
+  if(e.target.closest('#findme')){ setFind(!$('team').classList.contains('find')); return; }
+  if(e.target.closest('#qp')) return;
+  if(e.target.closest('.train')){ if(state.mode==='map') step(1); return; }
+  var g2=e.target.closest('.stn'); if(g2) goStation(+g2.getAttribute('data-i'),0);
+});
+document.addEventListener('keydown',function(e){
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  var k=e.key, tag=(e.target.tagName||'').toLowerCase(), inQ=!!(e.target.closest&&e.target.closest('#qp'));
+  if(lbOpen){ // the overlay keeps every key: Esc closes, Enter or Space press its close button, nothing steps
+    if(k==='Escape'){e.preventDefault();closeShot();} else if(!((k===' '||k==='Enter')&&tag==='button')) e.preventDefault();
+    return;
+  }
+  // MOCKUP ONLY: test panel keys (remove with the panel)
+  if(k==='Escape'&&!$('tp').hidden){ e.preventDefault(); toggleTest(false); $('tp-b').focus(); return; }
+  if(e.target.closest&&e.target.closest('#tp')) return;
+  if(k==='Escape'){ if(qOpen){e.preventDefault();closeQuery();return;} var ae=document.activeElement; if(ae&&ae.closest&&ae.closest('.stations-nav')) ae.blur(); return; }
+  if(k==='q'||k==='Q'){ e.preventDefault(); if(qOpen) closeQuery(); else openQuery(); return; }
+  if(inQ) return;
+  if((k===' '||k==='Enter')&&(tag==='button'||tag==='a')) return;
+  if(k==='ArrowRight'||k==='ArrowDown'||k==='PageDown'||(k===' '&&!e.shiftKey)){e.preventDefault();if(!e.repeat||!busy())step(1);}
+  else if(k==='ArrowLeft'||k==='ArrowUp'||k==='PageUp'||(k===' '&&e.shiftKey)){e.preventDefault();if(!e.repeat||!busy())step(-1);}
+  else if(k==='m'||k==='M'){e.preventDefault();closeQuery({noFocus:true});goMap();}
+});
+
+/* wheel / trackpad: one deliberate gesture = one step. After a step the wheel is locked for W_LOCK ms and then stays locked
+   until it has been quiet for W_QUIET ms, so a spun wheel or a trackpad's inertia tail never runs on to a second step */
+var W_TH=100, W_LOCK=900, W_QUIET=260, wAcc=0, wLast=0, wArmed=true, wLock=0, wT=0;
+function scrollerFor(t,dy){ // a display that can still scroll in this direction
+  var d=t.closest&&t.closest('#disp-wrap .disp'); if(!d||d.scrollHeight<=d.clientHeight+1) return null;
+  return (dy>0?d.scrollTop+d.clientHeight<d.scrollHeight-1:d.scrollTop>0)?d:null;
+}
+app.addEventListener('wheel',function(e){
+  if(lbOpen){ e.preventDefault(); return; }
+  if(e.target.closest&&e.target.closest('#qp,#tp')) return;
+  var d=Math.abs(e.deltaY)>=Math.abs(e.deltaX)?e.deltaY:e.deltaX;
+  if(e.deltaMode===1) d*=40; else if(e.deltaMode===2) d*=800;
+  var now=performance.now(), gap=now-wLast; wLast=now;
+  // text that does not fit scrolls first; the wheel then has to go quiet before it can step
+  if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&scrollerFor(e.target,e.deltaY)){ wArmed=false; wAcc=0; clearTimeout(wT); cancelPreview(); return; }
+  e.preventDefault();
+  if(!wArmed){ if(now>=wLock&&gap>=W_QUIET){ wArmed=true; wAcc=0; } else return; }
+  if(busy()){ wArmed=false; wLock=busyUntil; return; }
+  if(gap>W_QUIET){ wAcc=0; resetTrack(); }
+  stopCue();
+  wAcc+=d; clearTimeout(wT);
+  if(Math.abs(wAcc)>=W_TH){ var dir=wAcc>0?1:-1; wAcc=0; wArmed=false; wLock=now+W_LOCK; commitAfterPreview(dir); }
+  else { if(Math.abs(wAcc)>12) queuePreview(wAcc>0?1:-1,0.25*Math.abs(wAcc)/W_TH); wT=setTimeout(function(){wAcc=0;cancelPreview();},W_QUIET); }
+},{passive:false});
+
+/* touch: horizontal drag previews, release commits or returns */
+/* touch: the first 10px decide the axis. Horizontal previews and steps; vertical is left to the display's own scroll and never steps */
+/* on phone a swipe that starts on the displays moves through platforms; one that starts above them (strip, map, sign) moves a station */
+var t0x=0,t0y=0,tt0=0,tOn=false,tH=false,tV=false,tZone='';
+app.addEventListener('touchstart',function(e){ if(lbOpen||e.touches.length!==1||(e.target.closest&&e.target.closest('#qp,#tp,#tp-b'))){tOn=false;return;} tOn=true;tH=false;tV=false; t0x=e.touches[0].clientX; t0y=e.touches[0].clientY; tt0=performance.now(); resetTrack();
+  tZone=isPhone()&&!(e.target.closest&&e.target.closest('#disp-wrap'))?'st':''; },{passive:true});
+app.addEventListener('touchmove',function(e){
+  if(!tOn||tV) return; var dx=e.touches[0].clientX-t0x, dy=e.touches[0].clientY-t0y;
+  if(!tH&&Math.max(Math.abs(dx),Math.abs(dy))>10){ if(Math.abs(dx)>Math.abs(dy)) tH=true; else { tV=true; return; } }
+  if(tH){ if(e.cancelable) e.preventDefault(); var f=Math.min(1,Math.abs(dx)/(innerWidth*.5)); queuePreview(dx<0?1:-1,0.25*(1-Math.pow(1-f,2)),tZone); }
+},{passive:false});
+app.addEventListener('touchend',function(e){
+  if(!tOn) return; tOn=false;
+  if(tV){ cancelPreview(); return; }
+  var t=e.changedTouches[0], dx=t.clientX-t0x, dy=t.clientY-t0y, dt=performance.now()-tt0, vel=Math.abs(dx)/Math.max(1,dt);
+  if(Math.abs(dx)>Math.abs(dy)*1.3&&(Math.abs(dx)>=56||(Math.abs(dx)>=28&&vel>.6))){ commitAfterPreview(dx<0?1:-1,tZone); }
+  else cancelPreview();
+},{passive:true});
+app.addEventListener('touchcancel',function(){tOn=false;cancelPreview();},{passive:true});
+
+/* the bottom fade on a scrolling display goes once its last line is in view */
+var mRaf=0;
+$('disp-wrap').addEventListener('scroll',function(e){var d=e.target; if(mRaf) return; mRaf=requestAnimationFrame(function(){mRaf=0;updMore(d);});},{capture:true,passive:true});
+
+/* ---------- layout ---------- */
+function relayout(){
+  var phone=isPhone(), vA=curView();
+  V.tall.g.classList.toggle('gone',!phone);
+  [V.wide,V.tall].forEach(function(v){ if(v!==vA) v.g.classList.add('off'); else v.g.classList.remove('off','gone'); });
+  if(!phone) V.tall.g.classList.add('gone');
+  measureView(V.wide);
+  buildStrip();
+  var tgt;
+  LAYC={};
+  // on the smallest phones the overview leaves out the result lines, which the stations show in full, so no label touches another
+  var cpt=phone&&Math.pow(camTarget(V.tall,{mode:'map',i:0}).s,-0.7)>1.6;
+  if(cpt!==!!V.tall.compact){ V.tall.compact=cpt; V.tall.g.classList.toggle('compact',cpt); V.tall.L.lab.forEach(function(sd,i){setSide(V.tall,i,sd);}); measureView(V.tall); }
+  if(state.mode==='ride'){renderBoard();var lay=planStage(state);LAYC[layKey(state.i)]=lay;applyStage(lay);tgt=lay.cam;fitDisplay(curDisp());} else tgt=camTarget(vA,state);
+  cancelAnimationFrame(vA.raf); applyCam(vA,tgt); placeTrain(vA,vA.stLen[state.i]); vA.base=tgt;
+  setupCue();
+  var o=phone?V.wide:V.tall; if(o){var ot=o===V.wide?camTarget(o,{mode:'ride',i:state.i}):camTarget(o,{mode:'map',i:state.i});applyCam(o,ot);placeTrain(o,o.stLen[state.i]);o.base=ot;}
+  clipLabels(V.wide,V.wide.cam);
+  if(state.mode==='map') placeWash(vA,tgt);
+  var ir=$('intro').getBoundingClientRect(), it=getComputedStyle($('intro')).transform, idy=it&&it!=='none'?new DOMMatrix(it).m42:0;
+  $('clk-ca').style.setProperty('--cat',phone?Math.round(ir.top-idy-36)+'px':'auto');
+  updateClocks(); applyTheme('snap'); wxSetup(); warmLayouts();
+}
+var rT=0;
+window.addEventListener('resize',function(){clearTimeout(rT);rT=setTimeout(relayout,60);});
+
+/* ---------- boot ---------- */
+buildProjects(); buildWaffle(); buildSkills();
+buildView('wide'); buildView('tall');
+document.documentElement.classList.add('no-tt'); applyTheme('snap'); updateClocks(); // the first paint takes the phase without a fade
+markStations(V.wide); markStations(V.tall);
+var h0=location.hash.slice(1);
+if(h0==='express'){history.replaceState(null,'','#map');h0='map';}
+if(h0&&h0!=='map'&&h0!=='query'){ route(h0,{instant:true}); }
+relayout();
+if(h0==='query') openQuery({fromHash:true,noFocus:true});
+if(state.mode==='map'){
+  announce();
+  if(reduced){ app.classList.add('cue-static'); }
+  else if(!qOpen){ app.classList.add('draw'); setTimeout(function(){app.classList.remove('draw');},3200); scheduleCue(3700); }
+  setupCue();
+} else stopCue();
+requestAnimationFrame(function(){requestAnimationFrame(function(){document.documentElement.classList.remove('no-tt');});});
+tick();
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ measureView(V.wide); measureView(V.tall); if(!busy()&&!cue.running&&!pv.active) relayout(); });
+window.__ride={marker:function(){var v=curView(),m=getComputedStyle(v.train.querySelector('.tsc')).transform;return {plane:v.planeOp||0,a:+(+v.ta).toFixed(2),flip:v.plane.getAttribute('transform')||'',len:v.trainLen,mum:v.stLen[5],wat:v.stLen[6],ts:m&&m!=='none'?String(+new DOMMatrix(m).a.toFixed(2)):'1'};},get state(){return {mode:state.mode,i:state.i,p:state.p,id:ST[state.i].id};},busy:busy,get cue(){return {runs:cue.runs,stopped:cue.stopped,running:cue.running};},
+  cam:function(){var v=curView();return v.cam?{x:v.cam.x,y:v.cam.y,s:v.cam.s,fx:v.cam.fx,fy:v.cam.fy,train:v.trainLen}:null;},
+  plats:ST.map(function(s){return s.plats.length;}), ids:ST.map(function(s){return s.id;}),
+  query:function(k){return runQuery(QUERIES[k]);},
+  // preview a theme and weather everywhere: preview({phase:'night',weather:'snow'}); preview(null) goes back to the local time and month
+  preview:function(o){ if(!o){OV.phase=null;OV.weather=null;} else { if('phase' in o) OV.phase=o.phase||null; if('weather' in o) OV.weather=o.weather||null; } refreshTheme(); return {phase:OV.phase,weather:OV.weather}; },
+  conditions:function(){var o={};Object.keys(PLACES).forEach(function(k){var e=eff(k);o[k]={phase:e.phase,weather:e.weather,time:e.time};});return o;},
+  get wx(){return {running:!!WX.raf,systems:WX.sys.map(function(o){return o.key+':'+o.w+':'+o.ps.length;})};}, sql:function(k){return sqlOf(QUERIES[k]);}, km:GC_KM, get qOpen(){return qOpen;}};
+})();
+</script>
