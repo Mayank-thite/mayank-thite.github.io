@@ -16,7 +16,7 @@
 }
 /* theme: the look follows the local time of the place. Every colour that changes is a token below, so a phase is a token swap.
    :root carries the active phase. Home takes Toronto's; India's shows only as the soft wash below */
-:root,.ph-day,.ph-dusk{
+:root{
   --paper:#fff;--map:#f6f5f3;--ink:#141416;--muted:#55575e;--rule:#e3e3e0;--res:#2a5491;--red-t:#d7261e;
   --faint:#56585f;--dash:#a3a4a9;--dot:#cfcec9;--press:#d9d9d5;--kw:#7a3b8f;--kb:#55565c;--frame:rgba(20,20,22,.16);
   --gh-bg:rgba(20,20,22,.18);--gh-bd:rgba(20,20,22,.6);--plate:rgba(255,255,255,0);--wx:#56657f;
@@ -39,7 +39,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 #app{position:fixed;inset:0;overflow:hidden;background:var(--map);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.45;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;touch-action:none;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums}
 #app *,#app *::before,#app *::after{box-sizing:border-box}
-#app button{font:inherit;color:inherit;cursor:pointer}
+:where(#app button){font:inherit;color:inherit;cursor:pointer} /* zero specificity: a control's own class wins */
 #app :focus{outline:none}
 #app :focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 /* hover and press feedback: quick, colour only (zero specificity, so a control's own transition still wins) */
@@ -56,18 +56,18 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 /* top bar */
 .bar{position:absolute;z-index:40;left:0;right:0;top:0;height:calc(var(--bar) + var(--st));padding:var(--st) calc(16px + var(--sr)) 0 calc(20px + var(--sl));
   display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--paper);border-bottom:1px solid var(--rule)}
-.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0 4px;height:44px;font-weight:600!important;font-size:15px!important;letter-spacing:-.005em;white-space:nowrap}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0 4px;height:44px;font-weight:600;font-size:15px;letter-spacing:-.005em;white-space:nowrap}
 .brand-mark{display:flex;align-items:center}
 .brand-mark i{display:block;width:12px;height:4px;background:var(--red)}
 .brand-mark i+i{background:var(--blue)}
 .brand-mark b{display:block;width:8px;height:8px;border-radius:50%;border:2px solid var(--ink);background:var(--paper);margin:0 -1px}
 .is-map .brand{visibility:hidden}
 .bar-actions{display:flex;align-items:center;gap:4px}
-.tlink{height:44px;min-width:44px;padding:0 12px;border:0;background:none;display:inline-flex;align-items:center;gap:6px;color:var(--ink);text-decoration:none;font-size:14px!important;font-weight:500!important;white-space:nowrap;border-radius:2px}
+.tlink{height:44px;min-width:44px;padding:0 12px;border:0;background:none;display:inline-flex;align-items:center;gap:6px;color:var(--ink);text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap;border-radius:2px}
 .tlink:hover{background:var(--map)}
 .tlink .ar{font:400 12px/1 var(--mono);color:var(--muted)}
-.tlink kbd{font:400 11px/1 var(--mono);color:var(--muted);border:1px solid var(--rule);padding:2px 4px;border-radius:2px}
-#app .tlink[aria-expanded="true"]{background:var(--ink);color:var(--paper)}
+.tlink kbd,.qx kbd{font:400 11px/1 var(--mono);color:var(--muted);border:1px solid var(--rule);padding:2px 4px;border-radius:2px}
+.tlink[aria-expanded="true"]{background:var(--ink);color:var(--paper)}
 .tlink[aria-expanded="true"] kbd{color:var(--paper);border-color:var(--kb)}
 .tsep{width:1px;height:20px;background:var(--rule);margin:0 6px}
 .is-map #btn-map,.is-map .tsep.ts-map{display:none}
@@ -90,7 +90,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .lm path{fill:none;stroke:var(--ink);stroke-opacity:.4;stroke-width:1.1px;vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round}
 #map .lm-l text{font:400 9.5px var(--mono);fill:var(--muted);letter-spacing:.02em}
 #map .rg text{font:500 11px var(--mono);fill:var(--faint);letter-spacing:.06em}
-#map .arc-l text{font:400 10.5px var(--mono);fill:var(--muted)}
+#map .arc-l text{font:400 10.5px var(--mono);fill:var(--muted);transition:opacity .3s var(--ease)}
 .lm,.lm-l,.rg,.arc-l{transition:opacity .5s var(--ease)}
 .is-ride .lm,.is-ride .lm-l,.is-ride .rg{opacity:.35}
 .stn{cursor:pointer}
@@ -109,12 +109,11 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .stn .nm{font-weight:600;font-size:13.5px;fill:var(--ink);letter-spacing:-.005em}
 .stn.cur .nm{font-weight:700}
 #map .stn .yr{font:400 10.5px var(--mono);fill:var(--muted)}
-#map .stn .res{font:500 10.5px var(--mono);fill:var(--res);transition:opacity .3s var(--ease)}
+#map .stn .res{font:500 10.5px var(--mono);fill:var(--res)}
 .is-ride #map .stn .res{opacity:0}
 #map .view.compact .stn .res{display:none}
 .stn .lbl{transition:opacity .3s var(--ease)}
 .is-ride .stn.clip .lbl,.is-ride .arc-l.clip text{opacity:0}
-#map .arc-l text{transition:opacity .3s var(--ease)}
 .stn:hover .nm{text-decoration:underline;text-decoration-thickness:1px}
 .stn .mk-in{fill:var(--blue-d);pointer-events:none;transition:fill .15s}
 .stn.passed .mk-in{fill:var(--paper)}
@@ -127,7 +126,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .cuefx{position:absolute;z-index:2;left:0;top:0;width:0;height:0;pointer-events:none;transition:opacity .3s var(--ease)}
 .cuefx i{position:absolute;display:block}
 .cuefx .tp{left:calc(var(--tw) / -2);top:calc(var(--th) / -2);width:var(--tw);height:var(--th);border:1.5px solid var(--ink);border-radius:99px;opacity:0}
-.is-map:not(.cue-off):not(.demo) .cuefx .tp{animation:pulse 2s cubic-bezier(.215,.61,.355,1) infinite}
+.is-map:not(.cue-off):not(.demo) .cuefx .tp{animation:pulse 2s var(--ease) infinite}
 .cuefx .cv{left:calc(var(--d) - var(--cw) * .92);top:calc(var(--cw) / -2);width:var(--cw);height:var(--cw);border:solid var(--paper);border-width:var(--cs) var(--cs) 0 0;border-radius:1px;transform:rotate(45deg);opacity:.3;animation:sweep 1.8s linear infinite}
 .cuefx .cv:nth-child(3){animation-delay:.3s}.cuefx .cv:nth-child(4){animation-delay:.6s}
 .cuefx .cv[hidden]{display:none}
@@ -176,6 +175,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .b-sub{margin:8px 0 0;font-size:14.5px;font-weight:500;color:var(--muted);line-height:1.2}
 .b-meta{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:10px;padding-top:4px}
 .b-stop{margin:0;font:500 12px/1 var(--mono);white-space:nowrap}
+.yr-m{display:none}
 .b-plat{display:flex;align-items:center;gap:8px}
 .b-plat[hidden]{display:none}
 .pdots{display:flex}
@@ -184,15 +184,15 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .pd.on i{background:var(--ink)}
 .b-pl{font:400 11.5px/1 var(--mono);color:var(--muted);white-space:nowrap;min-width:5.5em;text-align:right}
 .b-way{display:grid;grid-template-columns:1fr auto 1fr;border-top:1px solid var(--ink);min-height:44px}
-.way{border:0;background:none;padding:0 16px;display:flex;align-items:center;gap:8px;font:500 12.5px/1.2 var(--mono)!important;text-align:left;min-height:44px;min-width:0}
+.way{border:0;background:none;padding:0 16px;display:flex;align-items:center;gap:8px;font:500 12.5px/1.2 var(--mono);text-align:left;min-height:44px;min-width:0}
 .way span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .way:hover:not([disabled]){background:var(--map)}
 .way.next{justify-content:flex-end;text-align:right}
-.way[disabled]{color:var(--muted);cursor:default}
+.way[disabled]{cursor:default}
 .b-yrs{align-self:center;font:500 13px/1 var(--mono);padding:0 12px;color:var(--ink)}
 .disp-wrap{position:relative;margin-top:24px}
 /* a display never clips: past its height it scrolls, with the gesture kept inside it */
-.disp{max-height:calc(var(--dh,320px) + 8px);margin:-4px;padding:4px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:thin}
+.disp{max-height:calc(var(--dh,320px) + 8px);margin:-4px;padding:4px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin}
 .disp[hidden]{display:none}
 .leaving{pointer-events:none}
 .stage.swap{opacity:0;transition:none}
@@ -217,7 +217,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .handled li::before{content:"0" counter(h);font:400 11px/1 var(--mono);color:var(--muted)}
 .ibi{display:flex;flex-direction:column;gap:16px}
 .ibi .launch{margin:0;display:flex;align-items:center;gap:14px;font:500 13px/1.3 var(--mono)}
-.ibi .launch img{display:block;height:40px;width:auto}
+.ibi .launch img{display:block;height:40px;width:auto;background:var(--plate);padding:3px 5px;border-radius:2px;box-sizing:content-box}
 /* team / find me */
 .team{margin:0}
 .team-img{position:relative;line-height:0}
@@ -232,8 +232,8 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .team.find .soft{opacity:.38}
 .team.find .me,.team.find .ring,.team.find .me-l{opacity:1}
 .team figcaption{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;font:400 10.5px/1.2 var(--mono);color:var(--muted)}
-.findme,.ctl{height:36px;padding:0 14px 0 10px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;font:500 12.5px/1 var(--mono)!important;display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none;white-space:nowrap}
-.ctl{padding:0 14px}
+.findme,.ctl{height:36px;padding:0 14px 0 10px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;font:500 12.5px/1 var(--mono);display:inline-flex;align-items:center;gap:8px;text-decoration:none;white-space:nowrap}
+.ctl{padding:0 14px;color:var(--ink)} /* Find me keeps its caption's colour */
 .findme:hover,.ctl:hover{border-color:var(--ink)}
 .findme i{display:block;width:12px;height:12px;border-radius:50%;border:1.5px solid var(--ink)}
 .findme[aria-pressed="true"] i{border-color:var(--red);box-shadow:inset 0 0 0 2px var(--paper),inset 0 0 0 6px var(--red)}
@@ -271,14 +271,13 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 /* figure table */
 .figs{width:100%;max-width:520px;border-collapse:collapse;font:400 14px/1.3 var(--mono)}
 .figs td{padding:10px 0;border-bottom:1px solid var(--rule)}
-.figs tr:first-child td{border-top:1px solid var(--ink)}
+.figs tr:first-child td,.certs tr:first-child td,.contact tr:first-child td{border-top:1px solid var(--ink)}
 .figs td:first-child{font-family:var(--sans);font-size:15.5px;color:var(--ink)}
 .figs td+td{text-align:right;font-weight:500}
 .figs tr.hi td{border-bottom-color:var(--ink)}
 .figs tr.hi td+td{color:var(--red-t);font-size:18px}
 .certs{width:100%;max-width:560px;border-collapse:collapse}
 .certs td{padding:14px 0;border-bottom:1px solid var(--rule);vertical-align:baseline}
-.certs tr:first-child td{border-top:1px solid var(--ink)}
 .certs .cn{font-size:clamp(18px,1.45vw,21px);font-weight:500;line-height:1.25;padding-right:16px}
 .certs .cn span{display:block;font:400 11.5px/1 var(--mono);color:var(--muted);margin-bottom:6px}
 .certs .gp{text-align:right;white-space:nowrap;font:500 22px/1 var(--mono)}
@@ -333,7 +332,6 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 /* contact */
 .contact{width:100%;max-width:600px;border-collapse:collapse}
 .contact td{padding:8px 0;border-bottom:1px solid var(--rule);vertical-align:middle}
-.contact tr:first-child td{border-top:1px solid var(--ink)}
 .contact .k{font:400 12.5px/1 var(--mono);color:var(--muted);width:92px}
 .contact .v{font:500 15px/1.3 var(--mono);word-break:break-all}
 .contact .v a{color:var(--ink)}
@@ -346,14 +344,12 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 /* query panel */
 .qp{position:absolute;z-index:60;right:calc(20px + var(--sr));top:calc(var(--bar) + var(--st) + 12px);width:min(660px,calc(100vw - 40px));max-height:calc(100% - var(--bar) - var(--st) - 24px - var(--sb));overflow:auto;
   background:var(--paper);border:1px solid var(--ink);border-top:9px solid var(--ink);touch-action:pan-y;overscroll-behavior:contain;padding:18px 20px 20px}
-.qp[hidden]{display:none}
 .qh{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .qh h2{margin:0;font-weight:700;font-stretch:80%;font-size:34px;line-height:1;letter-spacing:-.015em}
 .qh p{margin:8px 0 0;font-size:14px;color:var(--muted);max-width:30em}
-.qx{flex:none;height:36px;padding:0 10px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;display:inline-flex;align-items:center;gap:8px;font:500 12.5px/1 var(--mono)!important}
-.qx kbd{font:400 11px/1 var(--mono);color:var(--muted);border:1px solid var(--rule);padding:2px 4px;border-radius:2px}
+.qx{flex:none;height:36px;padding:0 10px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;display:inline-flex;align-items:center;gap:8px;font:500 12.5px/1 var(--mono)}
 .qq{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
-.qb{width:100%;text-align:left;border:1px solid var(--rule);background:var(--paper);padding:10px 12px 10px 14px;font:400 12.5px/1.5 var(--mono)!important;white-space:pre-wrap;border-left:3px solid var(--rule)}
+.qb{width:100%;text-align:left;border:1px solid var(--rule);background:var(--paper);padding:10px 12px 10px 14px;font:400 12.5px/1.5 var(--mono);white-space:pre-wrap;border-left:3px solid var(--rule)}
 .qb:hover{border-color:var(--ink)}
 .qb[aria-pressed="true"]{border-color:var(--ink);border-left-color:var(--red);background:var(--map)}
 .qb .kw{color:var(--kw)}
@@ -367,7 +363,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .qt td.found{color:var(--muted);font-size:13.5px}
 .qt tr.go{cursor:pointer}
 .qt tr.go:hover td{background:var(--map)}
-.qt .rb{border:0;background:none;padding:0;font-weight:600!important;text-align:left;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
+.qt .rb{border:0;background:none;padding:0;font-weight:600;text-align:left;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
 .qt tr.go:hover .rb{text-decoration-color:var(--ink)}
 
 .strip{display:none}
@@ -375,24 +371,21 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .strip .s-ix{fill:var(--pink);stroke:var(--ink)}
 .strip .s-st{fill:var(--paper)}.strip .s-st.red{stroke:var(--red)}.strip .s-st.blue{stroke:var(--blue-d)}
 .strip .s-st.red.past{fill:var(--red)}.strip .s-st.blue.past{fill:var(--blue-d)}
-.strip .s-cur{stroke:var(--ink)}.strip .s-tr{fill:var(--ink)}.strip text{fill:var(--muted)}
-.ibi .launch img{background:var(--plate);padding:3px 5px;border-radius:2px;box-sizing:content-box}
+.strip .s-cur{stroke:var(--ink)}.strip .s-tr{fill:var(--ink)}.strip text{fill:var(--muted);font-family:var(--mono);font-size:9.5px}
 
 /* home: when India's time of day differs from Toronto's, a soft wash of light or shade over the India side of the map,
    strongest at its far edge and gone by the middle. Sized from script; only its opacity ever animates */
-.wash{position:absolute;left:0;top:0;width:55%;height:100%;opacity:0;pointer-events:none;transition:opacity .6s var(--ease)}
-.wash.tall{width:100%;height:55%}
+.wash{position:absolute;left:0;top:0;width:55%;height:100%;opacity:0;pointer-events:none;transition:opacity .6s var(--ease);--wd:to right;
+  background:linear-gradient(var(--wd),rgba(var(--wc),1) 0,rgba(var(--wc),.86) 14%,rgba(var(--wc),.66) 28%,rgba(var(--wc),.45) 42%,rgba(var(--wc),.26) 56%,rgba(var(--wc),.12) 70%,rgba(var(--wc),.04) 84%,rgba(var(--wc),0) 100%)}
+.wash.tall{width:100%;height:55%;--wd:to bottom}
 .wash.w-night{--wc:20,28,51}.wash.w-day{--wc:255,217,160}.wash.w-dusk{--wc:242,164,107}
-.wash{background:linear-gradient(var(--wd,to right),rgba(var(--wc,0,0,0),1) 0,rgba(var(--wc,0,0,0),.86) 14%,rgba(var(--wc,0,0,0),.66) 28%,rgba(var(--wc,0,0,0),.45) 42%,rgba(var(--wc,0,0,0),.26) 56%,rgba(var(--wc,0,0,0),.12) 70%,rgba(var(--wc,0,0,0),.04) 84%,rgba(var(--wc,0,0,0),0) 100%)}
-.wash.tall{--wd:to bottom}
 .is-map .wash.on.w-night{opacity:.13}.is-map .wash.on.w-day{opacity:.09}.is-map .wash.on.w-dusk{opacity:.1}
 .wx{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1;pointer-events:none;transition:opacity .3s var(--ease)}
 .wx.hold{opacity:0}
 
 /* local clocks: one on the sign, one near each end of the line at home. Each is a button that cycles the theme */
-.clk{border:0;background:none;padding:4px 0;margin:-4px 0;font:400 11.5px/1.3 var(--mono)!important;color:var(--muted);white-space:nowrap;text-align:left}
-#app .clk{color:var(--muted)}
-#app .clk:hover{color:var(--ink)}
+.clk{border:0;background:none;padding:4px 0;margin:-4px 0;font:400 11.5px/1.3 var(--mono);color:var(--muted);white-space:nowrap;text-align:left}
+.clk:hover{color:var(--ink)}
 .b-subrow{display:flex;flex-wrap:nowrap;align-items:baseline;column-gap:14px;margin-top:8px;min-width:0}
 .b-subrow .b-sub{margin:0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .b-subrow .clk{flex:none}
@@ -402,16 +395,6 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 #clk-in{left:calc(28px + var(--sl));bottom:calc(14px + var(--sb))}
 #clk-ca{right:calc(28px + var(--sr));bottom:calc(14px + var(--sb))}
 
-/* MOCKUP ONLY: test panel for the owner to try themes and weather. Remove before the real site */
-.tp-b{position:absolute;z-index:45;right:calc(12px + var(--sr));top:calc(var(--bar) + var(--st) + 10px);height:26px;padding:0 8px;border:1px dashed var(--muted);background:var(--paper);border-radius:2px;font:500 11px/1 var(--mono)!important;color:var(--muted)}
-#app .tp-b{color:var(--muted)}
-#app .tp-b[aria-expanded="true"]{color:var(--ink);border-style:solid;border-color:var(--ink)}
-.tp{position:absolute;z-index:45;right:calc(12px + var(--sr));top:calc(var(--bar) + var(--st) + 42px);max-width:calc(100% - 24px - var(--sl) - var(--sr));background:var(--paper);border:1px dashed var(--ink);padding:8px;display:flex;flex-direction:column;gap:6px;touch-action:manipulation}
-.tp[hidden]{display:none}
-.tp-r{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
-.tp-r b{font:500 11px/1 var(--mono);color:var(--muted);width:4.6em}
-.tp-r button{height:32px;padding:0 9px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;font:400 12px/1 var(--mono)!important;color:var(--ink)}
-.tp-r button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
 
 /* Toronto: at a glance */
 .facts .k{width:104px;vertical-align:top;padding-top:9px;white-space:nowrap}
@@ -424,7 +407,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .sg .mlabel{margin:0 0 4px}
 .sl{list-style:none;margin:0 0 0 -13px;padding:0;display:flex;flex-wrap:wrap}
 .sl li{padding:0 12px;border-left:1px solid var(--rule);font-size:15.5px;font-weight:500;line-height:30px;white-space:nowrap}
-.sk{border:0;background:none;padding:0;font-weight:500!important;text-decoration:underline;text-decoration-color:var(--rule);text-decoration-thickness:1px;text-underline-offset:4px}
+.sk{border:0;background:none;padding:0;font-weight:500;text-decoration:underline;text-decoration-color:var(--rule);text-decoration-thickness:1px;text-underline-offset:4px}
 .sk:hover{text-decoration-color:var(--ink)}
 .sk .n{display:inline-block;font:400 11px/1 var(--mono);color:var(--muted);margin-left:6px}
 
@@ -460,14 +443,14 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 @media (max-width:899.98px){
   :root{--strip:34px}
   .bar{padding:var(--st) calc(6px + var(--sr)) 0 calc(10px + var(--sl))}
-  .brand{font-size:14.5px!important;gap:8px}
+  .brand{font-size:14.5px;gap:8px}
   .is-map .brand{visibility:visible}
   #btn-map,.tsep,.gh-top,.tlink .ar,#btn-q kbd{display:none!important}
-  .tlink{padding:0 9px;font-size:14px!important}
+  .tlink{padding:0 9px;font-size:14px}
   .intro{left:0;right:0;top:auto;bottom:0;padding:28px calc(16px + var(--sr)) calc(20px + var(--sb)) calc(16px + var(--sl));background:linear-gradient(transparent,var(--map) 26px)}
   .intro h1{font-size:40px}
-  @media (max-height:700px){ .intro{padding-top:22px;padding-bottom:calc(14px + var(--sb))} .intro h1{font-size:33px} .intro .tag{font-size:15px;line-height:1.32;margin-top:8px} }
   .intro .tag{font-size:16.5px;margin-top:10px}
+  @media (max-height:700px){ .intro{padding-top:22px;padding-bottom:calc(14px + var(--sb))} .intro h1{font-size:33px} .intro .tag{line-height:1.32} }
   .is-ride .intro{transform:translateY(8px)}
   .strip{display:block;position:absolute;z-index:30;left:0;right:0;top:calc(var(--bar) + var(--st));height:var(--strip);padding:3px calc(16px + var(--sr)) 0 calc(16px + var(--sl));
     background:var(--paper);border:0;border-bottom:1px solid var(--rule);transition:opacity .25s}
@@ -489,7 +472,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
   .b-plat.many{gap:4px}
   .b-way{grid-template-columns:1fr 1fr;min-height:42px}
   .b-yrs{display:none}
-  .way{padding:0 12px;font-size:12px!important;min-height:42px}
+  .way{padding:0 12px;font-size:12px;min-height:42px}
   .b-stop .yr-m{display:inline}
   .b-stop.many .yr-m{display:none}
   .disp-wrap{margin-top:12px}
@@ -551,16 +534,11 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
   .sl li{font-size:14.5px;line-height:32px}
   #clk-in{left:calc(16px + var(--sl));top:calc(var(--bar) + var(--st) + 4px);bottom:auto}
   #clk-ca{right:calc(16px + var(--sr));bottom:auto;top:var(--cat,auto)}
-  .tp-b{right:calc(10px + var(--sr))}
-  /* MOCKUP ONLY: in a station the Test button sits at the end of the strip, off the map band */
-  .is-ride .tp-b{top:calc(var(--bar) + var(--st) + 4px);z-index:46}
-  .strip{padding-right:calc(70px + var(--sr))}
-  .is-ride .tp{top:calc(var(--bar) + var(--st) + var(--strip) + 6px)}
   .again{margin-top:12px}
   .seep{margin-top:14px}
   .qp{left:0;right:0;top:calc(var(--bar) + var(--st));bottom:0;width:auto;max-height:none;border-left:0;border-right:0;border-bottom:0;padding:16px calc(16px + var(--sr)) calc(20px + var(--sb)) calc(16px + var(--sl))}
   .qh h2{font-size:30px}
-  .qb{font-size:12px!important}
+  .qb{font-size:12px}
   .qt{font-size:13.5px}
   .qt td.found{font-size:13px}
 }
@@ -572,14 +550,13 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 }
 @media (max-width:379.98px){
   .bar{padding-left:calc(8px + var(--sl));padding-right:calc(2px + var(--sr))}
-  .brand{font-size:14px!important;gap:7px;padding:0 2px}
-  .tlink{padding:0 7px;font-size:13.5px!important}
+  .brand{font-size:14px;gap:7px;padding:0 2px}
+  .tlink{padding:0 7px;font-size:13.5px}
   .b-name{font-size:28px}
   .story p{font-size:15px}
   .big.md{font-size:18.5px}
   .seep{margin-top:10px}
 }
-.yr-m{display:none}
 @media (prefers-reduced-motion:reduce){
   #app *,#app *::before,#app *::after{transition-duration:0s!important;transition-delay:0s!important;animation-duration:0s!important;animation-delay:0s!important}
 }
@@ -614,9 +591,9 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
       <span class="tsep ts-map" aria-hidden="true"></span>
       <button class="tlink" type="button" id="btn-q" data-act="query" aria-expanded="false" aria-controls="qp">Query <kbd>Q</kbd></button>
       <span class="tsep" aria-hidden="true"></span>
-      <a class="tlink" href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener">Resume <span class="ar" aria-hidden="true">↗</span></a>
-      <a class="tlink" href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener">LinkedIn <span class="ar" aria-hidden="true">↗</span></a>
-      <a class="tlink gh-top" href="https://github.com/Mayank-thite" target="_blank" rel="noopener">GitHub <span class="ar" aria-hidden="true">↗</span></a>
+      <a class="tlink" href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener noreferrer">Resume <span class="ar" aria-hidden="true">↗</span></a>
+      <a class="tlink" href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener noreferrer">LinkedIn <span class="ar" aria-hidden="true">↗</span></a>
+      <a class="tlink gh-top" href="https://github.com/Mayank-thite" target="_blank" rel="noopener noreferrer">GitHub <span class="ar" aria-hidden="true">↗</span></a>
     </div>
   </header>
 
@@ -838,10 +815,10 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
       <div class="disp skills" data-ex="s9-3" id="skills" hidden></div>
       <div class="disp d-contact" data-ex="s9-4" hidden>
         <table class="contact"><tbody>
-          <tr><td class="k">Email</td><td class="v" id="em">mayankthite.ca@gmail.com</td><td class="a"><button class="ctl" type="button" id="copy">Copy</button></td></tr>
-          <tr><td class="k">LinkedIn</td><td class="v"><a href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener">/in/mayank-thite</a></td><td class="a"><a class="ctl" href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener" aria-label="Open LinkedIn">Open ↗</a></td></tr>
-          <tr><td class="k">GitHub</td><td class="v"><a href="https://github.com/Mayank-thite" target="_blank" rel="noopener">Mayank-thite</a></td><td class="a"><a class="ctl" href="https://github.com/Mayank-thite" target="_blank" rel="noopener" aria-label="Open GitHub">Open ↗</a></td></tr>
-          <tr><td class="k">Resume</td><td class="v"><a href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener">PDF, one page</a></td><td class="a"><a class="ctl" href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener" aria-label="Open resume PDF">Open ↗</a></td></tr>
+          <tr><td class="k">Email</td><td class="v" id="em"></td><td class="a"><button class="ctl" type="button" id="copy">Copy</button></td></tr>
+          <tr><td class="k">LinkedIn</td><td class="v"><a href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener noreferrer">/in/mayank-thite</a></td><td class="a"><a class="ctl" href="https://www.linkedin.com/in/mayank-thite" target="_blank" rel="noopener noreferrer" aria-label="Open LinkedIn">Open ↗</a></td></tr>
+          <tr><td class="k">GitHub</td><td class="v"><a href="https://github.com/Mayank-thite" target="_blank" rel="noopener noreferrer">Mayank-thite</a></td><td class="a"><a class="ctl" href="https://github.com/Mayank-thite" target="_blank" rel="noopener noreferrer" aria-label="Open GitHub">Open ↗</a></td></tr>
+          <tr><td class="k">Resume</td><td class="v"><a href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener noreferrer">PDF, one page</a></td><td class="a"><a class="ctl" href="https://mayank-thite.github.io/Mayank_Thite_Resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="Open resume PDF">Open ↗</a></td></tr>
         </tbody></table>
         <p class="cfb" id="cfb" role="status" aria-live="polite"></p>
         <div class="again"><button class="ctl" type="button" data-act="ride-again"><i aria-hidden="true"></i>Ride again from Pune</button></div>
@@ -852,13 +829,6 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
   <div class="lb" id="lb" role="dialog" aria-modal="true" hidden>
     <button class="qx lb-x" type="button" id="lb-x" aria-label="Close screenshot">Close <kbd>Esc</kbd></button>
     <img id="lb-img" alt="" decoding="async">
-  </div>
-
-  <!-- MOCKUP ONLY: test panel for trying themes and weather. Remove before the real site -->
-  <button class="tp-b" type="button" id="tp-b" aria-expanded="false" aria-controls="tp">Test</button>
-  <div class="tp" id="tp" role="group" aria-label="Test theme and weather" hidden>
-    <div class="tp-r" data-k="phase"><b>Time</b><button type="button" data-v="">Auto</button><button type="button" data-v="day">Day</button><button type="button" data-v="dusk">Dusk</button><button type="button" data-v="night">Night</button></div>
-    <div class="tp-r" data-k="weather"><b>Weather</b><button type="button" data-v="">Auto</button><button type="button" data-v="clear">Clear</button><button type="button" data-v="rain">Rain</button><button type="button" data-v="snow">Snow</button></div>
   </div>
 
   <section class="qp" id="qp" role="dialog" aria-modal="false" aria-labelledby="qp-t" hidden>
@@ -879,10 +849,10 @@ var app=document.getElementById('app');
 var $=function(id){return document.getElementById(id);};
 var rmq=window.matchMedia('(prefers-reduced-motion: reduce)');
 var reduced=rmq.matches;
-try{rmq.addEventListener("change",function(e){reduced=e.matches;wxSetup();});}catch(e){}
+rmq.addEventListener("change",function(e){reduced=e.matches;wxSetup();});
 
 /* ---------- data: one source for the map, the stations and the query panel ---------- */
-var CATS=[['sd','Software development'],['de','Data engineering'],['an','Analytics'],['ds','Data science'],['ml','Machine learning']];
+var CATS={sd:'Software development',de:'Data engineering',an:'Analytics',ds:'Data science',ml:'Machine learning'};
 var PR=[
  {t:'Recap',when:'2025',y:2025,sh:['sh-recap',1200,750,"Screenshot of the Recap app: one event's shared photo gallery"],c:['sd'],short:"An event photo app. Guests scan a QR code and share one gallery, even offline.",what:"Guests at an event scan a QR code and start shooting, like passing around a disposable camera. The host sets how many shots each guest gets, and every photo lands in one shared gallery with reactions, tags and optional host approval.",how:"React and Vite on the front end, Node.js and Express on the back end, PostgreSQL and private storage on Supabase, Sharp for resizing and Redis for caching. It installs like an app as a PWA.",fix:"Venue signal is patchy, so photos that fail to upload wait on the phone and the service worker sends them later. Photos stay private behind links that expire, and caching those links in Redis keeps most interactions under 100 ms.",stack:['React','Node.js','PostgreSQL','Supabase','Redis','PWA']},
  {t:'Ask Toronto 311',when:'2026',y:2026,sh:['sh-ask-toronto-311',1200,540,"Ask Toronto 311 answering a question: a line chart of pothole and road damage requests by month for 2024 and 2025"],c:['sd','ml'],short:"Ask a question about Toronto's 311 requests in plain English and get the answer from the data.",f:"With short notes about the data's traps, Claude Haiku got 97 of 100 test questions right, for about a cent in total. A free model running on a laptop got 83.",what:"Toronto publishes almost a million 311 requests, but getting answers out of them takes SQL and knowing the data's quirks. This tool lets anyone ask in plain English, and it shows the query behind every answer so it can be checked.",how:"A language model writes one SQL query from the table layout, a page of notes about the data and a few similar solved questions. A checker and a read-only database login make sure it can only read. I tested free Qwen models and Claude on 100 questions with hand-checked answers.",fix:"Most wrong answers ran fine and just returned the wrong number, so letting the model retry on errors fixed nothing. What helped was writing down the data's traps, like dead animals being filed under \"Cadaver\".",stack:['Python','PostgreSQL','LLMs','Claude API','Ollama'],repo:'https://github.com/Mayank-thite/ask-toronto-311',live:'https://mayank-thite.github.io/ask-toronto-311/'},
@@ -891,7 +861,6 @@ var PR=[
  {t:'Retail analytics engine',when:'2024, rebuilt 2026',y:2024,sh:['sh-retail-analytics-engine',1200,750,"Screenshot of the retail analytics page with revenue and stock figures"],c:['de','an'],short:"Two years of wholesale sales turned into demand, customer and stock decisions.",f:"The standard reorder formula set stock too low for 647 of the 828 products that bring in 80% of revenue.",what:"Answers when demand peaks, who the best customers are and how much stock a UK online gift wholesaler should keep.",how:"Spark cleans the raw invoices into tidy tables and logs every rule it applies. SQL and Python do the analysis, and the results feed a Power BI report.",fix:"The textbook reorder formula assumes steady demand, but most of these products sell in bursts, so I used real sales history instead. An early \"holiday effect\" only showed the shop was closed, so I compared whole holiday weeks.",stack:['PySpark','Spark SQL','Pandas','Power BI'],repo:'https://github.com/Mayank-thite/retail-analytics-engine'},
  {t:'Stock sentiment pipeline',when:'2024, rebuilt 2026',y:2024,sh:['sh-stock-sentiment-pipeline',1200,750,"Screenshot of the stock sentiment page and its headline results"],c:['de','ds'],short:"Streams news headlines and checks whether their tone moves share prices.",f:"Good news lines up with a stock's price on the same day, but it doesn't help predict the next day.",what:"Tests whether the tone of the news tells you anything about where a stock is going, across NASDAQ-100 companies and 47,913 company-days.",how:"Headlines stream through Kafka, Spark scores how positive or negative each one is, and SQL in Hive matches them to that day's price change.",fix:"My first numbers treated every stock as independent, but stocks move together on big news days. Accounting for that cut the strength of the result roughly in half.",stack:['Python','Kafka','Spark','HiveQL','statsmodels'],repo:'https://github.com/Mayank-thite/stock-sentiment-pipeline'},
  {t:'Statistics and modeling',when:'2026',y:2026,sh:['sh-statistics-and-modeling',1200,563,"Chart from the statistics and modeling project: test-set cost by call threshold"],c:['ds','ml'],short:"Tests whether a model that picks which bank customers to call beats calling everyone.",f:"The model looked strong in testing, but on later calls it didn't beat simply calling everyone at the costs I assumed.",what:"Uses a bank's public phone-campaign data to check whether a model would actually save the bank effort. It also covers statistical tests and regression on a bike-sharing dataset.",how:"Python notebooks with statsmodels, scikit-learn and LightGBM, backed by a small tested code package.",fix:"Testing on a random mix of calls made the model look good. Training on earlier calls and predicting later ones, the way a bank would use it, showed it was much weaker.",stack:['Python','statsmodels','scikit-learn','LightGBM'],repo:'https://github.com/Mayank-thite/statistics-and-modeling'}];
-function cat(k){for(var i=0;i<CATS.length;i++)if(CATS[i][0]===k)return CATS[i];}
 
 /* stops: y = first year (sort key), result = confirmed figure, tools = tools named in the copy */
 var ST=[
@@ -947,7 +916,6 @@ var LAYOUTS={
   red:'M120 560H310Q330 560 344.1 545.9L415.9 474.1Q430 460 450 460H670Q690 460 704.1 445.9L775.9 374.1Q790 360 810 360H980',
   arc:'M980 360Q1090 160 1200 360',
   blue:'M1200 360H1380Q1400 360 1414.1 374.1L1485.9 445.9Q1500 460 1520 460H1700',
-  track:'M120 560H310Q330 560 344.1 545.9L415.9 474.1Q430 460 450 460H670Q690 460 704.1 445.9L775.9 374.1Q790 360 810 360H980Q1090 160 1200 360H1380Q1400 360 1414.1 374.1L1485.9 445.9Q1500 460 1520 460H1700',
   arcL:[1090,248,'middle'],
   lm:[
    {k:'gate',x:88,y:604,sc:1,label:'Shaniwar Wada',lx:120,ly:666},
@@ -968,7 +936,6 @@ var LAYOUTS={
   red:'M70 60V414',
   arc:'M70 414Q230 374 230 540',
   blue:'M230 540V720',
-  track:'M70 60V414Q230 374 230 540V720',
   arcL:[242,452,'start'],
   // landmarks sit clear of the station labels, which grow as the map shrinks on small phones
   lm:[
@@ -990,23 +957,21 @@ var LAYOUTS={
 var state={mode:'map',i:0,p:0}, visited=false, busyUntil=0, V={}, stageLay=null;
 function isPhone(){return window.innerWidth<900;}
 function curView(mode){return (isPhone()&&(mode||state.mode)==='map')?V.tall:V.wide;}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+var ESC={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return ESC[c];});}
 function easeOut(t){return 1-Math.pow(1-t,3);}
 
 /* ---------- geometry helpers ---------- */
-var R=Math.PI/180, EARTH=6371.0088, STEP=1;
-function haversine(a,b){var p1=a[0]*R,p2=b[0]*R,dp=p2-p1,dl=(b[1]-a[1])*R,h=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);return 2*EARTH*Math.asin(Math.sqrt(h));}
-var BOM=[19.0887,72.8679], YYZ=[43.6777,-79.6248]; // airport coordinates
-var GC_KM=Math.round(haversine(BOM,YYZ)/10)*10;
-var ARC_LABEL='BOM to YYZ, 2023, '+GC_KM.toLocaleString('en-CA')+' km';
+var R=Math.PI/180;
+var ARC_LABEL='BOM to YYZ, 2023, 12,490 km'; // great-circle distance between the two airports, to the nearest 10 km
 /* track lookup table: one point per unit of length, read by the train every frame instead of getPointAtLength */
 function buildLUT(v){
-  var n=Math.ceil(v.total/STEP)+1, X=new Float32Array(n), Y=new Float32Array(n);
-  for(var k=0;k<n;k++){var q=v.track.getPointAtLength(Math.min(v.total,k*STEP));X[k]=q.x;Y[k]=q.y;}
+  var n=Math.ceil(v.total)+1, X=new Float32Array(n), Y=new Float32Array(n);
+  for(var k=0;k<n;k++){var q=v.track.getPointAtLength(Math.min(v.total,k));X[k]=q.x;Y[k]=q.y;}
   v.lx=X; v.ly=Y; v.ln=n;
 }
 function ptAt(v,len,o){
-  var f=Math.max(0,Math.min(v.ln-1,len/STEP)), k=Math.min(v.ln-2,f|0), t=f-k;
+  var f=Math.max(0,Math.min(v.ln-1,len)), k=Math.min(v.ln-2,f|0), t=f-k;
   o[0]=v.lx[k]+(v.lx[k+1]-v.lx[k])*t; o[1]=v.ly[k]+(v.ly[k+1]-v.ly[k])*t; return o;
 }
 var PA=[0,0],PB=[0,0],PC=[0,0];
@@ -1023,7 +988,6 @@ function labPos(side,n,ix){
 function setSide(v,i,side){
   var g=v.pins[i], tx=g._tx.filter(function(t){return !(v.compact&&t.classList.contains('res'));}), lp=labPos(side,tx.length,ST[i].line==='ix');
   tx.forEach(function(t,k){t.setAttribute('x',lp.x);t.setAttribute('y',lp.ys[k]);t.setAttribute('text-anchor',lp.a);});
-  v.side[i]=side;
 }
 
 /* ---------- map views ---------- */
@@ -1032,10 +996,11 @@ function buildView(name){
   var L=v.L=LAYOUTS[name], h='';
   function lmG(list){return '<g class="lm">'+list.map(function(m){return '<path transform="translate('+m.x+' '+m.y+') scale('+m.sc+')" d="'+ART[m.k]+'"/>';}).join('')+'</g>';}
   function lmL(list){return '<g class="lm-l">'+list.map(function(m){return '<g class="pin" style="--x:'+m.lx+';--y:'+m.ly+'"><text text-anchor="middle">'+esc(m.label)+'</text></g>';}).join('')+'</g>';}
-  function rgG(r){return '<g class="rg"><g class="pin" style="--x:'+r[1]+';--y:'+r[2]+'"><text text-anchor="'+r[3]+'">'+r[0]+'</text></g></g>';}
+  function rgG(r){return '<g class="rg"><g class="pin" style="--x:'+r[1]+';--y:'+r[2]+'"><text text-anchor="'+r[3]+'">'+esc(r[0])+'</text></g></g>';}
   h+=lmG(L.lm);
   h+='<path class="ln red" pathLength="1" d="'+L.red+'"/><path class="ln arc" d="'+L.arc+'"/><path class="ln blue" pathLength="1" d="'+L.blue+'"/>';
-  h+='<path class="track" d="'+L.track+'" fill="none" stroke="none"/>';
+  var tail=function(d){return d.replace(/^M[^A-Za-z]*/,'');}; // the arc and the blue line pick up where the one before ends
+  h+='<path class="track" d="'+L.red+tail(L.arc)+tail(L.blue)+'" fill="none" stroke="none"/>';
   var pins='';
   ST.forEach(function(s,i){
     var p=L.pts[i], ix=s.line==='ix';
@@ -1055,12 +1020,12 @@ function buildView(name){
     '<g class="tb"><rect class="body" x="-8.5" y="-3.8" width="17" height="7.6" rx="3.8"/><circle class="lamp" cx="5.4" cy="0" r="1.5"/></g>'+
     '<path class="plane" d="'+PLANE+'"/></g>';
   v.track=v.g.querySelector('.track'); v.tb=v.train.querySelector('.tb'); v.plane=v.train.querySelector('.plane'); v.dir=1; v.arc=v.g.querySelector('.ln.arc'); v.arcG=v.g.querySelector('.arc-l');
-  v.pins=[].slice.call(v.g.querySelectorAll('.stn'));
-  v.pins.forEach(function(g){g._tx=[].slice.call(g.querySelectorAll('text.lbl'));});
-  v.side=[]; L.lab.forEach(function(sd,i){setSide(v,i,sd);});
+  v.pins=Array.from(v.g.querySelectorAll('.stn'));
+  v.pins.forEach(function(g){g._tx=Array.from(g.querySelectorAll('text.lbl'));});
+  L.lab.forEach(function(sd,i){setSide(v,i,sd);});
   v.total=v.track.getTotalLength();
   buildLUT(v);
-  v.stLen=L.pts.map(function(p){var best=0,bd=1e9;for(var k=0;k<v.ln;k++){var dx=v.lx[k]-p[0],dy=v.ly[k]-p[1],d=dx*dx+dy*dy;if(d<bd){bd=d;best=k*STEP;}}return best;});
+  v.stLen=L.pts.map(function(p){var best=0,bd=1e9;for(var k=0;k<v.ln;k++){var dx=v.lx[k]-p[0],dy=v.ly[k]-p[1],d=dx*dx+dy*dy;if(d<bd){bd=d;best=k;}}return best;});
   v.stLen[0]=0; v.stLen[LAST]=v.total;
   v.samples=[]; for(var l=0;l<=v.total;l+=8){ptAt(v,l,PC);v.samples.push([PC[0],PC[1]]);}
   measureView(v);
@@ -1068,7 +1033,7 @@ function buildView(name){
 }
 function measureView(v){
   function u(a,b){if(!a)return b;var x=Math.min(a.x,b.x),y=Math.min(a.y,b.y);return {x:x,y:y,w:Math.max(a.x+a.w,b.x+b.w)-x,h:Math.max(a.y+a.h,b.y+b.h)-y};}
-  v.boxes=v.pins.map(function(g){var b={x:-16,y:-16,w:32,h:32};[].forEach.call(g.querySelectorAll('text:not(.res)'),function(t){var r=t.getBBox();b=u(b,{x:r.x-3,y:r.y-2,w:r.width+6,h:r.height+4});});return b;});
+  v.boxes=v.pins.map(function(g){var b={x:-16,y:-16,w:32,h:32};g.querySelectorAll('text:not(.res)').forEach(function(t){var r=t.getBBox();b=u(b,{x:r.x-3,y:r.y-2,w:r.width+6,h:r.height+4});});return b;});
   var at=v.g.querySelector('.arc-l text').getBBox(); v.arcBox={x:at.x,y:at.y,w:at.width,h:at.height};
 }
 function placeTrain(v,len){
@@ -1105,9 +1070,7 @@ function applyCam(v,c,exact){
   var tx=c.fx-c.s*c.x, ty=c.fy-c.s*c.y, u=Math.pow(c.s,-0.7);
   var tr='translate('+tx.toFixed(3)+'px,'+ty.toFixed(3)+'px) scale('+c.s.toFixed(5)+')';
   if(tr!==v.tr){ v.tr=tr; v.g.style.transform=tr; }
-  // the counter-scale restyles every label and line. It lives on the inner svg, is held during the home cue (which starts
-  // and ends at the same zoom), and while moving is only rewritten when it has drifted by more than 0.4%, which no one can
-  // see; the end of every move writes the exact value
+  // the counter-scale restyles every label and line, so it is held during the cue, rewritten only past 0.4% drift, exact at the end
   if(!cue.running&&(exact?u.toFixed(4)!==v.u:Math.abs(u/(+v.u||1)-1)>.004)){ v.u=u.toFixed(4); v.svg.style.setProperty('--u',v.u); v.arc.style.strokeDasharray=(6*u).toFixed(2)+' '+(5*u).toFixed(2); }
   v.cam=c;
   if(v===V.wide&&keyOn) placeKeycap();
@@ -1120,10 +1083,9 @@ function placeCueFx(v){
   fx.style.transform='translate('+p.x.toFixed(1)+'px,'+p.y.toFixed(1)+'px) rotate('+ang.toFixed(1)+'deg)';
   fx.style.setProperty('--tw',(19*2.4*su).toFixed(1)+'px'); fx.style.setProperty('--th',(9.6*2.4*su).toFixed(1)+'px');
   fx.style.setProperty('--cw',(7.07*su).toFixed(1)+'px'); fx.style.setProperty('--cs',(2.4*su).toFixed(2)+'px');
-  [].forEach.call(fx.querySelectorAll('.cv'),function(el,k){var d=[.32,.5,.68][k]*(v.stLen[1]-v.stLen[0])*c.s; el.style.setProperty('--d',d.toFixed(1)+'px'); el.hidden=d-4*su<nose;});
+  fx.querySelectorAll('.cv').forEach(function(el,k){var d=[.32,.5,.68][k]*(v.stLen[1]-v.stLen[0])*c.s; el.style.setProperty('--d',d.toFixed(1)+'px'); el.hidden=d-4*su<nose;});
 }
-/* while the camera only pans (or barely zooms) the map is a composited layer, so each frame is a transform, not a repaint.
-   It is dropped at rest, so the map re-rasterises sharp at its final zoom */
+/* while the camera pans or barely zooms the map is its own layer (a transform, not a repaint); at rest it re-rasterises sharp */
 function layerOn(v,on){ on=!!on; if(v.layer!==on){ v.layer=on; v.g.style.willChange=on?'transform':''; } }
 function lerpCam(A,B,e){return {x:A.x+(B.x-A.x)*e,y:A.y+(B.y-A.y)*e,s:A.s*Math.pow(B.s/A.s,e),fx:A.fx+(B.fx-A.fx)*e,fy:A.fy+(B.fy-A.fy)*e};}
 /* camera and train curve: a critically damped spring in time, normalised to land exactly at the end. It starts soft (or at
@@ -1150,11 +1112,14 @@ function moveTo(v,target,trainTo,dur,v0){
 /* ---------- camera targets and sign placement ---------- */
 function barBottom(){return document.querySelector('.bar').getBoundingClientRect().bottom;}
 function stripH(){return isPhone()?(parseFloat(getComputedStyle(app).getPropertyValue('--strip'))||44):0;}
+function introBox(){
+  var r=$('intro').getBoundingClientRect(), t=getComputedStyle($('intro')).transform, dy=t&&t!=='none'?new DOMMatrix(t).m42:0;
+  return {top:r.top-dy,bottom:r.bottom-dy};
+}
 function homeRect(){
-  var W=innerWidth,H=innerHeight,bar=barBottom(),ir=$('intro').getBoundingClientRect(), t=getComputedStyle($('intro')).transform, dy=0;
-  if(t&&t!=='none'){dy=new DOMMatrix(t).m42;}
-  if(isPhone()) return {l:14,t:bar+36,r:W-14,b:ir.top-dy-36};
-  return {l:28,t:ir.bottom-dy+16,r:W-28,b:H-50};
+  var W=innerWidth,H=innerHeight,ib=introBox();
+  if(isPhone()) return {l:14,t:barBottom()+36,r:W-14,b:ib.top-36};
+  return {l:28,t:ib.bottom+16,r:W-28,b:H-50};
 }
 function rideScale(){var W=innerWidth,H=innerHeight;return isPhone()?Math.max(.72,Math.min(.95,W/470)):Math.max(.62,Math.min(1.15,Math.min(W/1200,H/1050)));}
 function camTarget(v,st,fyFrac){
@@ -1168,8 +1133,7 @@ function camTarget(v,st,fyFrac){
   if(isPhone()) return phoneCam(v,st.i);
   return {x:p[0],y:p[1],s:rideScale(),fx:W*.22,fy:bar+(fyFrac==null?.5:fyFrac)*(H-bar)};
 }
-/* phone: the map shows in a band under the strip, the sign fills the rest */
-/* the band is as tall as the stop's own labels need (within limits), so it is never half empty and the sign gets the rest */
+/* phone: the map shows in a band under the strip, as tall as the stop's labels need (within limits); the sign fills the rest */
 function phoneSpan(v,i,s){
   var p=v.L.pts[i], b=v.boxes[i], su=Math.pow(s,0.3), top=Math.min(-16*su,su*b.y), bot=Math.max(16*su,su*(b.y+b.h));
   if(i===5||i===6) top=Math.min(top,s*(v.L.arcL[1]-p[1])+su*v.arcBox.y); // keep the flight arc and its label in view
@@ -1260,7 +1224,7 @@ function buildStrip(){
     if(st.line==='ix') o+='<rect class="s-ix" x="'+(x-8)+'" y="'+(y-5)+'" width="16" height="10" rx="5" stroke-width="1.5"/>';
     else o+='<circle class="s-st '+st.line+'" data-s="'+i+'" cx="'+x+'" cy="'+y+'" r="4.5" stroke-width="2.5"/>';});
   o+='<circle class="s-cur" id="strip-cur" cx="'+xs[0]+'" cy="'+y+'" r="8" fill="none" stroke-width="2"/><circle class="s-tr" id="strip-train" cx="'+xs[0]+'" cy="'+y+'" r="3.2"/>';
-  o+='<text x="'+xs[0]+'" y="'+(h-1)+'" font-family="IBM Plex Mono,monospace" font-size="9.5">Pune</text><text x="'+xs[LAST]+'" y="'+(h-1)+'" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="9.5">Toronto</text>';
+  o+='<text x="'+xs[0]+'" y="'+(h-1)+'">Pune</text><text x="'+xs[LAST]+'" y="'+(h-1)+'" text-anchor="end">Toronto</text>';
   s.setAttribute('viewBox','0 0 '+w+' '+h); s.innerHTML=o; s._xs=xs; updateStrip();
 }
 function updateStrip(){
@@ -1270,16 +1234,16 @@ function updateStrip(){
 }
 
 /* ---------- projects: index + one platform each, built from PR ---------- */
-function kindsOf(p){return p.c.map(function(c){return cat(c)[1];}).join(', ');}
+function kindsOf(p){return p.c.map(function(c){return CATS[c];}).join(', ');}
 function buildProjects(){
   var h='<div class="disp pidx" data-ex="s8-0" hidden><ol class="deps">'+PR.map(function(p,k){return '<li><button type="button" class="dep" data-pj="'+(k+1)+'"><span class="dn">'+esc(p.t)+'</span><span class="dk">'+esc(kindsOf(p))+'</span><span class="dy">'+esc(p.when)+'</span><span class="da" aria-hidden="true">→</span></button></li>';}).join('')+'</ol></div>';
   PR.forEach(function(p,k){
-    var links=(p.live?'<a class="ctl" href="'+p.live+'" target="_blank" rel="noopener">Live ↗</a>':'')+(p.repo?'<a class="ctl" href="'+p.repo+'" target="_blank" rel="noopener">GitHub ↗</a>':'<span class="priv">Private repo</span>');
+    var links=(p.live?'<a class="ctl" href="'+esc(p.live)+'" target="_blank" rel="noopener noreferrer">Live ↗</a>':'')+(p.repo?'<a class="ctl" href="'+esc(p.repo)+'" target="_blank" rel="noopener noreferrer">GitHub ↗</a>':'<span class="priv">Private repo</span>');
     var hd='<h3 class="pj-n">'+esc(p.t)+'</h3><p class="pj-m"><span>'+esc(p.when)+'</span><span>'+esc(kindsOf(p))+'</span></p>';
     h+='<div class="disp pj" data-ex="s8-'+(k+1)+'" hidden><div class="pj-b">'+
-      '<div class="pj-sum"><button type="button" class="pj-shot" aria-label="Open the screenshot larger"><img src="img/'+p.sh[0]+'.jpg" alt="'+esc(p.sh[3])+'" width="'+p.sh[1]+'" height="'+p.sh[2]+'" loading="lazy" decoding="async"></button>'+
+      '<div class="pj-sum"><button type="button" class="pj-shot" aria-label="Open the screenshot larger"><img src="img/'+esc(p.sh[0])+'.jpg" alt="'+esc(p.sh[3])+'" width="'+p.sh[1]+'" height="'+p.sh[2]+'" loading="lazy" decoding="async"></button>'+
         '<div class="pj-hd">'+hd+'</div><p class="pj-sh">'+esc(p.short)+'</p></div>'+
-      '<div class="pj-how off" aria-hidden="true"><div class="pj-hd">'+hd+'</div>'+
+      '<div class="pj-how off"><div class="pj-hd">'+hd+'</div>'+
         (p.f?'<div class="pj-fd"><h4>What I found</h4><p class="pj-f">'+esc(p.f)+'</p></div>':'')+
         '<div class="pj-cols"><div><h4>What it\'s for</h4><p>'+esc(p.what)+'</p></div><div><h4>How I built it</h4><p>'+esc(p.how)+'</p></div><div><h4>Problems along the way</h4><p>'+esc(p.fix)+'</p></div></div>'+
         '<p class="pj-st">'+p.stack.map(esc).join(', ')+'</p></div>'+
@@ -1303,13 +1267,11 @@ function setHow(d,on){
   if(!d) return; var b=d.querySelector('.pj-t'); if(!b) return;
   var sum=d.querySelector('.pj-sum'), how=d.querySelector('.pj-how'), was=b.textContent!=='Details';
   sum.classList.toggle('off',on); how.classList.toggle('off',!on);
-  sum.setAttribute('aria-hidden',on?'true':'false'); how.setAttribute('aria-hidden',on?'false':'true');
   b.textContent=on?'Summary':'Details';
   fitDisplay(d);
   if(was!==on) animIn(on?how:sum,0,8,0,260);
 }
-/* the screenshot takes whatever height the text under it leaves (on phone it is cropped from the top), so the summary
-   does not scroll */
+/* the screenshot takes the height the text leaves (cropped from the top on phone), so the summary never scrolls */
 function fitShot(d){
   var im=d&&d.querySelector('.pj-shot img'); if(!im) return;
   im.style.maxHeight='';
@@ -1322,14 +1284,14 @@ function fitShot(d){
 var lbOpen=false, lbReturn=null;
 function openShot(img){
   lbReturn=document.activeElement; lbOpen=true;
-  var L=$('lb-img'); L.src=img.getAttribute('src'); L.alt=img.alt; L.width=img.width; L.height=img.height;
+  var L=$('lb-img'); L.src=img.getAttribute('src'); L.alt=img.alt;
   L.setAttribute('width',img.getAttribute('width')); L.setAttribute('height',img.getAttribute('height'));
   $('lb').setAttribute('aria-label',img.alt); $('lb').hidden=false; animIn($('lb'),0,0,0,200);
   $('lb-x').focus();
 }
 function closeShot(){
   if(!lbOpen) return; lbOpen=false; $('lb').hidden=true;
-  var r=lbReturn&&document.contains(lbReturn)?lbReturn:null; if(r) try{r.focus();}catch(e){}
+  if(lbReturn&&document.contains(lbReturn)) lbReturn.focus();
 }
 
 /* ---------- Amazon: 600 applicants, 24 picked, one is me ---------- */
@@ -1387,7 +1349,7 @@ function fadeCopy(el,dx){
     c=el.cloneNode(false); c.appendChild($('board').cloneNode(true));
     var w=$('disp-wrap').cloneNode(false); if(d){var dc=d.cloneNode(true);w.appendChild(dc);} c.appendChild(w);
   } else c=el.cloneNode(true);
-  c.removeAttribute('id'); c.removeAttribute('data-ex'); [].forEach.call(c.querySelectorAll('[id]'),function(n){n.removeAttribute('id');});
+  c.removeAttribute('id'); c.removeAttribute('data-ex'); c.querySelectorAll('[id]').forEach(function(n){n.removeAttribute('id');});
   c.setAttribute('aria-hidden','true'); c.setAttribute('inert',''); c.classList.add('leaving');
   // start from wherever a drag left it (the clone carries the drag's inline styles), so nothing jumps back first
   var op0=parseFloat(el.style.opacity); if(isNaN(op0)) op0=1; var tr0=el.style.transform||'none';
@@ -1403,6 +1365,7 @@ function showDisplay(prev){
   if(stationChanged){ animIn($('board'),0,10,prev&&prev.mode==='ride'?220:160); animIn(shown,0,12,prev&&prev.mode==='ride'?320:260); }
   else animIn(shown,(state.p<prev.p?-1:1)*14,0,0,340);
   if(shown&&shown.classList.contains('pj')) setHow(shown,false);
+  if(key==='s9-4'&&!$('em').textContent) $('em').textContent=email();
   fitDisplay(shown);
   var kn=shown&&shown.querySelector('.kn'); if(kn) countUp(kn);
   if(shown&&shown.classList.contains('waffle')){shown.classList.remove('play');void shown.offsetWidth;shown.classList.add('play');}
@@ -1421,7 +1384,7 @@ function warm(i){
   });
 }
 
-/* ---------- state ---------- */
+/* ---------- moving between states ---------- */
 /* #s3 is a station's first platform, #s3/2 its second, and so on */
 function hashFor(st){return st.mode==='map'?'map':ST[st.i].id+(st.p>0?'/'+(st.p+1):'');}
 function setState(next,opts){
@@ -1434,8 +1397,7 @@ function setState(next,opts){
   updateClocks();
   var moved=prev.mode!==state.mode||prev.i!==state.i;
   var dur=reduced||opts.instant?0:(moved?(Math.abs(prev.i-state.i)>3?900:800):0);
-  // a phase change during a move lands at 210 ms, when the old sign has faded and the new one has not yet appeared
-  // from home the sign is not shown yet, so the swap can go at once; between stations it waits for the sign's own fade
+  // a phase change between stations lands at 210 ms, between the old sign's fade and the new one's; from home, at once
   clearTimeout(themeT); if(moved&&dur&&prev.mode==='ride') themeT=setTimeout(function(){applyTheme('move');},210); else applyTheme(moved&&dur?'move':'snap');
   // station to station with a known layout: the camera starts at once, and the sign is rebuilt after the first frame
   var lay=state.mode==='ride'?LAYC[layKey(state.i)]:null, defer=!!(lay&&moved&&dur&&prev.mode==='ride');
@@ -1503,7 +1465,7 @@ function preview(dir,a,zone){
   if(ns.mode!==state.mode||ns.i!==state.i){
     // the target camera is planned once per gesture, so dragging does no layout reads
     var key=state.mode+state.i+'>'+ns.i;
-    if(pv.key!==key){ pv.key=key; pv.B=(curView(ns.mode)===v)?targetFor(v,ns):camTarget(v,{mode:'ride',i:ns.i}); layerOn(v,Math.abs(Math.log(pv.B.s/base.s))<.25); wxPause(); }
+    if(pv.key!==key){ pv.key=key; pv.B=(curView(ns.mode)===v)?targetFor(v,ns):camTarget(v,{mode:'ride',i:ns.i}); layerOn(v,Math.abs(Math.log(pv.B.s/base.s))<.25); wxStop(); } // the weather keeps its last frame
     cancelAnimationFrame(v.raf);
     applyCam(v,lerpCam(base,pv.B,a)); placeTrain(v,v.stLen[state.i]+(v.stLen[ns.i]-v.stLen[state.i])*a);
     if(state.mode==='ride'){var op=Math.max(0,1-a*2.4).toFixed(3);signEls().forEach(function(el){el.style.opacity=op;});}
@@ -1567,7 +1529,7 @@ function runCue(){
   var B=ghost?{x:P[0],y:P[1],s:base.s*1.5,fx:ps.x,fy:ps.y}:targetFor(v,{mode:'ride',i:0,p:0});
   if(ghost){
     var Q=v.L.pts[1], qs=screenOf(v,Q[0],Q[1]), lr=0, x0, y0;
-    [0,1].forEach(function(i){[].forEach.call(v.pins[i].querySelectorAll('text'),function(t){lr=Math.max(lr,t.getBoundingClientRect().right);});});
+    [0,1].forEach(function(i){v.pins[i].querySelectorAll('text').forEach(function(t){lr=Math.max(lr,t.getBoundingClientRect().right);});});
     if(v.name==='tall'){y0=(ps.y+qs.y)/2;x0=Math.min(innerWidth-30,lr+52+130);}
     else{y0=ps.y+48;x0=Math.min(innerWidth-30,ps.x+70+130);}
     g.style.left=x0+'px'; g.style.top=y0+'px';
@@ -1603,18 +1565,17 @@ function setFind(on){
   b.querySelector('span').textContent=on?'Show everyone':'Find me';
 }
 
-/* ---------- copy email ---------- */
+/* ---------- email: kept in parts so the address is never whole in the page source; written when Contact is shown ---------- */
+var EMAIL_PARTS=['mayankthite.ca','gmail','com'];
+function email(){return EMAIL_PARTS[0]+'@'+EMAIL_PARTS[1]+'.'+EMAIL_PARTS[2];}
 function copyEmail(){
-  var em=$('em').textContent.trim(), fb=$('cfb');
+  var em=email(), fb=$('cfb');
   function fail(){
     try{var r=document.createRange();r.selectNodeContents($('em'));var s=window.getSelection();s.removeAllRanges();s.addRange(r);}catch(e){}
     fb.textContent='Couldn\'t reach the clipboard. The address is selected, so press Ctrl+C or ⌘C.';
   }
-  try{
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(em).then(function(){fb.textContent='Copied '+em+'.';},fail);
-    } else fail();
-  }catch(e){fail();}
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(em).then(function(){fb.textContent='Copied '+em+'.';},fail);
+  else fail();
 }
 
 /* ---------- query the line: a tiny evaluator over the same data ---------- */
@@ -1653,7 +1614,7 @@ function renderQ(){
   $('qq').innerHTML=QUERIES.map(function(q,k){return '<li><button type="button" class="qb" data-q="'+k+'" aria-pressed="'+(k===qSel)+'">'+hiSql(sqlOf(q))+'</button></li>';}).join('');
   var t0=performance.now(), r=runQuery(QUERIES[qSel]), ms=performance.now()-t0, n=r.rows.length;
   $('qm').innerHTML='<span>'+n+' row'+(n===1?'':'s')+' in '+(ms<0.1?'under 0.1':ms.toFixed(1))+' ms</span><span>Select a row to ride there</span>';
-  var h='<table class="qt"><thead><tr>'+r.cols.map(function(c){return '<th'+(c==='stops'?' class="num"':'')+' scope="col">'+c+'</th>';}).join('')+'</tr></thead><tbody>';
+  var h='<table class="qt"><thead><tr>'+r.cols.map(function(c){return '<th'+(c==='stops'?' class="num"':'')+' scope="col">'+esc(c)+'</th>';}).join('')+'</tr></thead><tbody>';
   r.rows.forEach(function(row){
     h+='<tr class="go" data-go="'+row._go.join(',')+'">'+r.cols.map(function(c,k){var v=row[c];v=v==null?'':String(v);
       var cls=c==='stops'?'num':c==='year'?'mono':c==='result'?'res':c==='found'?'found':'';
@@ -1674,7 +1635,7 @@ function closeQuery(opts){
   qOpen=false; $('qp').hidden=true; $('btn-q').setAttribute('aria-expanded','false');
   if(!opts.fromHash&&location.hash==='#query'){ if(qPushed&&!opts.keepHistory){ qPushed=false; history.back(); } else { qPushed=false; history.replaceState(null,'','#'+hashFor(state)); } }
   else qPushed=false;
-  if(!opts.noFocus){ var r=qReturn&&document.contains(qReturn)&&qReturn!==document.body?qReturn:$('btn-q'); try{r.focus();}catch(e){} }
+  if(!opts.noFocus) (qReturn&&document.contains(qReturn)&&qReturn!==document.body?qReturn:$('btn-q')).focus();
 }
 
 /* ---------- local time, theme and weather ---------- */
@@ -1712,27 +1673,24 @@ function typicalWeather(wx,month){
   return month===12||month<=3?'snow':month===4||month===5||month===11?'rain':'clear';
 }
 /* the one source of conditions: {phase, weather} for a place now (plus what the clock shows) */
-function conditionsAt(key,d){
-  var P=PLACES[key], t=localTime(P.tz,d||new Date());
+function conditionsAt(key){
+  var P=PLACES[key], t=localTime(P.tz,new Date());
   return {phase:phaseAt(P,t),weather:typicalWeather(P.wx,t.month),time:t.hm,month:t.month};
 }
 /* overrides: the clock button cycles the theme; the test panel and __ride.preview set both */
 var OV={phase:null,weather:null};
-function eff(key){var c=conditionsAt(key); return {phase:OV.phase||c.phase,weather:OV.weather||c.weather,time:c.time,month:c.month,auto:c};}
+function eff(key){var c=conditionsAt(key); return {phase:OV.phase||c.phase,weather:OV.weather||c.weather,time:c.time,month:c.month};}
 function wxWord(key,w){return w==='snow'?'snow':w==='rain'?(PLACES[key].wx==='pune'?'monsoon rain':'light rain'):'clear';}
 var MODE_NAME={'':'Auto',day:'Day',dusk:'Dusk',night:'Night'};
 function nextMode(m){return m===null?'day':m==='day'?'night':null;}
-function setPh(el,p){ if(!el||el._ph===p) return; if(el._ph) el.classList.remove('ph-'+el._ph); el.classList.add('ph-'+p); el._ph=p; }
-/* a phase change is a token swap. 'snap' swaps at once; 'fade' (the page is still: a clock press, the test panel, the minute
-   tick) cross-fades the whole screen as one picture on the compositor; 'move' (during a camera move) swaps under the sign's
-   own fade and cross-fades only the map floor, as an opacity layer. No colour is animated, so nothing restyles per frame.
-   Home is one theme, Toronto's, where he lives; India's time of day shows as the wash */
+/* a phase change is a token swap, never an animated colour. 'snap': at once. 'fade' (page at rest): a view transition of the
+   whole screen. 'move' (during a camera move): the old floor and bar colours fade out on top. Home takes Toronto's phase */
 var vtOn=false;
 function applyTheme(how){
   var home=state.mode==='map', root=eff(home?'toronto':STOP_PLACE[state.i]).phase, de=document.documentElement;
   setWash(home?eff('pune').phase:root,root);
   if(de._ph===root) return;
-  function swap(){ setPh(de,root); }
+  function swap(){ if(de._ph) de.classList.remove('ph-'+de._ph); de.classList.add('ph-'+root); de._ph=root; }
   if(reduced||how==='snap'||!de._ph){ swap(); return; }
   if(how==='fade'&&document.startViewTransition&&!vtOn){
     vtOn=true;
@@ -1752,8 +1710,7 @@ function floorFade(){
     o.animate([{opacity:1},{opacity:0}],{duration:600,easing:'ease'});
   });
 }
-/* the wash: shade when it is night in India and day here, light when it is day there and night here, a warm tint at dusk.
-   Changing its colour fades it out first, so only opacity ever animates */
+/* the wash: shade, light or a dusk tint for India's phase; a colour change fades it out first, so only opacity animates */
 var washT=0;
 function setWash(there,here){
   var w=$('wash'), k=there===here?'':there, on=w.classList.contains('on');
@@ -1774,16 +1731,15 @@ function clockText(el,key,board){
 }
 function updateClocks(){
   clockText($('b-clk'),STOP_PLACE[state.i],true); clockText($('clk-in'),'pune'); clockText($('clk-ca'),'toronto');
-  // the sign's sub line never wraps: on a narrow phone the clock drops its weather word (still in its label) when the
-  // line would not fit. Worked out from character counts, so it reads no layout
+  // the sign's sub line never wraps: on a narrow phone the clock drops its weather word (kept in its label), by character count
   if(isPhone()){ var sub=(ST[state.i].sub||'').length*7, clk=$('b-clk')._t.length*6.9; $('b-clk').parentNode.classList.toggle('tight',sub+12+clk>innerWidth-56); }
   else $('b-clk').parentNode.classList.remove('tight');
 }
-function refreshTheme(){ applyTheme('fade'); updateClocks(); wxSetup(); syncTest(); }
+function refreshTheme(){ applyTheme('fade'); updateClocks(); wxSetup(); }
 var tickT=0;
 function tick(){ refreshTheme(); clearTimeout(tickT); tickT=setTimeout(tick,60000-Date.now()%60000+50); }
-/* home: where India ends and Canada starts on screen, halfway between Mumbai's labels and Waterloo's. The wash runs from
-   the far India edge to a little past it (never less than 45% of the map), and the two places' weather meets there */
+/* home: India ends halfway between Mumbai's labels and Waterloo's. The wash runs a little past that (at least half the map)
+   and the two places' weather meets there */
 var HOME_MID=0;
 function placeWash(v,c){
   if(!c) return;
@@ -1835,9 +1791,7 @@ function wxSetup(){
   if(!WX.sys.length) return;
   WX.ctx=ctx; WX.last=WX.next=performance.now(); WX.raf=requestAnimationFrame(wxFrame);
 }
-function wxPause(){ wxStop(); } // keeps the last frame on screen
-/* drawn at most 60 times a second whatever the display's rate (motion is in px per second, so it looks the same); each
-   region is cleared on its own instead of the whole canvas */
+/* at most 60 draws a second at any refresh rate (motion is in px per second); each region clears only itself */
 var WX_STEP=1000/60;
 function wxFrame(now){
   WX.raf=requestAnimationFrame(wxFrame);
@@ -1879,12 +1833,6 @@ function wxHoldFor(ms){
 }
 document.addEventListener('visibilitychange',function(){ if(document.hidden) wxStop(); else wxSetup(); });
 
-/* MOCKUP ONLY: the test panel sets the theme and weather everywhere until set back to Auto. Remove before the real site */
-function syncTest(){
-  [].forEach.call(document.querySelectorAll('#tp .tp-r'),function(r){ var k=r.getAttribute('data-k');
-    [].forEach.call(r.querySelectorAll('button'),function(b){ b.setAttribute('aria-pressed',String((OV[k]||'')===b.getAttribute('data-v'))); }); });
-}
-function toggleTest(on){ $('tp').hidden=!on; $('tp-b').setAttribute('aria-expanded',String(on)); }
 
 /* ---------- routing ---------- */
 function route(h,opts){
@@ -1895,8 +1843,8 @@ function route(h,opts){
     if(h==='express') history.replaceState(null,'','#map');
     setState({mode:'map',i:state.i,p:0},{fromHash:true,instant:opts.instant}); return;
   }
-  var m=/^([a-z0-9]+)(?:\/(\d+))?$/.exec(h), i=-1; if(!m) return;
-  ST.forEach(function(s,k){if(s.id===m[1])i=k;}); if(i<0) return;
+  var m=/^([a-z0-9]+)(?:\/(\d+))?$/.exec(h); if(!m) return;
+  var i=ST.findIndex(function(s){return s.id===m[1];}); if(i<0) return;
   var p=m[2]?Math.max(0,Math.min(ST[i].plats.length-1,+m[2]-1)):0;
   setState({mode:'ride',i:i,p:p},{fromHash:true,instant:opts.instant});
   var canon=hashFor(state); if(h!==canon) history.replaceState(null,'','#'+canon);
@@ -1924,10 +1872,6 @@ document.addEventListener('click',function(e){
   var dp=e.target.closest('.dep'); if(dp){ goStation(PJ,+dp.getAttribute('data-pj')); return; }
   var sk=e.target.closest('.sk'); if(sk){ var sg=sk.getAttribute('data-go').split(',').map(Number); goStation(sg[0],sg[1]); return; }
   var ck=e.target.closest('.clk'); if(ck){ OV.phase=nextMode(OV.phase); refreshTheme(); $('live').textContent='Theme: '+MODE_NAME[OV.phase||'']+'.'; return; }
-  // MOCKUP ONLY: test panel (remove with the panel)
-  if(e.target.closest('#tp-b')){ toggleTest($('tp').hidden); return; }
-  var tb=e.target.closest('#tp button[data-v]'); if(tb){ OV[tb.parentNode.getAttribute('data-k')]=tb.getAttribute('data-v')||null; refreshTheme(); return; }
-  if(e.target.closest('#tp')) return;
   var tg=e.target.closest('.pj-t'); if(tg){ setHow(tg.closest('.pj'),tg.textContent==='Details'); return; }
   var sh=e.target.closest('.pj-shot'); if(sh){ openShot(sh.querySelector('img')); return; }
   if(e.target.closest('#copy')){ copyEmail(); return; }
@@ -1943,9 +1887,6 @@ document.addEventListener('keydown',function(e){
     if(k==='Escape'){e.preventDefault();closeShot();} else if(!((k===' '||k==='Enter')&&tag==='button')) e.preventDefault();
     return;
   }
-  // MOCKUP ONLY: test panel keys (remove with the panel)
-  if(k==='Escape'&&!$('tp').hidden){ e.preventDefault(); toggleTest(false); $('tp-b').focus(); return; }
-  if(e.target.closest&&e.target.closest('#tp')) return;
   if(k==='Escape'){ if(qOpen){e.preventDefault();closeQuery();return;} var ae=document.activeElement; if(ae&&ae.closest&&ae.closest('.stations-nav')) ae.blur(); return; }
   if(k==='q'||k==='Q'){ e.preventDefault(); if(qOpen) closeQuery(); else openQuery(); return; }
   if(inQ) return;
@@ -1964,7 +1905,7 @@ function scrollerFor(t,dy){ // a display that can still scroll in this direction
 }
 app.addEventListener('wheel',function(e){
   if(lbOpen){ e.preventDefault(); return; }
-  if(e.target.closest&&e.target.closest('#qp,#tp')) return;
+  if(e.target.closest&&e.target.closest('#qp')) return;
   var d=Math.abs(e.deltaY)>=Math.abs(e.deltaX)?e.deltaY:e.deltaX;
   if(e.deltaMode===1) d*=40; else if(e.deltaMode===2) d*=800;
   var now=performance.now(), gap=now-wLast; wLast=now;
@@ -1980,11 +1921,10 @@ app.addEventListener('wheel',function(e){
   else { if(Math.abs(wAcc)>12) queuePreview(wAcc>0?1:-1,0.25*Math.abs(wAcc)/W_TH); wT=setTimeout(function(){wAcc=0;cancelPreview();},W_QUIET); }
 },{passive:false});
 
-/* touch: horizontal drag previews, release commits or returns */
-/* touch: the first 10px decide the axis. Horizontal previews and steps; vertical is left to the display's own scroll and never steps */
-/* on phone a swipe that starts on the displays moves through platforms; one that starts above them (strip, map, sign) moves a station */
+/* touch: the first 10px decide the axis; horizontal previews, then commits or returns, vertical is the display's own scroll.
+   On phone a swipe on the displays moves a platform, one above them (strip, map, sign) a station */
 var t0x=0,t0y=0,tt0=0,tOn=false,tH=false,tV=false,tZone='';
-app.addEventListener('touchstart',function(e){ if(lbOpen||e.touches.length!==1||(e.target.closest&&e.target.closest('#qp,#tp,#tp-b'))){tOn=false;return;} tOn=true;tH=false;tV=false; t0x=e.touches[0].clientX; t0y=e.touches[0].clientY; tt0=performance.now(); resetTrack();
+app.addEventListener('touchstart',function(e){ if(lbOpen||e.touches.length!==1||(e.target.closest&&e.target.closest('#qp'))){tOn=false;return;} tOn=true;tH=false;tV=false; t0x=e.touches[0].clientX; t0y=e.touches[0].clientY; tt0=performance.now(); resetTrack();
   tZone=isPhone()&&!(e.target.closest&&e.target.closest('#disp-wrap'))?'st':''; },{passive:true});
 app.addEventListener('touchmove',function(e){
   if(!tOn||tV) return; var dx=e.touches[0].clientX-t0x, dy=e.touches[0].clientY-t0y;
@@ -2009,7 +1949,6 @@ function relayout(){
   var phone=isPhone(), vA=curView();
   V.tall.g.classList.toggle('gone',!phone);
   [V.wide,V.tall].forEach(function(v){ if(v!==vA) v.g.classList.add('off'); else v.g.classList.remove('off','gone'); });
-  if(!phone) V.tall.g.classList.add('gone');
   measureView(V.wide);
   buildStrip();
   var tgt;
@@ -2020,11 +1959,10 @@ function relayout(){
   if(state.mode==='ride'){renderBoard();var lay=planStage(state);LAYC[layKey(state.i)]=lay;applyStage(lay);tgt=lay.cam;fitDisplay(curDisp());} else tgt=camTarget(vA,state);
   cancelAnimationFrame(vA.raf); applyCam(vA,tgt); placeTrain(vA,vA.stLen[state.i]); vA.base=tgt;
   setupCue();
-  var o=phone?V.wide:V.tall; if(o){var ot=o===V.wide?camTarget(o,{mode:'ride',i:state.i}):camTarget(o,{mode:'map',i:state.i});applyCam(o,ot);placeTrain(o,o.stLen[state.i]);o.base=ot;}
+  var o=phone?V.wide:V.tall, ot=camTarget(o,{mode:phone?'ride':'map',i:state.i}); applyCam(o,ot); placeTrain(o,o.stLen[state.i]); o.base=ot; // the hidden view waits where it will be needed
   clipLabels(V.wide,V.wide.cam);
   if(state.mode==='map') placeWash(vA,tgt);
-  var ir=$('intro').getBoundingClientRect(), it=getComputedStyle($('intro')).transform, idy=it&&it!=='none'?new DOMMatrix(it).m42:0;
-  $('clk-ca').style.setProperty('--cat',phone?Math.round(ir.top-idy-36)+'px':'auto');
+  $('clk-ca').style.setProperty('--cat',phone?Math.round(introBox().top-36)+'px':'auto');
   updateClocks(); applyTheme('snap'); wxSetup(); warmLayouts();
 }
 var rT=0;
@@ -2049,6 +1987,8 @@ if(state.mode==='map'){
 requestAnimationFrame(function(){requestAnimationFrame(function(){document.documentElement.classList.remove('no-tt');});});
 tick();
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ measureView(V.wide); measureView(V.tall); if(!busy()&&!cue.running&&!pv.active) relayout(); });
+/* TEST HOOK: window.__ride, for the automated tests and the Test panel. Delete from here to "END test hook" (and the
+   Test panel, which uses it) for the real site; nothing else reads it */
 window.__ride={marker:function(){var v=curView(),m=getComputedStyle(v.train.querySelector('.tsc')).transform;return {plane:v.planeOp||0,a:+(+v.ta).toFixed(2),flip:v.plane.getAttribute('transform')||'',len:v.trainLen,mum:v.stLen[5],wat:v.stLen[6],ts:m&&m!=='none'?String(+new DOMMatrix(m).a.toFixed(2)):'1'};},get state(){return {mode:state.mode,i:state.i,p:state.p,id:ST[state.i].id};},busy:busy,get cue(){return {runs:cue.runs,stopped:cue.stopped,running:cue.running};},
   cam:function(){var v=curView();return v.cam?{x:v.cam.x,y:v.cam.y,s:v.cam.s,fx:v.cam.fx,fy:v.cam.fy,train:v.trainLen}:null;},
   plats:ST.map(function(s){return s.plats.length;}), ids:ST.map(function(s){return s.id;}),
@@ -2056,6 +1996,50 @@ window.__ride={marker:function(){var v=curView(),m=getComputedStyle(v.train.quer
   // preview a theme and weather everywhere: preview({phase:'night',weather:'snow'}); preview(null) goes back to the local time and month
   preview:function(o){ if(!o){OV.phase=null;OV.weather=null;} else { if('phase' in o) OV.phase=o.phase||null; if('weather' in o) OV.weather=o.weather||null; } refreshTheme(); return {phase:OV.phase,weather:OV.weather}; },
   conditions:function(){var o={};Object.keys(PLACES).forEach(function(k){var e=eff(k);o[k]={phase:e.phase,weather:e.weather,time:e.time};});return o;},
-  get wx(){return {running:!!WX.raf,systems:WX.sys.map(function(o){return o.key+':'+o.w+':'+o.ps.length;})};}, sql:function(k){return sqlOf(QUERIES[k]);}, km:GC_KM, get qOpen(){return qOpen;}};
+  get wx(){return {running:!!WX.raf,systems:WX.sys.map(function(o){return o.key+':'+o.w+':'+o.ps.length;})};}, sql:function(k){return sqlOf(QUERIES[k]);}, get qOpen(){return qOpen;}, get ov(){return {phase:OV.phase,weather:OV.weather};}};
+/* END test hook */
 })();
 </script>
+
+<!-- MOCKUP ONLY: Test panel for the owner to try every time of day and weather. It talks to the page only through
+     window.__ride, so deleting everything from here to "END Test panel" removes it completely. -->
+<style>
+.tp-b{position:absolute;z-index:45;right:calc(12px + var(--sr));top:calc(var(--bar) + var(--st) + 10px);height:26px;padding:0 8px;border:1px dashed var(--muted);background:var(--paper);border-radius:2px;font:500 11px/1 var(--mono);color:var(--muted)}
+.tp-b[aria-expanded="true"]{color:var(--ink);border-style:solid;border-color:var(--ink)}
+.tp{position:absolute;z-index:45;right:calc(12px + var(--sr));top:calc(var(--bar) + var(--st) + 42px);max-width:calc(100% - 24px - var(--sl) - var(--sr));background:var(--paper);border:1px dashed var(--ink);padding:8px;display:flex;flex-direction:column;gap:6px;touch-action:manipulation}
+.tp[hidden]{display:none}
+.tp-r{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.tp-r b{font:500 11px/1 var(--mono);color:var(--muted);width:4.6em}
+.tp-r button{height:32px;padding:0 9px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;font:400 12px/1 var(--mono);color:var(--ink)}
+.tp-r button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+@media (max-width:899.98px){
+  .tp-b{right:calc(10px + var(--sr))}
+  /* in a station the button sits at the end of the strip, off the map band */
+  .is-ride .tp-b{top:calc(var(--bar) + var(--st) + 4px);z-index:46}
+  .strip{padding-right:calc(70px + var(--sr))}
+  .is-ride .tp{top:calc(var(--bar) + var(--st) + var(--strip) + 6px)}
+}
+</style>
+<script>
+(function(){
+"use strict";
+var R=window.__ride; if(!R) return;
+document.getElementById('qp').insertAdjacentHTML('beforebegin','<button class="tp-b" type="button" id="tp-b" aria-expanded="false" aria-controls="tp">Test</button><div class="tp" id="tp" role="group" aria-label="Test theme and weather" hidden><div class="tp-r" data-k="phase"><b>Time</b><button type="button" data-v="">Auto</button><button type="button" data-v="day">Day</button><button type="button" data-v="dusk">Dusk</button><button type="button" data-v="night">Night</button></div><div class="tp-r" data-k="weather"><b>Weather</b><button type="button" data-v="">Auto</button><button type="button" data-v="clear">Clear</button><button type="button" data-v="rain">Rain</button><button type="button" data-v="snow">Snow</button></div></div>');
+var b=document.getElementById('tp-b'), tp=document.getElementById('tp');
+function sync(){ var ov=R.ov; tp.querySelectorAll('.tp-r').forEach(function(r){ var k=r.getAttribute('data-k');
+  r.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed',String((ov[k]||'')===x.getAttribute('data-v'))); }); }); }
+function toggle(on){ if(on) sync(); tp.hidden=!on; b.setAttribute('aria-expanded',String(on)); }
+// the panel's own clicks, keys, wheel and touches never reach the page's handlers
+b.addEventListener('click',function(e){ e.stopPropagation(); toggle(tp.hidden); });
+tp.addEventListener('click',function(e){ e.stopPropagation(); var x=e.target.closest('button[data-v]'); if(!x) return; var o={}; o[x.parentNode.getAttribute('data-k')]=x.getAttribute('data-v'); R.preview(o); sync(); });
+[b,tp].forEach(function(el){ ['touchstart','touchmove','touchend'].forEach(function(t){ el.addEventListener(t,function(e){e.stopPropagation();},{passive:true}); }); });
+tp.addEventListener('wheel',function(e){e.stopPropagation();},{passive:true});
+document.addEventListener('click',function(e){ if(e.target.closest('.clk')) sync(); }); // a clock press also changes the theme override
+document.addEventListener('keydown',function(e){
+  if(e.ctrlKey||e.metaKey||e.altKey||!document.getElementById('lb').hidden) return;
+  if(e.key==='Escape'&&!tp.hidden){ e.preventDefault(); e.stopPropagation(); toggle(false); b.focus(); return; }
+  if(e.target.closest&&e.target.closest('#tp')) e.stopPropagation();
+},true);
+})();
+</script>
+<!-- END Test panel -->
