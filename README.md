@@ -70,12 +70,19 @@ Every project below has its own platform at the [Projects station](https://mayan
 
 ## 🔧 How it's built
 
-![HTML](https://img.shields.io/badge/HTML-one_file-E34F26?logo=html5&logoColor=white)
+![HTML](https://img.shields.io/badge/HTML-one_page-E34F26?logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS-plain-1572B6?logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-no_libraries-F7DF1E?logo=javascript&logoColor=black)
 ![SVG](https://img.shields.io/badge/SVG-map-D7261E)
 ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-deployed-222222?logo=githubpages&logoColor=white)
 
-The whole site is one HTML file, `site/index.html`, with plain CSS and JavaScript. There is no build step and no library.
+The whole site is one page with plain CSS and JavaScript. There is no build step and no library.
+
+| File | What's in it |
+|:--|:--|
+| `site/index.html` | The page and all its text |
+| `site/style.css` | The look, the three time-of-day themes and the phone layout |
+| `site/app.js` | The data, the map, the camera and train, the query panel, time and weather |
 
 <details>
 <summary><b>The details</b></summary>
