@@ -128,8 +128,6 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .stn.cur .mk:not(.ix){fill:var(--paper);stroke:var(--ink);stroke-width:2.5px;r:10.5px}
 .stn .halo{fill:none;stroke:var(--ink);stroke-width:1px;opacity:0;r:16px;transition:opacity .3s}
 .stn.cur .halo{opacity:.3}
-.stn text{paint-order:stroke;stroke:var(--map);stroke-width:4px;stroke-linejoin:round}
-.refold .stn text{stroke:none} /* while the old floor fades out, a halo in the new floor colour would show as a blot */
 .stn .nm{font-weight:600;font-size:13.5px;fill:var(--ink);letter-spacing:-.005em}
 .stn.cur .nm{font-weight:700}
 #map .stn .yr{font:400 10.5px var(--mono);fill:var(--muted)}
@@ -273,6 +271,17 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 .tests3 .out{font:500 12.5px/1.6 var(--mono);color:var(--muted);white-space:nowrap;text-align:right}
 .tests3 .won .out{color:var(--ink)}
 .tests3 p{grid-column:2/4;margin:3px 0 0;font-size:15px;line-height:1.4;color:var(--muted);max-width:34em}
+/* each point appears in turn; a losing title is then struck out and dimmed (the strike is visual only, the tag says it) */
+.tests3 .lose h4{color:var(--muted)}
+.tests3 b{font-weight:inherit;background:linear-gradient(currentColor,currentColor) 0 58%/100% 1.5px no-repeat}
+.tests3 li:nth-child(2){--k:1}.tests3 li:nth-child(3){--k:2}
+.d-tests.play .tests3{overflow:hidden} /* the rise never makes the display scroll */
+.d-tests.play li{animation:t3in .3s var(--ease) both;animation-delay:calc(var(--k,0) * 550ms)}
+.d-tests.play .lose h4{animation:t3dim .35s var(--ease) both;animation-delay:calc(var(--k,0) * 550ms + 1s)}
+.d-tests.play .lose b{animation:t3st .35s var(--ease) both;animation-delay:calc(var(--k,0) * 550ms + 1s)}
+@keyframes t3in{from{opacity:0;transform:translateY(6px)}}
+@keyframes t3dim{from{color:var(--ink)}}
+@keyframes t3st{from{background-size:0 1.5px}}
 /* key number */
 .kn{display:block;font:500 clamp(72px,7vw,112px)/.88 var(--mono);color:var(--red-t);letter-spacing:-.05em;font-variant-numeric:tabular-nums;white-space:nowrap}
 .kn-l{margin:14px 0 0;font:500 14px/1.4 var(--mono)}
@@ -410,6 +419,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
 /* local clocks: one on the sign, one near each end of the line at home. Each is a button that cycles the theme */
 .clk{border:0;background:none;padding:4px 0;margin:-4px 0;font:400 11.5px/1.3 var(--mono);color:var(--muted);white-space:nowrap;text-align:left}
 .clk:hover{color:var(--ink)}
+.clk svg{width:1.1em;height:1.1em;vertical-align:-.22em;margin-right:.4em;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .b-subrow{display:flex;flex-wrap:nowrap;align-items:baseline;column-gap:14px;margin-top:8px;min-width:0}
 .b-subrow .b-sub{margin:0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .b-subrow .clk{flex:none}
@@ -711,7 +721,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
         <div class="ba-row" role="group" aria-label="After, four steps">
           <div class="ba-k">After</div>
           <ol class="ba-l" style="--n:4" role="list">
-            <li class="ba-s"><i></i><span>Checkout</span></li><li class="ba-s"><i></i><span>Instant access</span></li><li class="ba-s"><i></i><span>Quiz marks itself</span></li><li class="ba-s"><i></i><span>Certificate</span></li>
+            <li class="ba-s"><i></i><span>Checkout</span></li><li class="ba-s"><i></i><span>Instant access</span></li><li class="ba-s"><i></i><span>Quiz auto-evaluation</span></li><li class="ba-s"><i></i><span>Certificate</span></li>
           </ol>
         </div>
         <p class="ba-n">Proper hosting, LearnDash for courses and a checkout students could finish on their own.</p>
@@ -728,13 +738,13 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
       <!-- IBI checkout -->
       <div class="disp d-stmt" data-ex="s4-0" hidden>
         <p class="big">People picked a course, saw the price and left.</p>
-        <p class="support">I built Power BI dashboards on sales, retention, drop-off, cart abandonment, traffic and ads. Every week, with leadership, they showed the same thing.</p>
+        <p class="support">I built Power BI dashboards on sales, retention, drop-off, cart abandonment, traffic and ads. Every week I took them to leadership, and we planned the next change from what they showed.</p>
       </div>
       <div class="disp d-tests" data-ex="s4-1" hidden>
-        <h3 class="mlabel">We tested three ways in</h3>
+        <h3 class="mlabel">What we uncovered in the weekly meetings</h3>
         <ol class="tests3">
-          <li class="lose"><div class="mkr" aria-hidden="true"><i></i></div><h4><span>1</span>Free courses</h4><div class="out">Didn't work</div><p>Filled up fast. Almost nobody finished, because nothing was at stake.</p></li>
-          <li class="lose"><div class="mkr" aria-hidden="true"><i></i></div><h4><span>2</span>Monthly plans</h4><div class="out">Didn't work</div><p>People recorded a whole course in a day and cancelled. We blocked recording; they found a jugaad anyway.</p></li>
+          <li class="lose"><div class="mkr" aria-hidden="true"><i></i></div><h4><span>1</span><b>Free courses</b></h4><div class="out">Didn't work</div><p>Filled up fast. Almost nobody finished, because nothing was at stake.</p></li>
+          <li class="lose"><div class="mkr" aria-hidden="true"><i></i></div><h4><span>2</span><b>Monthly plans</b></h4><div class="out">Didn't work</div><p>People recorded a whole course in a day and cancelled. We blocked recording; they found a jugaad anyway.</p></li>
           <li class="won"><div class="mkr" aria-hidden="true"><i></i></div><h4><span>3</span>A small sample, then a discount</h4><div class="out">Won</div><p>A small sample program first, then a discount on the full course.</p></li>
         </ol>
       </div>
@@ -801,7 +811,7 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
       </div>
       <div class="disp d-stmt" data-ex="s7-1" hidden>
         <p class="big md">I'm an Operations Analyst at Canada's first fully robotics-integrated sort centre. When the numbers move, I work out why in Excel and SQL.</p>
-        <p class="support">I monitor 1,000 robotic drive units, 40 induct stations (half manual, half automated) and the conveyor system.</p>
+        <p class="support">I monitor 1,000 robotic drive units, 40 induct stations and the conveyor system.</p>
       </div>
       <div class="disp d-num" data-ex="s7-2" hidden>
         <span class="kn" data-count="98.5" aria-label="98.5 percent or more">98.5%+</span>
@@ -892,7 +902,7 @@ var ST=[
  {id:'s1',n:1,name:'Pune',mr:'पुणे',sub:'Taking things apart',years:'Growing up',line:'red',plats:['Statement','Photo','The story behind it'],tools:['C']},
  {id:'s2',n:2,name:'Snapper',sub:'Snapper Future Tech',years:'2019',y:2019,line:'red',plats:['Statement','Team photo','What I handled','The story behind it'],tools:['WordPress']},
  {id:'s3',n:3,name:'IBI platform',sub:'Indian Blockchain Institute',years:'2020',y:2020,line:'red',plats:['Statement','Before and after','The result','The live site'],result:'+27% completions',tools:['LearnDash']},
- {id:'s4',n:4,name:'IBI checkout',sub:'Indian Blockchain Institute',years:'2020',y:2020,line:'red',plats:['Why people left','Three ways in','The result'],result:'+175% sales',tools:['Power BI','A/B testing']},
+ {id:'s4',n:4,name:'IBI checkout',sub:'Indian Blockchain Institute',years:'2020',y:2020,line:'red',plats:['Why people left','What we tried','The result'],result:'+175% sales',tools:['Power BI','A/B testing']},
  {id:'s5',n:5,name:'Full-stack dev',sub:'Snapper Future Tech',years:'2020–23',y:2020,line:'red',plats:['Statement','The figures','Government pilot','The story behind it'],result:'+25% conversion',tools:['Google Analytics','Microsoft Clarity']},
  {id:'mumbai',n:0,name:'Mumbai',sub:'Change for the Canada line',years:'2023',y:2023,line:'ix',plats:['Statement','The airport']},
  {id:'s6',n:6,name:'Waterloo',sub:'Conestoga College',years:'2023–24',y:2023,line:'blue',plats:['Statement','Certificates','Photo','Where projects started']},
@@ -1058,7 +1068,7 @@ function buildView(name){
 }
 function measureView(v){
   function u(a,b){if(!a)return b;var x=Math.min(a.x,b.x),y=Math.min(a.y,b.y);return {x:x,y:y,w:Math.max(a.x+a.w,b.x+b.w)-x,h:Math.max(a.y+a.h,b.y+b.h)-y};}
-  v.boxes=v.pins.map(function(g){var b={x:-16,y:-16,w:32,h:32};g.querySelectorAll('text:not(.res)').forEach(function(t){var r=t.getBBox();b=u(b,{x:r.x-3,y:r.y-2,w:r.width+6,h:r.height+4});});return b;});
+  v.boxes=v.pins.map(function(g){var b={x:-16,y:-16,w:32,h:32},l=null;g.querySelectorAll('text:not(.res)').forEach(function(t){var r=t.getBBox();b=u(b,{x:r.x-3,y:r.y-2,w:r.width+6,h:r.height+4});l=u(l,{x:r.x,y:r.y,w:r.width,h:r.height});});b.l=l;return b;});
   var at=v.g.querySelector('.arc-l text').getBBox(); v.arcBox={x:at.x,y:at.y,w:at.width,h:at.height};
 }
 function placeTrain(v,len){
@@ -1083,11 +1093,13 @@ function markStations(v){
 }
 /* hide station labels that a ride camera would crop at the screen edge */
 function clipLabels(v,c){
-  var on=state.mode==='ride'&&v===V.wide, W=innerWidth, top=barBottom()+stripH(), u=Math.pow(c.s,-0.7), tx=c.fx-c.s*c.x, ty=c.fy-c.s*c.y;
+  var on=state.mode==='ride'&&v===V.wide, R=[], W=innerWidth, top=barBottom()+stripH(), u=Math.pow(c.s,-0.7), tx=c.fx-c.s*c.x, ty=c.fy-c.s*c.y;
   v.pins.forEach(function(g,i){
     var b=v.boxes[i], p=v.L.pts[i], X=tx+c.s*(p[0]+u*b.x), Y=ty+c.s*(p[1]+u*b.y), cut=on&&i!==state.i&&(X<2||X+c.s*u*b.w>W-2||Y<top);
-    g.classList.toggle('clip',cut);
+    g.classList.toggle('clip',cut); var l=b.l; R[i]=[tx+c.s*(p[0]+u*l.x),ty+c.s*(p[1]+u*l.y)]; R[i].push(R[i][0]+c.s*u*l.w,R[i][1]+c.s*u*l.h);
   });
+  // labels have no halo: of two neighbours that would touch, the one farther from the current station is hidden
+  if(on) for(var i=0;i<R.length-1;i++){ var a=R[i], d=R[i+1]; if(a[2]+2>d[0]&&a[3]>d[1]&&d[3]>a[1]) v.pins[Math.abs(i-state.i)>Math.abs(i+1-state.i)?i:i+1].classList.add('clip'); }
   var ab=v.arcBox, aX=tx+c.s*(v.L.arcL[0]+u*ab.x), aY=ty+c.s*(v.L.arcL[1]+u*ab.y);
   var ac=on&&(aX<2||aX+c.s*u*ab.w>W-2||aY<top); v.arcG.classList.toggle('clip',ac);
 }
@@ -1393,7 +1405,7 @@ function showDisplay(prev){
   if(key==='s9-4'&&!$('em').textContent) $('em').textContent=email();
   fitDisplay(shown);
   var kn=shown&&shown.querySelector('.kn'); if(kn) countUp(kn);
-  if(shown&&shown.classList.contains('waffle')){shown.classList.remove('play');void shown.offsetWidth;shown.classList.add('play');}
+  if(shown&&shown.matches('.waffle,.d-tests')){shown.classList.remove('play');void shown.offsetWidth;shown.classList.add('play');}
   if(key!=='s2-1') setFind(false);
   warm(state.i);
 }
@@ -1762,11 +1774,17 @@ function setWash(there,here){
   w._k=k;
   if(on&&k&&!reduced){ w.classList.remove('on'); washT=setTimeout(put,600); } else put();
 }
+/* line icons before the clock text: the condition for that place now */
+var WXI={sun:'<circle cx="8" cy="8" r="2.8"/><path d="M8 1.5v1.7M8 12.8v1.7M1.5 8h1.7M12.8 8h1.7M3.4 3.4l1.2 1.2M11.4 11.4l1.2 1.2M3.4 12.6l1.2-1.2M11.4 4.6l1.2-1.2"/>',
+ moon:'<path d="M13.2 10A5.6 5.6 0 1 1 6 2.8 4.5 4.5 0 0 0 13.2 10z"/>',
+ rain:'<path d="M4.5 9.5a2.5 2.5 0 0 1-.2-5 3.8 3.8 0 0 1 7.3 1A2 2 0 0 1 11.5 9.5zM5.6 11.6l-.8 2M8.6 11.6l-.8 2M11.6 11.6l-.8 2"/>',
+ snow:'<path d="M8 1.8v12.4M2.6 4.9l10.8 6.2M2.6 11.1l10.8-6.2M6.4 2.9 8 4.3l1.6-1.4M6.4 13.1 8 11.7l1.6 1.4"/>'};
 function clockText(el,key,board){
   var e=eff(key), P=PLACES[key], m=OV.phase===null?'':OV.phase, nx=nextMode(OV.phase);
   // on the sign the place name is left out where it is the station's own name; the weather word can be hidden by width
   var nm=board&&P.name===ST[state.i].name?'':P.name+' ', w=', '+wxWord(key,e.weather), txt=nm+e.time+w;
-  if(el._t!==txt){ el._t=txt; el.innerHTML=esc(nm+e.time)+'<span class="cw">'+esc(w)+'</span>'; }
+  var ic=e.weather==='rain'||e.weather==='snow'?e.weather:e.phase==='night'?'moon':'sun';
+  if(el._t!==txt||el._i!==ic){ el._t=txt; el._i=ic; el.innerHTML='<svg viewBox="0 0 16 16" aria-hidden="true">'+WXI[ic]+'</svg>'+esc(nm+e.time)+'<span class="cw">'+esc(w)+'</span>'; }
   var lab=P.name+' local time '+e.time+'. '+(e.live?'Weather now: '+wxWord(key,e.weather)+'.':'Typical '+MONTHS[e.month-1]+' weather: '+wxWord(key,e.weather)+', not a live report.')+
     ' Theme: '+MODE_NAME[m]+'. Activate to switch to '+MODE_NAME[nx===null?'':nx]+'.';
   el.setAttribute('aria-label',lab); el.title=lab;
@@ -1774,7 +1792,7 @@ function clockText(el,key,board){
 function updateClocks(){
   clockText($('b-clk'),STOP_PLACE[state.i],true); clockText($('clk-in'),'pune'); clockText($('clk-ca'),'toronto');
   // the sign's sub line never wraps: on a narrow phone the clock drops its weather word (kept in its label), by character count
-  if(isPhone()){ var sub=(ST[state.i].sub||'').length*7, clk=$('b-clk')._t.length*6.9; $('b-clk').parentNode.classList.toggle('tight',sub+12+clk>innerWidth-56); }
+  if(isPhone()){ var sub=(ST[state.i].sub||'').length*7, clk=$('b-clk')._t.length*6.9+18; $('b-clk').parentNode.classList.toggle('tight',sub+12+clk>innerWidth-56); }
   else $('b-clk').parentNode.classList.remove('tight');
 }
 function refreshTheme(){ applyTheme('fade'); updateClocks(); wxSetup(); }
@@ -1896,6 +1914,7 @@ window.addEventListener('hashchange',function(){closeShot();route(location.hash.
 /* ---------- input ---------- */
 document.addEventListener('click',function(e){
   if(lbOpen){ if(e.target.closest('#lb')) closeShot(); return; }
+  var xl=e.target.closest('a[target="_blank"]'); if(xl){ if(!e.defaultPrevented&&!e.button&&!e.ctrlKey&&!e.metaKey&&!e.shiftKey&&!e.altKey){ var nw=window.open(xl.href,'_blank'); if(nw){ e.preventDefault(); try{nw.opener=null;}catch(x){} } } return; } // some iOS views open a target=_blank link in the same tab; where no window opens, the link works as usual
   var qb=e.target.closest('.qb'); if(qb){ qSel=+qb.getAttribute('data-q'); renderQ(); var nb=document.querySelector('.qb[data-q="'+qSel+'"]'); if(nb) nb.focus(); return; }
   var tr=e.target.closest('tr[data-go]'); if(tr){ var g=tr.getAttribute('data-go').split(',').map(Number); closeQuery({noFocus:true,keepHistory:true}); history.replaceState(null,'','#'+hashFor(state)); goStation(g[0],g[1]); return; }
   var a=e.target.closest('[data-act]');
@@ -1964,10 +1983,10 @@ app.addEventListener('wheel',function(e){
 },{passive:false});
 
 /* touch: the first 10px decide the axis; horizontal previews, then commits or returns, vertical is the display's own scroll.
-   On phone a swipe on the displays moves a platform, one above them (strip, map, sign) a station */
+   On phone a swipe that starts below the sign (the displays, full width, to the bottom) moves a platform, one above it (strip, map, sign) a station */
 var t0x=0,t0y=0,tt0=0,tOn=false,tH=false,tV=false,tZone='';
 app.addEventListener('touchstart',function(e){ if(lbOpen||e.touches.length!==1||(e.target.closest&&e.target.closest('#qp'))){tOn=false;return;} tOn=true;tH=false;tV=false; t0x=e.touches[0].clientX; t0y=e.touches[0].clientY; tt0=performance.now(); resetTrack();
-  tZone=isPhone()&&!(e.target.closest&&e.target.closest('#disp-wrap'))?'st':''; },{passive:true});
+  tZone=isPhone()&&t0y<$('board').getBoundingClientRect().bottom?'st':''; },{passive:true});
 app.addEventListener('touchmove',function(e){
   if(!tOn||tV) return; var dx=e.touches[0].clientX-t0x, dy=e.touches[0].clientY-t0y;
   if(!tH&&Math.max(Math.abs(dx),Math.abs(dy))>10){ if(Math.abs(dx)>Math.abs(dy)) tH=true; else { tV=true; return; } }
