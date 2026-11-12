@@ -1,53 +1,52 @@
 <div align="center">
 
-<a href="https://mayank-thite.github.io/"><img src="public/og-image.png" alt="Mayank Thite, data analyst. Open the portfolio" width="100%"></a>
+<a href="https://mayank-thite.github.io/"><img src="site/og-image.png" alt="Mayank Thite, data analyst. A metro map from Pune to Toronto. Open the portfolio" width="100%"></a>
 
 ### 👉 [**mayank-thite.github.io**](https://mayank-thite.github.io/)
 
-[![Open the portfolio](https://img.shields.io/badge/Open_the_portfolio-F5B44A?style=for-the-badge&logo=googlechrome&logoColor=black)](https://mayank-thite.github.io/)
-[![Recruiter view](https://img.shields.io/badge/Recruiter_view-1_min-1F2937?style=for-the-badge)](https://mayank-thite.github.io/#hire)
-[![The full story](https://img.shields.io/badge/The_full_story-5_min-1F2937?style=for-the-badge)](https://mayank-thite.github.io/#story)
+[![Open the portfolio](https://img.shields.io/badge/Open_the_portfolio-D7261E?style=for-the-badge&logo=googlechrome&logoColor=white)](https://mayank-thite.github.io/)
+[![Projects](https://img.shields.io/badge/Projects-7-1F2937?style=for-the-badge)](https://mayank-thite.github.io/#s8)
+[![Contact](https://img.shields.io/badge/Contact-Toronto-1F2937?style=for-the-badge)](https://mayank-thite.github.io/#s9/5)
 
 [![Resume](https://img.shields.io/badge/Resume-PDF-DC2626?logo=adobeacrobatreader&logoColor=white)](https://mayank-thite.github.io/Mayank_Thite_Resume.pdf)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-mayank--thite-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/mayank-thite)
-[![Email](https://img.shields.io/badge/Email-mayankthite.ca%40gmail.com-EA4335?logo=gmail&logoColor=white)](mailto:mayankthite.ca@gmail.com)
 [![Deploy](https://github.com/Mayank-thite/mayank-thite.github.io/actions/workflows/deploy.yml/badge.svg)](https://github.com/Mayank-thite/mayank-thite.github.io/actions/workflows/deploy.yml)
 
-[**About me**](#-about-me) · [**Two ways to read it**](#-two-ways-to-read-it) · [**Projects**](#-projects) · [**How it's built**](#-how-its-built) · [**Contact**](#-contact)
+[**About me**](#-about-me) · [**How to read it**](#-how-to-read-it) · [**Projects**](#-projects) · [**How it's built**](#-how-its-built) · [**Contact**](#-contact)
 
 </div>
 
 ## 👋 About me
 
-I'm a data analyst working with SQL, Power BI and Python, with 4+ years of experience. I'm currently an Operations Analyst at Amazon Canada.
+I'm a data analyst with 4+ years of experience in operational data analysis, root-cause analysis and dashboarding. I work with SQL, Power BI and Python, and I'm currently an Operations Analyst at Amazon Canada.
 
 I'm looking for data analyst, BI and junior data engineering roles. I'm based in Toronto and open to roles across Canada.
 
 > [!TIP]
-> Short on time? The [recruiter view](https://mayank-thite.github.io/#hire) has my roles, results, skills and contact details on one page. It takes about a minute.
+> Short on time? Go straight to [Toronto](https://mayank-thite.github.io/#s9), the last stop. It has the short version, my skills and how to reach me.
 
-## 🧭 Two ways to read it
+## 🧭 How to read it
 
-The site opens with a choice. Pick the short version or the long one, and switch between them any time from the top bar.
+The site is a metro map of my career, from Pune to Toronto. Each station is a job, a move or a set of projects, and each one has a few platforms with one thing on each.
+
+- **Ride the line.** Swipe, scroll, use the arrow keys or pick any station on the map.
+- **Query the line.** Press `Q` to run SQL over the same data the map is drawn from.
+- **Local time.** Each station takes the time of day and the usual weather of its own city, so Pune can be at night while Toronto is at noon.
 
 <table>
 <tr>
 <td width="50%" valign="top">
 
-**I'm hiring** · about a minute
+**The map**
 
-The roles I'm after, what I've delivered, my skills, my projects and how to reach me.
-
-<a href="https://mayank-thite.github.io/#hire"><img src=".github/readme/hire.jpg" alt="Recruiter view"></a>
+<a href="https://mayank-thite.github.io/"><img src=".github/readme/home.jpg" alt="The home screen: a metro map from Pune to Toronto"></a>
 
 </td>
 <td width="50%" valign="top">
 
-**Walk me through it** · about five minutes
+**A station**
 
-From a quadcopter in Pune to a robotics floor in Ontario, in nine stops. Each one leads with the work, and the backstory is optional.
-
-<a href="https://mayank-thite.github.io/#story"><img src=".github/readme/story.jpg" alt="The story view"></a>
+<a href="https://mayank-thite.github.io/#s2"><img src=".github/readme/station.jpg" alt="The Snapper station, shown at night in Pune"></a>
 
 </td>
 </tr>
@@ -55,7 +54,9 @@ From a quadcopter in Pune to a robotics floor in Ontario, in nine stops. Each on
 
 ## 📂 Projects
 
-Every project below is also on the site, with what it's for, how I built it, the problems along the way and what I found.
+Every project below has its own platform at the [Projects station](https://mayank-thite.github.io/#s8), with what it's for, how I built it, the problems along the way and what I found.
+
+<a href="https://mayank-thite.github.io/#s8/2"><img src=".github/readme/project.jpg" alt="A project platform on the site, showing Recap" width="100%"></a>
 
 | Project | What it does | Area | Links |
 |:--|:--|:--|:--|
@@ -69,25 +70,29 @@ Every project below is also on the site, with what it's for, how I built it, the
 
 ## 🔧 How it's built
 
-![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
-![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
-![Canvas](https://img.shields.io/badge/Canvas-2D_sky-F5B44A)
+![HTML](https://img.shields.io/badge/HTML-one_file-E34F26?logo=html5&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-no_libraries-F7DF1E?logo=javascript&logoColor=black)
+![SVG](https://img.shields.io/badge/SVG-map-D7261E)
 ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-deployed-222222?logo=githubpages&logoColor=white)
 
-I built the site myself. The star sky behind it is one canvas with one animation loop, kept outside React so it never slows the page down.
+The whole site is one HTML file, `site/index.html`, with plain CSS and JavaScript. There is no build step and no library.
 
 <details>
 <summary><b>The details</b></summary>
 <br>
 
-- **Fast first load.** The opening page ships on its own. The recruiter view and the story are separate pieces that start loading when you hover or tap a choice, along with their first images. The site only switches views once they're ready, so transitions don't stall.
-- **No blank screen.** A small loading screen is built into the HTML, so something shows before any JavaScript runs. It fades once the fonts and the first view are ready.
-- **Calm by default for some.** Anyone who has reduced motion turned on in their system settings gets a still version everywhere.
-- **Easy to update.** All the text lives in two files (`src/content/stops.js` and `src/content/projects.js`), and images are WebP files in `public/s/`.
-- **Deploys itself.** Every merge to `main` is checked, built and published to GitHub Pages by `.github/workflows/deploy.yml`.
+- **One source of data.** The stations and projects are two lists in the script. The map, the station signs, the skills list and the query panel are all drawn from them.
+- **The map is the navigation.** The line is an SVG path. The camera eases along it with a spring curve, and the train reads its position from a lookup table instead of measuring the path on every frame.
+- **Queries run in the page.** The three saved SQL queries are worked out in the browser over the same lists, and the panel shows how long each one took.
+- **Time and weather.** The theme comes from each city's local time and its sunrise and sunset. The weather is the usual weather for the month, drawn on a canvas that stops when the tab is hidden.
+- **Reduced motion.** Anyone who has reduced motion turned on in their system settings gets a still version.
+- **Private by default.** Nothing is stored or tracked. The email address is put together by the script when the Contact platform opens, so it isn't in the page source, and `robots.txt` asks AI crawlers to stay out.
+- **Deploys itself.** Every push to `main` publishes the `site/` folder to GitHub Pages through `.github/workflows/deploy.yml`.
 
 </details>
 
+The earlier version of the site, built with React, is kept on the [`old-story-site`](https://github.com/Mayank-thite/mayank-thite.github.io/tree/old-story-site) branch.
+
 ## 📬 Contact
 
-The quickest way to reach me is [email](mailto:mayankthite.ca@gmail.com) or [LinkedIn](https://www.linkedin.com/in/mayank-thite). My [resume](https://mayank-thite.github.io/Mayank_Thite_Resume.pdf) is on the site too.
+The quickest way to reach me is the [Contact platform](https://mayank-thite.github.io/#s9/5) on the site or [LinkedIn](https://www.linkedin.com/in/mayank-thite). My [resume](https://mayank-thite.github.io/Mayank_Thite_Resume.pdf) is on the site too.

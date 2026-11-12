@@ -1,5 +1,25 @@
-<title>Pune to Toronto</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Mayank Thite, Data Analyst</title>
+<meta name="description" content="Mayank Thite, data analyst in Toronto with 4+ years of experience in operational data analysis, root-cause analysis and dashboarding. Open to roles across Canada.">
+<meta property="og:type" content="profile">
+<meta property="og:title" content="Mayank Thite, Data Analyst">
+<meta property="og:description" content="Mayank Thite, data analyst in Toronto with 4+ years of experience in operational data analysis, root-cause analysis and dashboarding. Open to roles across Canada.">
+<meta property="og:image" content="https://mayank-thite.github.io/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A metro map from Pune to Toronto with the name Mayank Thite, data analyst.">
+<meta property="og:url" content="https://mayank-thite.github.io/">
+<meta property="og:site_name" content="Mayank Thite">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://mayank-thite.github.io/">
+<link rel="icon" type="image/png" href="icon.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Mayank Thite","jobTitle":"Data Analyst","address":{"@type":"PostalAddress","addressLocality":"Toronto","addressRegion":"ON","addressCountry":"CA"},"url":"https://mayank-thite.github.io/","sameAs":["https://www.linkedin.com/in/mayank-thite","https://github.com/Mayank-thite"],"knowsAbout":["SQL","Power BI","Python","Apache Spark","PostgreSQL","ETL"]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap">
@@ -561,7 +581,8 @@ html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--map);c
   #app *,#app *::before,#app *::after{transition-duration:0s!important;transition-delay:0s!important;animation-duration:0s!important;animation-delay:0s!important}
 }
 </style>
-
+</head>
+<body>
 <div id="app" class="is-map">
   <nav class="stations-nav" aria-label="List of stations">
     <h2>List of stations</h2>
@@ -1677,7 +1698,7 @@ function conditionsAt(key){
   var P=PLACES[key], t=localTime(P.tz,new Date());
   return {phase:phaseAt(P,t),weather:typicalWeather(P.wx,t.month),time:t.hm,month:t.month};
 }
-/* overrides: the clock button cycles the theme; the test panel and __ride.preview set both */
+/* override: the clock button cycles the theme */
 var OV={phase:null,weather:null};
 function eff(key){var c=conditionsAt(key); return {phase:OV.phase||c.phase,weather:OV.weather||c.weather,time:c.time,month:c.month};}
 function wxWord(key,w){return w==='snow'?'snow':w==='rain'?(PLACES[key].wx==='pune'?'monsoon rain':'light rain'):'clear';}
@@ -1987,59 +2008,7 @@ if(state.mode==='map'){
 requestAnimationFrame(function(){requestAnimationFrame(function(){document.documentElement.classList.remove('no-tt');});});
 tick();
 if(document.fonts&&document.fonts.ready) document.fonts.ready.then(function(){ measureView(V.wide); measureView(V.tall); if(!busy()&&!cue.running&&!pv.active) relayout(); });
-/* TEST HOOK: window.__ride, for the automated tests and the Test panel. Delete from here to "END test hook" (and the
-   Test panel, which uses it) for the real site; nothing else reads it */
-window.__ride={marker:function(){var v=curView(),m=getComputedStyle(v.train.querySelector('.tsc')).transform;return {plane:v.planeOp||0,a:+(+v.ta).toFixed(2),flip:v.plane.getAttribute('transform')||'',len:v.trainLen,mum:v.stLen[5],wat:v.stLen[6],ts:m&&m!=='none'?String(+new DOMMatrix(m).a.toFixed(2)):'1'};},get state(){return {mode:state.mode,i:state.i,p:state.p,id:ST[state.i].id};},busy:busy,get cue(){return {runs:cue.runs,stopped:cue.stopped,running:cue.running};},
-  cam:function(){var v=curView();return v.cam?{x:v.cam.x,y:v.cam.y,s:v.cam.s,fx:v.cam.fx,fy:v.cam.fy,train:v.trainLen}:null;},
-  plats:ST.map(function(s){return s.plats.length;}), ids:ST.map(function(s){return s.id;}),
-  query:function(k){return runQuery(QUERIES[k]);},
-  // preview a theme and weather everywhere: preview({phase:'night',weather:'snow'}); preview(null) goes back to the local time and month
-  preview:function(o){ if(!o){OV.phase=null;OV.weather=null;} else { if('phase' in o) OV.phase=o.phase||null; if('weather' in o) OV.weather=o.weather||null; } refreshTheme(); return {phase:OV.phase,weather:OV.weather}; },
-  conditions:function(){var o={};Object.keys(PLACES).forEach(function(k){var e=eff(k);o[k]={phase:e.phase,weather:e.weather,time:e.time};});return o;},
-  get wx(){return {running:!!WX.raf,systems:WX.sys.map(function(o){return o.key+':'+o.w+':'+o.ps.length;})};}, sql:function(k){return sqlOf(QUERIES[k]);}, get qOpen(){return qOpen;}, get ov(){return {phase:OV.phase,weather:OV.weather};}};
-/* END test hook */
 })();
 </script>
-
-<!-- MOCKUP ONLY: Test panel for the owner to try every time of day and weather. It talks to the page only through
-     window.__ride, so deleting everything from here to "END Test panel" removes it completely. -->
-<style>
-.tp-b{position:absolute;z-index:45;right:calc(12px + var(--sr));top:calc(var(--bar) + var(--st) + 10px);height:26px;padding:0 8px;border:1px dashed var(--muted);background:var(--paper);border-radius:2px;font:500 11px/1 var(--mono);color:var(--muted)}
-.tp-b[aria-expanded="true"]{color:var(--ink);border-style:solid;border-color:var(--ink)}
-.tp{position:absolute;z-index:45;right:calc(12px + var(--sr));top:calc(var(--bar) + var(--st) + 42px);max-width:calc(100% - 24px - var(--sl) - var(--sr));background:var(--paper);border:1px dashed var(--ink);padding:8px;display:flex;flex-direction:column;gap:6px;touch-action:manipulation}
-.tp[hidden]{display:none}
-.tp-r{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
-.tp-r b{font:500 11px/1 var(--mono);color:var(--muted);width:4.6em}
-.tp-r button{height:32px;padding:0 9px;border:1px solid var(--rule);background:var(--paper);border-radius:2px;font:400 12px/1 var(--mono);color:var(--ink)}
-.tp-r button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
-@media (max-width:899.98px){
-  .tp-b{right:calc(10px + var(--sr))}
-  /* in a station the button sits at the end of the strip, off the map band */
-  .is-ride .tp-b{top:calc(var(--bar) + var(--st) + 4px);z-index:46}
-  .strip{padding-right:calc(70px + var(--sr))}
-  .is-ride .tp{top:calc(var(--bar) + var(--st) + var(--strip) + 6px)}
-}
-</style>
-<script>
-(function(){
-"use strict";
-var R=window.__ride; if(!R) return;
-document.getElementById('qp').insertAdjacentHTML('beforebegin','<button class="tp-b" type="button" id="tp-b" aria-expanded="false" aria-controls="tp">Test</button><div class="tp" id="tp" role="group" aria-label="Test theme and weather" hidden><div class="tp-r" data-k="phase"><b>Time</b><button type="button" data-v="">Auto</button><button type="button" data-v="day">Day</button><button type="button" data-v="dusk">Dusk</button><button type="button" data-v="night">Night</button></div><div class="tp-r" data-k="weather"><b>Weather</b><button type="button" data-v="">Auto</button><button type="button" data-v="clear">Clear</button><button type="button" data-v="rain">Rain</button><button type="button" data-v="snow">Snow</button></div></div>');
-var b=document.getElementById('tp-b'), tp=document.getElementById('tp');
-function sync(){ var ov=R.ov; tp.querySelectorAll('.tp-r').forEach(function(r){ var k=r.getAttribute('data-k');
-  r.querySelectorAll('button').forEach(function(x){ x.setAttribute('aria-pressed',String((ov[k]||'')===x.getAttribute('data-v'))); }); }); }
-function toggle(on){ if(on) sync(); tp.hidden=!on; b.setAttribute('aria-expanded',String(on)); }
-// the panel's own clicks, keys, wheel and touches never reach the page's handlers
-b.addEventListener('click',function(e){ e.stopPropagation(); toggle(tp.hidden); });
-tp.addEventListener('click',function(e){ e.stopPropagation(); var x=e.target.closest('button[data-v]'); if(!x) return; var o={}; o[x.parentNode.getAttribute('data-k')]=x.getAttribute('data-v'); R.preview(o); sync(); });
-[b,tp].forEach(function(el){ ['touchstart','touchmove','touchend'].forEach(function(t){ el.addEventListener(t,function(e){e.stopPropagation();},{passive:true}); }); });
-tp.addEventListener('wheel',function(e){e.stopPropagation();},{passive:true});
-document.addEventListener('click',function(e){ if(e.target.closest('.clk')) sync(); }); // a clock press also changes the theme override
-document.addEventListener('keydown',function(e){
-  if(e.ctrlKey||e.metaKey||e.altKey||!document.getElementById('lb').hidden) return;
-  if(e.key==='Escape'&&!tp.hidden){ e.preventDefault(); e.stopPropagation(); toggle(false); b.focus(); return; }
-  if(e.target.closest&&e.target.closest('#tp')) e.stopPropagation();
-},true);
-})();
-</script>
-<!-- END Test panel -->
+</body>
+</html>
