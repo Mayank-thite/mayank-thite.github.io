@@ -20,10 +20,14 @@
 <link rel="canonical" href="https://mayank-thite.github.io/">
 <link rel="icon" type="image/png" href="icon.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Mayank Thite","jobTitle":"Data Analyst","address":{"@type":"PostalAddress","addressLocality":"Toronto","addressRegion":"ON","addressCountry":"CA"},"url":"https://mayank-thite.github.io/","sameAs":["https://www.linkedin.com/in/mayank-thite","https://github.com/Mayank-thite"],"knowsAbout":["SQL","Power BI","Python","Apache Spark","PostgreSQL","ETL"]}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=IBM+Plex+Mono:wght@400;500&family=Mukta:wght@400;500&display=swap">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/archivo-latin.woff2">
 <style>
+/* self-hosted Google Fonts subsets (SIL OFL 1.1, see fonts/LICENSE.txt); only the ranges this page uses */
+@font-face{font-family:'Archivo';font-style:normal;font-weight:400 700;font-stretch:62% 125%;font-display:swap;src:url(fonts/archivo-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/plexmono-400-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/plexmono-500-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Mukta';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/mukta-500-devanagari.woff2) format("woff2");unicode-range:U+0900-097F,U+1CD0-1CF4,U+1CF7-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B0A}
+@font-face{font-family:'Mukta';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/mukta-500-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 :root{
   --red:#d7261e;--blue:#a9c4f2;--blue-d:#4f78bf;--pink:#f4c6d6;
   --scrim:rgba(10,10,12,.95);--lb-bd:rgba(255,255,255,.18);
@@ -1693,14 +1697,31 @@ function typicalWeather(wx,month){
   if(wx==='pune') return month>=6&&month<=9?'rain':'clear';
   return month===12||month<=3?'snow':month===4||month===5||month===11?'rain':'clear';
 }
+/* live weather: one Open-Meteo request for every place after load, then at most every 30 minutes while the tab is seen.
+   Kept in memory for an hour; any failure leaves the typical weather, silently */
+var LIVE={}, liveT=0, liveTry=0;
+function wmo(c){return c>=71&&c<=77||c===85||c===86?'snow':c>=51&&c<=67||c>=80&&c<=82||c>=95&&c<=99?'rain':'clear';}
+function liveWx(){
+  if(document.readyState!=='complete'||document.hidden||navigator.onLine===false||!window.AbortController||Date.now()-liveTry<18e5) return;
+  liveTry=Date.now();
+  var ks=Object.keys(PLACES), ac=new AbortController(), to=setTimeout(function(){ac.abort();},4000);
+  function ll(f){return ks.map(function(k){return PLACES[k][f];}).join(',');}
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+ll('lat')+'&longitude='+ll('lon')+'&current=weather_code',{credentials:'omit',referrerPolicy:'no-referrer',signal:ac.signal})
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){ d=[].concat(d); var n={};
+      ks.forEach(function(k,i){ var c=d[i]&&d[i].current&&d[i].current.weather_code; if(typeof c==='number') n[k]=wmo(c); });
+      LIVE=n; liveT=Date.now(); updateClocks(); wxSetup(); })
+    .catch(function(){}).then(function(){ clearTimeout(to); });
+}
+addEventListener('load',function(){ idle(liveWx); });
 /* the one source of conditions: {phase, weather} for a place now (plus what the clock shows) */
 function conditionsAt(key){
-  var P=PLACES[key], t=localTime(P.tz,new Date());
-  return {phase:phaseAt(P,t),weather:typicalWeather(P.wx,t.month),time:t.hm,month:t.month};
+  var P=PLACES[key], t=localTime(P.tz,new Date()), lw=Date.now()-liveT<36e5&&LIVE[key];
+  return {phase:phaseAt(P,t),weather:lw||typicalWeather(P.wx,t.month),live:!!lw,time:t.hm,month:t.month};
 }
 /* override: the clock button cycles the theme */
-var OV={phase:null,weather:null};
-function eff(key){var c=conditionsAt(key); return {phase:OV.phase||c.phase,weather:OV.weather||c.weather,time:c.time,month:c.month};}
+var OV={phase:null};
+function eff(key){var c=conditionsAt(key); return {phase:OV.phase||c.phase,weather:c.weather,live:c.live,time:c.time,month:c.month};}
 function wxWord(key,w){return w==='snow'?'snow':w==='rain'?(PLACES[key].wx==='pune'?'monsoon rain':'light rain'):'clear';}
 var MODE_NAME={'':'Auto',day:'Day',dusk:'Dusk',night:'Night'};
 function nextMode(m){return m===null?'day':m==='day'?'night':null;}
@@ -1746,7 +1767,7 @@ function clockText(el,key,board){
   // on the sign the place name is left out where it is the station's own name; the weather word can be hidden by width
   var nm=board&&P.name===ST[state.i].name?'':P.name+' ', w=', '+wxWord(key,e.weather), txt=nm+e.time+w;
   if(el._t!==txt){ el._t=txt; el.innerHTML=esc(nm+e.time)+'<span class="cw">'+esc(w)+'</span>'; }
-  var lab=P.name+' local time '+e.time+'. '+(OV.weather?'Weather set for testing: '+wxWord(key,e.weather)+'.':'Typical '+MONTHS[e.month-1]+' weather: '+wxWord(key,e.weather)+', not a live report.')+
+  var lab=P.name+' local time '+e.time+'. '+(e.live?'Weather now: '+wxWord(key,e.weather)+'.':'Typical '+MONTHS[e.month-1]+' weather: '+wxWord(key,e.weather)+', not a live report.')+
     ' Theme: '+MODE_NAME[m]+'. Activate to switch to '+MODE_NAME[nx===null?'':nx]+'.';
   el.setAttribute('aria-label',lab); el.title=lab;
 }
@@ -1758,7 +1779,7 @@ function updateClocks(){
 }
 function refreshTheme(){ applyTheme('fade'); updateClocks(); wxSetup(); }
 var tickT=0;
-function tick(){ refreshTheme(); clearTimeout(tickT); tickT=setTimeout(tick,60000-Date.now()%60000+50); }
+function tick(){ refreshTheme(); liveWx(); clearTimeout(tickT); tickT=setTimeout(tick,60000-Date.now()%60000+50); }
 /* home: India ends halfway between Mumbai's labels and Waterloo's. The wash runs a little past that (at least half the map)
    and the two places' weather meets there */
 var HOME_MID=0;

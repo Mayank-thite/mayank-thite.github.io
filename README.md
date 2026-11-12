@@ -31,7 +31,7 @@ The site is a metro map of my career, from Pune to Toronto. Each station is a jo
 
 - **Ride the line.** Swipe, scroll, use the arrow keys or pick any station on the map.
 - **Query the line.** Press `Q` to run SQL over the same data the map is drawn from.
-- **Local time.** Each station takes the time of day and the usual weather of its own city, so Pune can be at night while Toronto is at noon.
+- **Local time and weather.** Each station takes the time of day and the current weather of its own city, so Pune can be at night while it snows in Toronto.
 
 <table>
 <tr>
@@ -84,9 +84,9 @@ The whole site is one HTML file, `site/index.html`, with plain CSS and JavaScrip
 - **One source of data.** The stations and projects are two lists in the script. The map, the station signs, the skills list and the query panel are all drawn from them.
 - **The map is the navigation.** The line is an SVG path. The camera eases along it with a spring curve, and the train reads its position from a lookup table instead of measuring the path on every frame.
 - **Queries run in the page.** The three saved SQL queries are worked out in the browser over the same lists, and the panel shows how long each one took.
-- **Time and weather.** The theme comes from each city's local time and its sunrise and sunset. The weather is the usual weather for the month, drawn on a canvas that stops when the tab is hidden.
+- **Time and weather.** The theme comes from each city's local time and its sunrise and sunset. The weather is read from Open-Meteo once the page has loaded and drawn on a canvas that stops when the tab is hidden. If that request fails, the page shows the usual weather for the month instead.
 - **Reduced motion.** Anyone who has reduced motion turned on in their system settings gets a still version.
-- **Private by default.** Nothing is stored or tracked. The email address is put together by the script when the Contact platform opens, so it isn't in the page source, and `robots.txt` asks AI crawlers to stay out.
+- **Private by default.** Nothing is stored or tracked, and the fonts are served from the site itself. The weather lookup is the only outside request. The email address is put together by the script when the Contact platform opens, so it isn't in the page source, and `robots.txt` asks AI crawlers to stay out.
 - **Deploys itself.** Every push to `main` publishes the `site/` folder to GitHub Pages through `.github/workflows/deploy.yml`.
 
 </details>
